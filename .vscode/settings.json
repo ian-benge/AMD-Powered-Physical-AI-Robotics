@@ -1,0 +1,6 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+  "python.terminal.activateEnvironment": false,
+  "files.exclude": {"**/__pycache__": true},
+  "search.exclude": {"**/.venv": true, "**/models": true, "**/outputs": true, "**/datasets": true}
+}

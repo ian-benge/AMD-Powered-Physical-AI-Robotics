@@ -1,0 +1,3 @@
+# Application packages only. Install the platform-appropriate PyTorch build first.
+ultralytics==8.4.153
+opencv-python==4.14.0.94

@@ -1,0 +1,40 @@
+ROVER VISION - START HERE
+
+This project uses free VS Code, Python, OpenCV, PyTorch, and YOLO.
+You do not need GitHub Copilot, an AI subscription, or an API key.
+
+1. Extract the entire ZIP. Do not run files from inside the ZIP viewer.
+   Put rover-vision somewhere writable, such as Documents or C:\Projects.
+
+2. Install Python 3.12 if needed:
+   https://www.python.org/downloads/windows/
+   Install Python Install Manager, open PowerShell, and run:
+   pymanager install 3.12
+
+3. Double-click Setup-Windows.cmd in the extracted folder.
+   Wait for "Setup complete". Downloads can take several minutes.
+   This step creates .venv and checks imports. It does not test the webcam.
+
+4. Open VS Code. Choose File > Open Folder > the extracted rover-vision folder.
+   Install its recommended Microsoft Python and Python Debugger extensions.
+   If prompted, trust the folder after reviewing the supplied files.
+
+5. Open Run and Debug (Ctrl+Shift+D).
+   Choose "Rover: webcam detection" and press F5.
+   The first run downloads YOLO11n weights into models/.
+
+6. Show the webcam a cup, bottle, phone, chair, or person.
+   A separate window shows labels, boxes, confidence scores, and speed.
+   Click the window and press Q to quit or S to save an image and results.
+
+You can also double-click Run-Windows.cmd after setup.
+
+To change the camera, edit camera_source in config.json from 0 to 1.
+For a slower laptop, change image_size from 640 to 320.
+The model will not yet know your custom container, lid, or sample.
+
+If the webcam fails, try the VS Code launch option
+"Rover: check model without webcam" to isolate the problem.
+
+Read README.md for details, troubleshooting, and OAK-D/Halo migration notes.
+See VALIDATION.md for exactly what was tested before delivery.

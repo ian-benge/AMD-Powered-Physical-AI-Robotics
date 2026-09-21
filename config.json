@@ -1,0 +1,10 @@
+{
+  "camera_source": 0,
+  "camera_backend": "auto",
+  "camera_width": 640,
+  "camera_height": 480,
+  "model_path": "models/yolo11n.pt",
+  "device": "cpu",
+  "confidence": 0.4,
+  "image_size": 640
+}
