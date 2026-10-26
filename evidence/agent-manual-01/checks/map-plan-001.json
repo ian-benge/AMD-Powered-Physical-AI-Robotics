@@ -1,0 +1,39 @@
+{
+  "test": "terrain_and_compute_path",
+  "passed": true,
+  "motion_commanded": false,
+  "map_pose": [
+    0.08381959795951843,
+    0.00146179657895118,
+    -0.00023785453963122863
+  ],
+  "proposed_target": [
+    0.4338195880589316,
+    0.0013785474908652165
+  ],
+  "resolution_m": 0.05000000074505806,
+  "known_cells": 4242,
+  "hazardous_cells": 0,
+  "footprint_known_clear": true,
+  "target_footprint_known_clear": true,
+  "lifecycle": {
+    "planner_server": {
+      "id": 3,
+      "label": "active"
+    },
+    "controller_server": {
+      "id": 3,
+      "label": "active"
+    },
+    "bt_navigator": {
+      "id": 3,
+      "label": "active"
+    }
+  },
+  "action_status": 4,
+  "error_code": 0,
+  "error_message": "",
+  "path_poses": 5,
+  "path_length_m": 0.3500000150974042,
+  "all_path_footprints_known_clear": true
+}

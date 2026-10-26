@@ -1,0 +1,2 @@
+data: '{"mode": "stopped", "reason": "operator_stop", "ready": true, "command": [0.0, 0.0], "sim_time": 564.414, "depth_age_seconds": 0.05434979998972267, "pose_age_seconds": 0.023651976021938026, "clock_age_seconds": 0.001967871969100088}'
+---

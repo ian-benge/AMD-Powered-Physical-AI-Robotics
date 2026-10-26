@@ -1,0 +1,383 @@
+{
+  "phase2-edge-p04-20261021": {
+    "passed": false,
+    "error": "Pose disagreement exceeds Phase Two short-trial limits (0.10 m / 5 degrees)",
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.4,
+      "width": 960
+    },
+    "comparison": {
+      "truth_displacement_m": 1.227999319252937,
+      "estimated_displacement_m": 1.2714797961576252,
+      "relative_endpoint_error_m": 0.21517601509496026,
+      "relative_yaw_error_deg": 0.4891939546959755,
+      "final_receipt_skew_wall_seconds": 0.01627859298605472
+    },
+    "drive_stop_reason": "unsafe_or_unobserved_ground",
+    "motion_commanded": true,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.75,
+      "observed_sample_fraction": 0.214,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 27.556
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": 1.4500000000000002,
+      "observed_sample_fraction": 0.046969696969696974,
+      "hazard_sample_fraction": 0.046969696969696974,
+      "stamp": 53.758
+    }
+  },
+  "phase2-flat-p04-20261021": {
+    "passed": false,
+    "error": "Pose disagreement exceeds Phase Two short-trial limits (0.10 m / 5 degrees)",
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.4,
+      "width": 960
+    },
+    "comparison": {
+      "truth_displacement_m": 1.2479993082147867,
+      "estimated_displacement_m": 0.759078948468531,
+      "relative_endpoint_error_m": 0.48895466498709683,
+      "relative_yaw_error_deg": 0.15926537300649554,
+      "final_receipt_skew_wall_seconds": 0.0026909750304184854
+    },
+    "drive_stop_reason": null,
+    "motion_commanded": true,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.75,
+      "observed_sample_fraction": 0.6414747474747474,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 100.156
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.75,
+      "observed_sample_fraction": 0.6319393939393939,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 126.754
+    }
+  },
+  "phase2-flat-p06-20261021": {
+    "passed": false,
+    "error": "No fresh valid truth/visual odometry after bounded settling",
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.6,
+      "width": 960
+    },
+    "comparison": null,
+    "drive_stop_reason": null,
+    "motion_commanded": false,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": null,
+      "observed_sample_fraction": null,
+      "hazard_sample_fraction": null,
+      "stamp": null
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": null,
+      "observed_sample_fraction": null,
+      "hazard_sample_fraction": null,
+      "stamp": null
+    }
+  },
+  "phase2-flat-p08-20261021": {
+    "passed": false,
+    "error": "Drive was interrupted by invalid_odometry",
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.8,
+      "width": 960
+    },
+    "comparison": {
+      "truth_displacement_m": 0.004999994055712198,
+      "estimated_displacement_m": 0.0002026928189090202,
+      "relative_endpoint_error_m": 0.004832930257203643,
+      "relative_yaw_error_deg": 0.00370321654507196,
+      "final_receipt_skew_wall_seconds": 0.03248928202083334
+    },
+    "drive_stop_reason": "invalid_odometry",
+    "motion_commanded": true,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.30000000000000004,
+      "observed_sample_fraction": 0.55,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 17.888
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.30000000000000004,
+      "observed_sample_fraction": 0.55,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 19.736
+    }
+  },
+  "phase2-mars-p04-20261021": {
+    "passed": true,
+    "error": null,
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.4,
+      "width": 960
+    },
+    "comparison": {
+      "truth_displacement_m": 1.0019704373026184,
+      "estimated_displacement_m": 1.0005583394885078,
+      "relative_endpoint_error_m": 0.001822294219575002,
+      "relative_yaw_error_deg": 0.013748194076230964,
+      "final_receipt_skew_wall_seconds": 0.014735590957570821
+    },
+    "drive_stop_reason": null,
+    "motion_commanded": true,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.75,
+      "observed_sample_fraction": 0.6598989898989899,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 32.738
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.75,
+      "observed_sample_fraction": 0.642080808080808,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 54.352
+    }
+  },
+  "phase2-mars-p05-20261021": {
+    "passed": false,
+    "error": "No fresh valid truth/visual odometry after bounded settling",
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.5,
+      "width": 960
+    },
+    "comparison": null,
+    "drive_stop_reason": null,
+    "motion_commanded": false,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": null,
+      "observed_sample_fraction": null,
+      "hazard_sample_fraction": null,
+      "stamp": null
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": null,
+      "observed_sample_fraction": null,
+      "hazard_sample_fraction": null,
+      "stamp": null
+    }
+  },
+  "phase2-mars-p06-20261021": {
+    "passed": false,
+    "error": "No fresh valid truth/visual odometry after bounded settling",
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.6,
+      "width": 960
+    },
+    "comparison": null,
+    "drive_stop_reason": null,
+    "motion_commanded": false,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": null,
+      "observed_sample_fraction": null,
+      "hazard_sample_fraction": null,
+      "stamp": null
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": null,
+      "observed_sample_fraction": null,
+      "hazard_sample_fraction": null,
+      "stamp": null
+    }
+  },
+  "phase2-mars-p08-20261021": {
+    "passed": false,
+    "error": "Drive was interrupted by invalid_odometry",
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.8,
+      "width": 960
+    },
+    "comparison": {
+      "truth_displacement_m": 0.019999985917292126,
+      "estimated_displacement_m": 0.01987594502466281,
+      "relative_endpoint_error_m": 0.00012668905707596974,
+      "relative_yaw_error_deg": 0.003046732682041436,
+      "final_receipt_skew_wall_seconds": 0.0012750219902954996
+    },
+    "drive_stop_reason": "invalid_odometry",
+    "motion_commanded": true,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.30000000000000004,
+      "observed_sample_fraction": 0.5468686868686868,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 32.77
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.30000000000000004,
+      "observed_sample_fraction": 0.5430303030303031,
+      "hazard_sample_fraction": 0.0,
+      "stamp": 34.75
+    }
+  },
+  "phase2-slope-p04-20261021": {
+    "passed": false,
+    "error": "No fresh valid truth/visual odometry after bounded settling",
+    "camera": {
+      "boxes_topic": "/oak/boxes",
+      "camera_info_topic": "/oak/camera_info",
+      "depth_topic": "/oak/depth/image_raw",
+      "far_m": 8.0,
+      "height": 540,
+      "horizontal_fov_rad": 1.22,
+      "horizontal_fov_status": "provisional",
+      "image_topic": "/oak/image_raw",
+      "mount_xyz": [
+        0.2,
+        0.0,
+        0.682
+      ],
+      "near_m": 0.3,
+      "optical_center_height_m": 0.762,
+      "rate_hz": 30,
+      "tilt_rad": 0.4,
+      "width": 960
+    },
+    "comparison": null,
+    "drive_stop_reason": null,
+    "motion_commanded": false,
+    "initial_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.8000000000000002,
+      "observed_sample_fraction": 0.6966666666666668,
+      "hazard_sample_fraction": 0.6966666666666668,
+      "stamp": 0.034
+    },
+    "final_mapping": {
+      "first_observed_strip_ahead_of_front_m": 0.8000000000000002,
+      "observed_sample_fraction": 0.6966666666666668,
+      "hazard_sample_fraction": 0.6966666666666668,
+      "stamp": 0.034
+    }
+  }
+}

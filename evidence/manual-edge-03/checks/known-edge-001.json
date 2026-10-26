@@ -1,0 +1,59 @@
+{
+  "test": "browser_known_edge",
+  "passed": true,
+  "command_owners": [
+    "navigation_motion_guard"
+  ],
+  "clearance": {
+    "success": true,
+    "message": "Confirmed clear launch area; manual control can now be selected"
+  },
+  "guard_after_release": {
+    "kind": "status",
+    "wall": 365461.658005305,
+    "mode": "stopped",
+    "reason": "unsafe_or_unobserved_ground",
+    "fault": {
+      "reason": "unsafe_or_unobserved_ground",
+      "sim_time": 212.03,
+      "detail": {
+        "depth_age_seconds": 0.022678582987282425,
+        "pose_age_seconds": 0.006793443986680359,
+        "clock_age_seconds": 0.0007566799758933485,
+        "command": [
+          0.05,
+          0.0
+        ],
+        "step": 10,
+        "pose": [
+          1.4294970014587174,
+          -0.008120473890255992,
+          0.005574116339656764
+        ],
+        "x": 1.5255824793637396,
+        "y": -0.20258790615029493,
+        "cell": -1
+      }
+    },
+    "stop_generation": 1,
+    "sequence": 1089,
+    "odometry_resets": 0,
+    "ready": true,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "sim_time": 212.88,
+    "depth_age_seconds": 0.07283016300061718,
+    "pose_age_seconds": 0.03479111002525315,
+    "clock_age_seconds": 0.000936224008910358
+  },
+  "truth_displacement_m": 1.2449993098705092,
+  "input_messages": 474,
+  "nonzero_inputs": 474,
+  "release_to_zero_wall_s": 0.04394597199279815,
+  "cleanup_stop": {
+    "success": true,
+    "message": "Stopped; explicit mode selection required to resume"
+  }
+}

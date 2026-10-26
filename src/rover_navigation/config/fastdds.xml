@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Navigation container only. RGB (1.5 MB) and depth (2 MB) frames exceed the
+     default 512 KB shared-memory segment, so best-effort readers lose fragments.
+     UDPv4 is kept for discovery and for peers outside the container. -->
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+  <transport_descriptors>
+    <transport_descriptor>
+      <transport_id>navigation_shm</transport_id>
+      <type>SHM</type>
+      <segment_size>16777216</segment_size>
+    </transport_descriptor>
+    <transport_descriptor>
+      <transport_id>navigation_udp</transport_id>
+      <type>UDPv4</type>
+    </transport_descriptor>
+  </transport_descriptors>
+  <participant profile_name="navigation_participant" is_default_profile="true">
+    <rtps>
+      <userTransports>
+        <transport_id>navigation_shm</transport_id>
+        <transport_id>navigation_udp</transport_id>
+      </userTransports>
+      <useBuiltinTransports>false</useBuiltinTransports>
+    </rtps>
+  </participant>
+</profiles>

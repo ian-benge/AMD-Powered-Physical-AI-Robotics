@@ -1,0 +1,105 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Tool Properties
+    Name: Tool Properties
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Fixed Frame: map
+    Background Color: 24; 32; 44
+    Frame Rate: 20
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Ground reference
+      Enabled: true
+      Cell Size: 1
+      Plane: XY
+    - Class: rviz_default_plugins/RobotModel
+      Name: Rover
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /robot_description
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+      Visual Enabled: true
+      Collision Enabled: false
+    - Class: rviz_default_plugins/Map
+      Name: Terrain - gray unknown, black hazards
+      Enabled: true
+      Topic:
+        Value: /navigation/terrain_map
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+      Color Scheme: map
+      Alpha: 0.8
+    - Class: rviz_default_plugins/Map
+      Name: Local safety terrain
+      Enabled: false
+      Topic:
+        Value: /navigation/local_ground
+        Durability Policy: Volatile
+      Alpha: 0.4
+    - Class: rviz_default_plugins/Path
+      Name: Preview outward
+      Enabled: true
+      Topic:
+        Value: /navigation/preview_outward
+        Durability Policy: Transient Local
+      Color: 40; 220; 255
+      Line Style: Billboards
+      Line Width: 0.035
+    - Class: rviz_default_plugins/Path
+      Name: Preview return
+      Enabled: true
+      Topic:
+        Value: /navigation/preview_return
+        Durability Policy: Transient Local
+      Color: 255; 220; 70
+      Line Style: Billboards
+      Line Width: 0.018
+    - Class: rviz_default_plugins/Path
+      Name: Current replanned path
+      Enabled: true
+      Topic:
+        Value: /plan
+        Durability Policy: Volatile
+      Color: 255; 120; 100
+      Line Style: Billboards
+      Line Width: 0.025
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Home green, destination orange
+      Enabled: true
+      Topic:
+        Value: /navigation/mission_markers
+        Durability Policy: Transient Local
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Confirmed rocks
+      Enabled: true
+      Topic:
+        Value: /navigation/sample_site_markers
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Tentative and unverified candidates
+      Enabled: false
+      Topic:
+        Value: /navigation/tentative_site_markers
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/SetGoal
+      Topic: /navigation/selected_goal
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Name: Map
+      Scale: 75
+      Target Frame: map
+Window Geometry:
+  Width: 1050
+  Height: 800

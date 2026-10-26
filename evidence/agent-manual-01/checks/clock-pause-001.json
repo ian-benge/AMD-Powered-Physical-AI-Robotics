@@ -1,0 +1,89 @@
+{
+  "test": "stationary_clock_pause",
+  "drive_requested": false,
+  "session": "/work/navigation_sessions/agent-manual-01",
+  "duration_wall_s": 1.0,
+  "speed_m_s": 0.05,
+  "stop_method": "service",
+  "passed": true,
+  "scope": "manual_simulation_only",
+  "owners": {
+    "/cmd_vel": [
+      "navigation_motion_guard"
+    ],
+    "/navigation/manual_cmd_vel": [
+      "navigation_manual_smoke"
+    ],
+    "/diff_drive_controller/cmd_vel": [
+      "twist_stamper"
+    ]
+  },
+  "contact_transport": "Publishers [Address, Message Type]:\n  tcp://<HALO_TAILSCALE_IP>:41851, gz.msgs.Contacts\nSubscribers [Address, Message Type]:\n  tcp://<HALO_TAILSCALE_IP>:38353, gz.msgs.Contacts",
+  "collision_acceptance": "physical_contact_test_pending",
+  "baseline": {
+    "truth": {
+      "kind": "truth",
+      "wall": 333192.665151632,
+      "x": 0.08799994860902431,
+      "y": -4.240319438302161e-18,
+      "yaw": -3.7563116460577026e-17,
+      "stamp": 381.78
+    },
+    "estimate": {
+      "kind": "estimate",
+      "wall": 333192.654994858,
+      "x": 0.08381959795951843,
+      "y": 0.00146179657895118,
+      "yaw": -0.00023785453963122858,
+      "stamp": 381.746
+    }
+  },
+  "pause_response": "data: true",
+  "paused_status": {
+    "kind": "status",
+    "wall": 333194.064389646,
+    "mode": "stopped",
+    "reason": "sensor_or_clock_timeout",
+    "ready": false,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "sim_time": 382.26,
+    "depth_age_seconds": 0.8334612040198408,
+    "pose_age_seconds": 0.9131772610126063,
+    "clock_age_seconds": 0.8190707380417734
+  },
+  "cleanup_stop": {
+    "success": true,
+    "message": "Stopped; explicit mode selection required to resume"
+  },
+  "resume_response": "data: true",
+  "counts": {
+    "truth": 341,
+    "guard_command": 160,
+    "estimate": 71,
+    "status": 43,
+    "ground": 27,
+    "mission": 8,
+    "service_manual": 1,
+    "service_stop": 1
+  },
+  "last_status": {
+    "kind": "status",
+    "wall": 333195.664991044,
+    "mode": "stopped",
+    "reason": "operator_stop",
+    "ready": true,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "sim_time": 383.214,
+    "depth_age_seconds": 0.2753157280385494,
+    "pose_age_seconds": 0.5213169220369309,
+    "clock_age_seconds": 0.001911803032271564
+  },
+  "ready_false_samples": 5,
+  "max_ground_age_s": 1.6334747719811276
+}

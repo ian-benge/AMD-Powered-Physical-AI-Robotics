@@ -1,0 +1,33 @@
+{
+  "before": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "Mapping paused · confirm the clear launch area to begin",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 81 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "Map empty · waiting for launch-area confirmation",
+    "manualDisabled": true,
+    "sites": 0
+  },
+  "driveRequested": false,
+  "restart": {
+    "previousSession": "phase2-mars-final-20261021",
+    "session": "restart-20261021T145720Z-e91aa8",
+    "knownCells": 0,
+    "storedCandidates": 0,
+    "mode": "stopped"
+  },
+  "after": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "Mapping paused · confirm the clear launch area to begin",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 81 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "Map empty · waiting for launch-area confirmation",
+    "manualDisabled": true,
+    "sites": 0
+  },
+  "controlRoundTrip": {
+    "count": 0,
+    "p95_ms": null,
+    "max_ms": null
+  }
+}

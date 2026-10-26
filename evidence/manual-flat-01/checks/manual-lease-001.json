@@ -1,0 +1,46 @@
+{
+  "test": "browser_drive_release",
+  "passed": true,
+  "command_owners": [
+    "navigation_motion_guard"
+  ],
+  "clearance": {
+    "success": true,
+    "message": "Confirmed clear launch area; manual control can now be selected"
+  },
+  "guard_after_release": {
+    "kind": "status",
+    "wall": 364625.012766952,
+    "mode": "stopped",
+    "reason": "command_timeout",
+    "fault": {
+      "reason": "command_timeout",
+      "sim_time": 235.816,
+      "detail": {
+        "depth_age_seconds": 0.004602533997967839,
+        "pose_age_seconds": 0.004107231041416526,
+        "clock_age_seconds": 0.0005487820017151535
+      }
+    },
+    "stop_generation": 1,
+    "sequence": 1206,
+    "odometry_resets": 0,
+    "ready": true,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "sim_time": 236.366,
+    "depth_age_seconds": 0.15427697403356433,
+    "pose_age_seconds": 0.027674709039274603,
+    "clock_age_seconds": 0.0006182790384627879
+  },
+  "truth_displacement_m": 0.06499996112089795,
+  "input_messages": 19,
+  "nonzero_inputs": 19,
+  "release_to_zero_wall_s": 0.31341292400611565,
+  "cleanup_stop": {
+    "success": true,
+    "message": "Stopped; explicit mode selection required to resume"
+  }
+}

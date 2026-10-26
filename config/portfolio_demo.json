@@ -1,0 +1,12 @@
+{
+  "terrain": {"ground_textures": [], "visual_grid_size": 65},
+  "rocks": {
+    "procedural_count": 16,
+    "include_existing": true,
+    "scanned_ids": [],
+    "held_out_ids": ["proc_12", "proc_13", "proc_14", "proc_15", "falling_rock4"]
+  },
+  "candidates": {"enabled": false},
+  "capture": {"views_per_scene": 4, "target_class_views": {}},
+  "dataset": {"seeds": [50000], "empty_seeds": [], "rocks_only_seeds": [50000]}
+}

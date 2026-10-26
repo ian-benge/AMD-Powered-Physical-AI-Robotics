@@ -1,0 +1,113 @@
+{
+  "test": "terrain_audit",
+  "motion_commanded": false,
+  "session": "/work/navigation_sessions/phase2-mars-p04-20261021",
+  "fixture": "",
+  "captures": [
+    {
+      "stamp": 57.356,
+      "known_cells": 8040,
+      "hazard_cells": 679,
+      "cause_cells": {
+        "slope": 678,
+        "height_change": 14
+      },
+      "evidence": "audit-001-frame-0001"
+    },
+    {
+      "stamp": 59.566,
+      "known_cells": 8040,
+      "hazard_cells": 679,
+      "cause_cells": {
+        "slope": 678,
+        "height_change": 14
+      },
+      "evidence": "audit-001-frame-0002"
+    },
+    {
+      "stamp": 60.754,
+      "known_cells": 8040,
+      "hazard_cells": 679,
+      "cause_cells": {
+        "slope": 678,
+        "height_change": 14
+      },
+      "evidence": "audit-001-frame-0003"
+    }
+  ],
+  "capture_span_sim_seconds": 3.397999999999996,
+  "synchronization": "Exact sensor and published terrain stamps; image-time TF; no truth used by navigation",
+  "map": {
+    "known_cells": 8040,
+    "hazard_cells": 679,
+    "resolution_m": 0.05000000074505806
+  },
+  "frame": {
+    "stamp": 60.754,
+    "known_cells": 9090,
+    "hazard_cells": 377,
+    "by_step": 0,
+    "by_slope": 377,
+    "slope_p95_deg": 11.427344974631055,
+    "hazards_near_rocks": 0,
+    "hazards_away_from_rocks": 377
+  },
+  "measured_vs_heightfield": {
+    "visual": {
+      "rms_m": 0.0012547882852080195,
+      "transpose": false,
+      "flip": false
+    },
+    "collision": {
+      "rms_m": 0.015706586978008585,
+      "transpose": false,
+      "flip": false
+    }
+  },
+  "passed": true,
+  "acceptance_scope": "Read-only synchronized evidence capture; interpret fixture results separately",
+  "timing": {
+    "map": {
+      "count": 29,
+      "rate_wall_hz": 5.1352427809215415,
+      "max_gap_wall_seconds": 0.2993512929533608,
+      "p95_gap_wall_seconds": 0.2234225177468033,
+      "max_stamp_gap_sim_seconds": 0.4939999999999998
+    },
+    "depth": {
+      "count": 171,
+      "rate_wall_hz": 30.309101642929104,
+      "max_gap_wall_seconds": 0.13491202099248767,
+      "p95_gap_wall_seconds": 0.03475925198290497,
+      "max_stamp_gap_sim_seconds": 0.034000000000006025
+    },
+    "rgb": {
+      "count": 171,
+      "rate_wall_hz": 30.31936777275514,
+      "max_gap_wall_seconds": 0.13404388999333605,
+      "p95_gap_wall_seconds": 0.03500622145365924,
+      "max_stamp_gap_sim_seconds": 0.034000000000006025
+    },
+    "info": {
+      "count": 171,
+      "rate_wall_hz": 30.304223419737667,
+      "max_gap_wall_seconds": 0.1429527560248971,
+      "p95_gap_wall_seconds": 0.03429759246937465,
+      "max_stamp_gap_sim_seconds": 0.034000000000006025
+    },
+    "local": {
+      "count": 29,
+      "rate_wall_hz": 5.159062386443327,
+      "max_gap_wall_seconds": 0.25871171604376286,
+      "p95_gap_wall_seconds": 0.2037418784602778,
+      "max_stamp_gap_sim_seconds": 0.4939999999999998
+    },
+    "reasons": {
+      "count": 29,
+      "rate_wall_hz": 5.1369948707824555,
+      "max_gap_wall_seconds": 0.30164379900088534,
+      "p95_gap_wall_seconds": 0.22477892499300647,
+      "max_stamp_gap_sim_seconds": 0.4939999999999998
+    }
+  }
+}

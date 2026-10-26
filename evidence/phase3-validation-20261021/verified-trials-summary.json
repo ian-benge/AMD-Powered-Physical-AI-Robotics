@@ -1,0 +1,86 @@
+{
+  "state": "complete",
+  "trials": [
+    {
+      "passed": true,
+      "error": null,
+      "comparison": {
+        "truth_displacement_m": 0.4570075677403196,
+        "estimated_displacement_m": 0.454171082612532,
+        "relative_endpoint_error_m": 0.0036606456663184636,
+        "relative_yaw_error_deg": 0.26337706804400607,
+        "final_receipt_skew_wall_seconds": 0.010821922041941434
+      },
+      "revisit_ids_retained": [
+        "1:2"
+      ],
+      "tentative_count": 35,
+      "maximum_position_disagreement_m": 0.006704772247336486,
+      "maximum_yaw_disagreement_deg": 1.639374247603048,
+      "index": 3,
+      "session": "restart-20261021T212626Z-06f471",
+      "exit_code": 0,
+      "fresh_revisit_passed": true,
+      "full_replay_passed": true,
+      "replayed_frames": 309,
+      "positive_observations": 1015,
+      "negative_depth_rejections": 21,
+      "false_confirmation_events": [],
+      "duplicate_confirmation_events": []
+    },
+    {
+      "passed": true,
+      "error": null,
+      "comparison": {
+        "truth_displacement_m": 0.45522864677883224,
+        "estimated_displacement_m": 0.45296200837573675,
+        "relative_endpoint_error_m": 0.0023261628927277716,
+        "relative_yaw_error_deg": 0.16615531416934862,
+        "final_receipt_skew_wall_seconds": 0.004265143012162298
+      },
+      "revisit_ids_retained": [
+        "1:2"
+      ],
+      "tentative_count": 38,
+      "maximum_position_disagreement_m": 0.006594757648263939,
+      "maximum_yaw_disagreement_deg": 1.2834394627312744,
+      "index": 4,
+      "session": "restart-20261021T212834Z-6fa6de",
+      "exit_code": 0,
+      "fresh_revisit_passed": true,
+      "full_replay_passed": true,
+      "replayed_frames": 315,
+      "positive_observations": 1027,
+      "negative_depth_rejections": 20,
+      "false_confirmation_events": [],
+      "duplicate_confirmation_events": []
+    },
+    {
+      "passed": true,
+      "error": null,
+      "comparison": {
+        "truth_displacement_m": 0.45814071480336166,
+        "estimated_displacement_m": 0.4566660705932319,
+        "relative_endpoint_error_m": 0.005196230058749621,
+        "relative_yaw_error_deg": 0.030549994263314745,
+        "final_receipt_skew_wall_seconds": 0.01820240297820419
+      },
+      "revisit_ids_retained": [
+        "1:2"
+      ],
+      "tentative_count": 39,
+      "maximum_position_disagreement_m": 0.005196238010067083,
+      "maximum_yaw_disagreement_deg": 1.299387206350525,
+      "index": 5,
+      "session": "restart-20261021T212947Z-150fe2",
+      "exit_code": 0,
+      "fresh_revisit_passed": true,
+      "full_replay_passed": true,
+      "replayed_frames": 706,
+      "positive_observations": 1805,
+      "negative_depth_rejections": 24,
+      "false_confirmation_events": [],
+      "duplicate_confirmation_events": []
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-23",
+  "passed": true,
+  "source": "Exact frame-count prefixes reconstructed from surviving append-only events; fixed original thresholds",
+  "trials": [
+    {
+      "session": "restart-20261021T212626Z-06f471",
+      "frames": 309,
+      "passed": true,
+      "positive_observations": 1015,
+      "negative_depth_rejections": 21,
+      "false_confirmation_events": [],
+      "duplicate_confirmation_events": []
+    },
+    {
+      "session": "restart-20261021T212834Z-6fa6de",
+      "frames": 315,
+      "passed": true,
+      "positive_observations": 1027,
+      "negative_depth_rejections": 20,
+      "false_confirmation_events": [],
+      "duplicate_confirmation_events": []
+    },
+    {
+      "session": "restart-20261021T212947Z-150fe2",
+      "frames": 706,
+      "passed": true,
+      "positive_observations": 1805,
+      "negative_depth_rejections": 24,
+      "false_confirmation_events": [],
+      "duplicate_confirmation_events": []
+    }
+  ]
+}

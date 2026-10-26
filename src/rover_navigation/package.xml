@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>rover_navigation</name><version>0.1.0</version>
+  <description>Sensor-based Mars rover mapping, guarded navigation and exploration.</description>
+  <maintainer email="agfoti04@tamu.edu">Capstone team</maintainer><license>Apache-2.0</license>
+  <buildtool_depend>ament_python</buildtool_depend>
+  <exec_depend>rclpy</exec_depend><exec_depend>tf2_ros</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend><exec_depend>nav_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend><exec_depend>std_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend><exec_depend>action_msgs</exec_depend>
+  <exec_depend>rosgraph_msgs</exec_depend>
+  <exec_depend>nav2_msgs</exec_depend><exec_depend>sensor_msgs_py</exec_depend>
+  <exec_depend>cv_bridge</exec_depend><exec_depend>message_filters</exec_depend>
+  <exec_depend>grid_map_msgs</exec_depend><exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend><exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend><exec_depend>rtabmap_odom</exec_depend>
+  <exec_depend>rtabmap_slam</exec_depend><exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>nav2_smac_planner</exec_depend><exec_depend>nav2_regulated_pure_pursuit_controller</exec_depend>
+  <exec_depend>mars_training_environment</exec_depend><exec_depend>four_wheel_sim</exec_depend>
+  <exec_depend>rover_perception</exec_depend><exec_depend>ros_gz_bridge</exec_depend>
+  <exec_depend>ros_gz_sim</exec_depend><exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>ros_gz_interfaces</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend><exec_depend>rviz2</exec_depend>
+  <exec_depend>vision_msgs</exec_depend><exec_depend>python3-opencv</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <test_depend>python3-pytest</test_depend>
+  <export><build_type>ament_python</build_type></export>
+</package>

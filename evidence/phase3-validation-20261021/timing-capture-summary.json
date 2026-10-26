@@ -1,0 +1,227 @@
+[
+  {
+    "index": 3,
+    "session": "restart-20261021T212626Z-06f471",
+    "audit_passed": true,
+    "captures": 29,
+    "timing": {
+      "map": {
+        "count": 301,
+        "rate_wall_hz": 5.002696189270683,
+        "max_gap_wall_seconds": 0.29254013497848064,
+        "p95_gap_wall_seconds": 0.22946466332650745,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      },
+      "depth": {
+        "count": 1831,
+        "rate_wall_hz": 30.303416091769034,
+        "max_gap_wall_seconds": 0.14606086199637502,
+        "p95_gap_wall_seconds": 0.03539151200384367,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "rgb": {
+        "count": 1831,
+        "rate_wall_hz": 30.303478750870294,
+        "max_gap_wall_seconds": 0.14879122702404857,
+        "p95_gap_wall_seconds": 0.035564250143943356,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "info": {
+        "count": 1832,
+        "rate_wall_hz": 30.303710083505027,
+        "max_gap_wall_seconds": 0.14927030797116458,
+        "p95_gap_wall_seconds": 0.03455887548625469,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "local": {
+        "count": 301,
+        "rate_wall_hz": 5.00272244545323,
+        "max_gap_wall_seconds": 0.2941674509784207,
+        "p95_gap_wall_seconds": 0.23723691359045915,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      },
+      "reasons": {
+        "count": 301,
+        "rate_wall_hz": 5.002699601032335,
+        "max_gap_wall_seconds": 0.2949530800106004,
+        "p95_gap_wall_seconds": 0.22811597601685207,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      }
+    },
+    "tracker_sampled_p95_ms": 20.36632999079302,
+    "tracker_sampled_max_ms": 24.38436698867008,
+    "matched_references": [
+      {
+        "track_id": "1:1",
+        "reference": "pale_stone_000",
+        "world_xy": [
+          3.6403287235616477,
+          -2.2448928278308915
+        ],
+        "center_distance_m": 0.05317987061401814,
+        "reference_radius_m": 0.0945696773
+      },
+      {
+        "track_id": "1:2",
+        "reference": "rock_010",
+        "world_xy": [
+          5.084866423750319,
+          2.9258783833072317
+        ],
+        "center_distance_m": 0.052083095924176585,
+        "reference_radius_m": 0.1604607161
+      }
+    ],
+    "wall_seconds": 47.77877875795821
+  },
+  {
+    "index": 4,
+    "session": "restart-20261021T212834Z-6fa6de",
+    "audit_passed": true,
+    "captures": 29,
+    "timing": {
+      "map": {
+        "count": 306,
+        "rate_wall_hz": 5.008944778644048,
+        "max_gap_wall_seconds": 0.48355880699818954,
+        "p95_gap_wall_seconds": 0.22860307858791204,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      },
+      "depth": {
+        "count": 1821,
+        "rate_wall_hz": 30.18913753828957,
+        "max_gap_wall_seconds": 0.3566719660302624,
+        "p95_gap_wall_seconds": 0.03543867540429346,
+        "max_stamp_gap_sim_seconds": 0.1979999999999995
+      },
+      "rgb": {
+        "count": 1822,
+        "rate_wall_hz": 30.206018689443958,
+        "max_gap_wall_seconds": 0.3557680710218847,
+        "p95_gap_wall_seconds": 0.03548830299405381,
+        "max_stamp_gap_sim_seconds": 0.1639999999999997
+      },
+      "info": {
+        "count": 1822,
+        "rate_wall_hz": 30.20404018045036,
+        "max_gap_wall_seconds": 0.3356352730188519,
+        "p95_gap_wall_seconds": 0.03457237500697374,
+        "max_stamp_gap_sim_seconds": 0.16599999999999948
+      },
+      "local": {
+        "count": 306,
+        "rate_wall_hz": 5.008831957940221,
+        "max_gap_wall_seconds": 0.4825300140073523,
+        "p95_gap_wall_seconds": 0.22880166303366425,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      },
+      "reasons": {
+        "count": 304,
+        "rate_wall_hz": 5.015385252490839,
+        "max_gap_wall_seconds": 0.4846838759840466,
+        "p95_gap_wall_seconds": 0.22709810459637084,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      }
+    },
+    "tracker_sampled_p95_ms": 21.95418899646029,
+    "tracker_sampled_max_ms": 24.500539002474397,
+    "matched_references": [
+      {
+        "track_id": "1:1",
+        "reference": "pale_stone_000",
+        "world_xy": [
+          3.646098917994167,
+          -2.23719151333905
+        ],
+        "center_distance_m": 0.05054607071725332,
+        "reference_radius_m": 0.0945696773
+      },
+      {
+        "track_id": "1:2",
+        "reference": "rock_010",
+        "world_xy": [
+          5.084866423750319,
+          2.9258783833072317
+        ],
+        "center_distance_m": 0.052083095924176585,
+        "reference_radius_m": 0.1604607161
+      }
+    ],
+    "wall_seconds": 47.796980687009636
+  },
+  {
+    "index": 5,
+    "session": "restart-20261021T212947Z-150fe2",
+    "audit_passed": true,
+    "captures": 29,
+    "timing": {
+      "map": {
+        "count": 301,
+        "rate_wall_hz": 4.999792484860588,
+        "max_gap_wall_seconds": 0.31760322797345,
+        "p95_gap_wall_seconds": 0.2269638691068394,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      },
+      "depth": {
+        "count": 1831,
+        "rate_wall_hz": 30.303296774346702,
+        "max_gap_wall_seconds": 0.1481128580053337,
+        "p95_gap_wall_seconds": 0.035387727149645797,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "rgb": {
+        "count": 1830,
+        "rate_wall_hz": 30.303930227365107,
+        "max_gap_wall_seconds": 0.15286030195420608,
+        "p95_gap_wall_seconds": 0.03547047098400071,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "info": {
+        "count": 1831,
+        "rate_wall_hz": 30.303046874604778,
+        "max_gap_wall_seconds": 0.15106039098463953,
+        "p95_gap_wall_seconds": 0.034558492989162914,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "local": {
+        "count": 301,
+        "rate_wall_hz": 4.999757461601821,
+        "max_gap_wall_seconds": 0.3160433729644865,
+        "p95_gap_wall_seconds": 0.22674287789559458,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      },
+      "reasons": {
+        "count": 301,
+        "rate_wall_hz": 4.999818181197479,
+        "max_gap_wall_seconds": 0.3089911499992013,
+        "p95_gap_wall_seconds": 0.22680581936438102,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      }
+    },
+    "tracker_sampled_p95_ms": 20.0793799594976,
+    "tracker_sampled_max_ms": 22.157003986649215,
+    "matched_references": [
+      {
+        "track_id": "1:1",
+        "reference": "pale_stone_000",
+        "world_xy": [
+          3.649100288898643,
+          -2.22636189173845
+        ],
+        "center_distance_m": 0.053770099990796356,
+        "reference_radius_m": 0.0945696773
+      },
+      {
+        "track_id": "1:2",
+        "reference": "rock_010",
+        "world_xy": [
+          5.085484939136858,
+          2.92397997437321
+        ],
+        "center_distance_m": 0.05375976457448439,
+        "reference_radius_m": 0.1604607161
+      }
+    ],
+    "wall_seconds": 47.84800733701559
+  }
+]

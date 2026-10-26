@@ -1,0 +1,16 @@
+.venv/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.cache/
+.DS_Store
+models/*.pt
+models/*.onnx
+outputs/*
+!outputs/.gitkeep
+datasets/
+runs/
+requirements-local.txt
+environment-local.json

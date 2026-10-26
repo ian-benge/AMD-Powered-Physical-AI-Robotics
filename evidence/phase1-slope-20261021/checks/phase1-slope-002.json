@@ -1,0 +1,13 @@
+{
+  "test": "terrain_audit",
+  "motion_commanded": false,
+  "session": "/work/navigation_sessions/phase1-slope-20261021",
+  "fixture": "slope",
+  "error": "No exact-stamp RGB/depth/calibration/terrain/reasons/local grid and image-time transforms",
+  "passed": false,
+  "partial_sensor_evidence": {
+    "evidence": "phase1-slope-002-unmapped",
+    "stamp": 215.392,
+    "partial": true
+  }
+}

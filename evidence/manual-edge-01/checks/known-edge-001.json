@@ -1,0 +1,16 @@
+{
+  "test": "browser_known_edge",
+  "passed": false,
+  "command_owners": [
+    "navigation_motion_guard"
+  ],
+  "clearance": {
+    "success": true,
+    "message": "Confirmed clear launch area; manual control can now be selected"
+  },
+  "error": "HTTP Error 400: Bad Request",
+  "cleanup_stop": {
+    "success": true,
+    "message": "Stopped; explicit mode selection required to resume"
+  }
+}

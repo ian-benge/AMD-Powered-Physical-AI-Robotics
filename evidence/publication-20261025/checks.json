@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-25",
+  "platform": "Windows",
+  "python": "3.12.13",
+  "command": "python scripts/run_checks.py --output-dir outputs/source-checks",
+  "passed": true,
+  "total_tests": 480,
+  "skipped": 4,
+  "suites": [
+    {
+      "suite": "environment",
+      "tests": 129,
+      "seconds": 398.935,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "suite": "navigation",
+      "tests": 166,
+      "seconds": 6.502,
+      "skipped": 4,
+      "passed": true
+    },
+    {
+      "suite": "perception",
+      "tests": 157,
+      "seconds": 30.751,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "suite": "training",
+      "tests": 24,
+      "seconds": 0.839,
+      "skipped": 0,
+      "passed": true
+    },
+    {
+      "suite": "webcam",
+      "tests": 4,
+      "seconds": 0.001,
+      "skipped": 0,
+      "passed": true
+    }
+  ],
+  "browser_contract": {
+    "command": "node src/rover_perception/test/test_live_controls.cjs",
+    "passed": true
+  },
+  "procedural_demo": {
+    "command": "python -m mars_training_environment.generate --config config/portfolio_demo.json --output dataset/portfolio-demo",
+    "passed": true,
+    "scenes": 1,
+    "planned_views": 4,
+    "config_sha256": "4a2aa3420607589c76ee05d966b08736e6afde3a6eea0989f050b784cc40db64"
+  },
+  "scope": "CPU source checks and procedural generation; no new Halo inference or driving performed for publication"
+}

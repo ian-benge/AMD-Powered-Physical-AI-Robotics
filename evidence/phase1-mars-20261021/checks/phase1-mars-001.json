@@ -1,0 +1,193 @@
+{
+  "test": "terrain_audit",
+  "motion_commanded": false,
+  "session": "/work/navigation_sessions/phase1-mars-20261021",
+  "fixture": "",
+  "captures": [
+    {
+      "stamp": 50.756,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0001"
+    },
+    {
+      "stamp": 51.746,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0002"
+    },
+    {
+      "stamp": 52.934,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0003"
+    },
+    {
+      "stamp": 53.956,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0004"
+    },
+    {
+      "stamp": 55.144,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0005"
+    },
+    {
+      "stamp": 56.134,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0006"
+    },
+    {
+      "stamp": 57.356,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0007"
+    },
+    {
+      "stamp": 58.346,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0008"
+    },
+    {
+      "stamp": 59.534,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0009"
+    },
+    {
+      "stamp": 60.556,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0010"
+    },
+    {
+      "stamp": 61.744,
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "cause_cells": {
+        "slope": 145,
+        "height_change": 6
+      },
+      "evidence": "phase1-mars-001-frame-0011"
+    }
+  ],
+  "capture_span_sim_seconds": 10.988,
+  "synchronization": "Exact sensor and published terrain stamps; image-time TF; no truth used by navigation",
+  "map": {
+    "known_cells": 2994,
+    "hazard_cells": 147,
+    "resolution_m": 0.05000000074505806
+  },
+  "frame": {
+    "stamp": 61.744,
+    "known_cells": 9359,
+    "hazard_cells": 289,
+    "by_step": 15,
+    "by_slope": 276,
+    "slope_p95_deg": 10.675041854560673,
+    "hazards_near_rocks": 26,
+    "hazards_away_from_rocks": 263
+  },
+  "measured_vs_heightfield": {
+    "visual": {
+      "rms_m": 0.001398330462907618,
+      "transpose": false,
+      "flip": false
+    },
+    "collision": {
+      "rms_m": 0.014164117226467701,
+      "transpose": false,
+      "flip": false
+    }
+  },
+  "passed": true,
+  "acceptance_scope": "Read-only synchronized evidence capture; interpret fixture results separately",
+  "timing": {
+    "map": {
+      "count": 62,
+      "rate_wall_hz": 5.0570087330289395,
+      "max_gap_wall_seconds": 0.2528332629590295,
+      "p95_gap_wall_seconds": 0.23380647297017276,
+      "max_stamp_gap_sim_seconds": 0.23199999999999932
+    },
+    "depth": {
+      "count": 372,
+      "rate_wall_hz": 30.3102241919684,
+      "max_gap_wall_seconds": 0.13424650800880045,
+      "p95_gap_wall_seconds": 0.03544764348771423,
+      "max_stamp_gap_sim_seconds": 0.034000000000006025
+    },
+    "rgb": {
+      "count": 372,
+      "rate_wall_hz": 30.310306051605004,
+      "max_gap_wall_seconds": 0.13458286499371752,
+      "p95_gap_wall_seconds": 0.03556202398613095,
+      "max_stamp_gap_sim_seconds": 0.034000000000006025
+    },
+    "info": {
+      "count": 372,
+      "rate_wall_hz": 30.304470355753356,
+      "max_gap_wall_seconds": 0.13781873701373115,
+      "p95_gap_wall_seconds": 0.03466629653121345,
+      "max_stamp_gap_sim_seconds": 0.034000000000006025
+    },
+    "local": {
+      "count": 62,
+      "rate_wall_hz": 5.069761787196632,
+      "max_gap_wall_seconds": 0.28306217602221295,
+      "p95_gap_wall_seconds": 0.26568859501276165,
+      "max_stamp_gap_sim_seconds": 0.23199999999999932
+    },
+    "reasons": {
+      "count": 62,
+      "rate_wall_hz": 5.057920427939839,
+      "max_gap_wall_seconds": 0.25528553395997733,
+      "p95_gap_wall_seconds": 0.235601858003065,
+      "max_stamp_gap_sim_seconds": 0.23199999999999932
+    }
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "duration_wall_s": 5.001599142968189,
+  "counts": {
+    "depth": 145,
+    "rgb": 144,
+    "info": 146,
+    "marker_arrays": 7,
+    "annotated": 82,
+    "detections": 79
+  },
+  "detected_classes": {
+    "rock": 237
+  },
+  "first_sites": {
+    "frame": "odom",
+    "map_projection": "current map->odom",
+    "ready": true,
+    "error": "",
+    "objects": [
+      {
+        "id": 1,
+        "class_name": "rock",
+        "odom_position": [
+          3.642134403773254,
+          -2.2224695977463997,
+          0.0008819943036960011
+        ],
+        "detection_count": 558,
+        "max_confidence": 0.9380305409431458,
+        "first_stamp": "2:48000000",
+        "last_stamp": "20:428000000",
+        "observation_pose": [
+          0.1300003427263833,
+          4.599189886798484e-06,
+          -2.3058056575694836e-06,
+          1.2020605311128442e-07,
+          -7.599592208857513e-07,
+          8.180425083987146e-07,
+          0.9999999999993694
+        ],
+        "map_position": [
+          3.642134403773254,
+          -2.2224695977463997,
+          0.0008819943036960011
+        ]
+      },
+      {
+        "id": 2,
+        "class_name": "rock",
+        "odom_position": [
+          5.078066911568757,
+          2.946353750169889,
+          0.09604380644144828
+        ],
+        "detection_count": 558,
+        "max_confidence": 0.6794105768203735,
+        "first_stamp": "2:48000000",
+        "last_stamp": "20:428000000",
+        "observation_pose": [
+          0.1300003427263833,
+          4.599189886798484e-06,
+          -2.3058056575694836e-06,
+          1.2020605311128442e-07,
+          -7.599592208857513e-07,
+          8.180425083987146e-07,
+          0.9999999999993694
+        ],
+        "map_position": [
+          5.078066911568757,
+          2.946353750169889,
+          0.09604380644144828
+        ]
+      },
+      {
+        "id": 3,
+        "class_name": "rock",
+        "odom_position": [
+          5.179141157158623,
+          -3.350587749786567,
+          -0.01340521847223406
+        ],
+        "detection_count": 558,
+        "max_confidence": 0.6339269280433655,
+        "first_stamp": "2:48000000",
+        "last_stamp": "20:428000000",
+        "observation_pose": [
+          0.1300003427263833,
+          4.599189886798484e-06,
+          -2.3058056575694836e-06,
+          1.2020605311128442e-07,
+          -7.599592208857513e-07,
+          8.180425083987146e-07,
+          0.9999999999993694
+        ],
+        "map_position": [
+          5.179141157158623,
+          -3.350587749786567,
+          -0.01340521847223406
+        ]
+      }
+    ],
+    "stored_count": 3,
+    "counts": {
+      "observations": 1674
+    },
+    "archived_epochs": [
+      {
+        "reason": "odometry_reset",
+        "objects": []
+      }
+    ],
+    "odometry_resets": 1
+  },
+  "guard": {
+    "mode": "stopped",
+    "reason": "invalid_odometry",
+    "fault": {
+      "reason": "invalid_odometry",
+      "sim_time": 0.02,
+      "detail": {
+        "depth_age_seconds": null,
+        "pose_age_seconds": null,
+        "clock_age_seconds": 0.001597147958818823
+      }
+    },
+    "stop_generation": 0,
+    "sequence": 139,
+    "odometry_resets": 1,
+    "ready": true,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "sim_time": 23.044,
+    "depth_age_seconds": 0.033854441018775105,
+    "pose_age_seconds": 0.009650857013184577,
+    "clock_age_seconds": 0.002156436035875231
+  },
+  "marker_count": 6,
+  "detector": {
+    "ready": true,
+    "backend": "remote_http",
+    "error": "",
+    "processed_frames": 701,
+    "model": {
+      "backend": "torch",
+      "model": "/home/ian/capstone-training/mars-pilot50-v2/runs/detect/coverage500_fourclass_yolov8s_npu_960/weights/best.pt",
+      "precision": "fp32",
+      "input_size": [
+        960,
+        960
+      ],
+      "device": "0",
+      "class_names": [
+        "rock",
+        "pale_soil_patch",
+        "yellow_crystal_rock",
+        "mudstone_slab"
+      ],
+      "model_sha256": "89bbcf4ff124996fb6a520c5bf751287c2b5ea47bbd1d7e2adaf7f530ee44ca3",
+      "source_checkpoint_sha256": "89bbcf4ff124996fb6a520c5bf751287c2b5ea47bbd1d7e2adaf7f530ee44ca3",
+      "executed_device": "cuda:0",
+      "gpu_name": "AMD Radeon 8060S Graphics"
+    }
+  },
+  "sites": {
+    "frame": "odom",
+    "map_projection": "current map->odom",
+    "ready": true,
+    "error": "",
+    "objects": [
+      {
+        "id": 1,
+        "class_name": "rock",
+        "odom_position": [
+          3.642134406942412,
+          -2.2224695793857783,
+          0.00088199525975205
+        ],
+        "detection_count": 634,
+        "max_confidence": 0.9380305409431458,
+        "first_stamp": "2:48000000",
+        "last_stamp": "22:936000000",
+        "observation_pose": [
+          0.1300003427263833,
+          4.599189886798484e-06,
+          -2.3058056575694836e-06,
+          1.2020605311128442e-07,
+          -7.599592208857513e-07,
+          8.180425083987146e-07,
+          0.9999999999993694
+        ],
+        "map_position": [
+          3.642134406942412,
+          -2.2224695793857783,
+          0.00088199525975205
+        ]
+      },
+      {
+        "id": 2,
+        "class_name": "rock",
+        "odom_position": [
+          5.078066910071799,
+          2.9463537492985403,
+          0.09604381734106295
+        ],
+        "detection_count": 634,
+        "max_confidence": 0.6794105768203735,
+        "first_stamp": "2:48000000",
+        "last_stamp": "22:936000000",
+        "observation_pose": [
+          0.1300003427263833,
+          4.599189886798484e-06,
+          -2.3058056575694836e-06,
+          1.2020605311128442e-07,
+          -7.599592208857513e-07,
+          8.180425083987146e-07,
+          0.9999999999993694
+        ],
+        "map_position": [
+          5.078066910071799,
+          2.9463537492985403,
+          0.09604381734106295
+        ]
+      },
+      {
+        "id": 3,
+        "class_name": "rock",
+        "odom_position": [
+          5.1791411657380255,
+          -3.350587736098947,
+          -0.01340520834461438
+        ],
+        "detection_count": 634,
+        "max_confidence": 0.6339269280433655,
+        "first_stamp": "2:48000000",
+        "last_stamp": "22:936000000",
+        "observation_pose": [
+          0.1300003427263833,
+          4.599189886798484e-06,
+          -2.3058056575694836e-06,
+          1.2020605311128442e-07,
+          -7.599592208857513e-07,
+          8.180425083987146e-07,
+          0.9999999999993694
+        ],
+        "map_position": [
+          5.1791411657380255,
+          -3.350587736098947,
+          -0.01340520834461438
+        ]
+      }
+    ],
+    "stored_count": 3,
+    "counts": {
+      "observations": 1902
+    },
+    "archived_epochs": [
+      {
+        "reason": "odometry_reset",
+        "objects": []
+      }
+    ],
+    "odometry_resets": 1
+  },
+  "aligned_stamps": 78,
+  "command_owners": [
+    "navigation_motion_guard"
+  ],
+  "passed": true
+}

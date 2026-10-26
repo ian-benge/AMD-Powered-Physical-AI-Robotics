@@ -1,0 +1,26 @@
+{
+  "before": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "Mapping paused · confirm the clear launch area to begin",
+    "camera": "Live detections matched to this image",
+    "detector": "YOLOv8 · AMD NPU · a16w8 · 3783 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "Map empty · waiting for launch-area confirmation · Terrain: AMD GPU",
+    "manualDisabled": true,
+    "sites": 0
+  },
+  "driveRequested": false,
+  "after": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "Mapping paused · confirm the clear launch area to begin",
+    "camera": "Live detections matched to this image",
+    "detector": "YOLOv8 · AMD NPU · a16w8 · 3783 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "Map empty · waiting for launch-area confirmation · Terrain: AMD GPU",
+    "manualDisabled": true,
+    "sites": 0
+  },
+  "controlRoundTrip": {
+    "count": 0,
+    "p95_ms": null,
+    "max_ms": null
+  }
+}

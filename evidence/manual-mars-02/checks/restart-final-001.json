@@ -1,0 +1,28 @@
+{
+  "before": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "Mapping paused · confirm the clear launch area to begin",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 84 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "0 mapped detection candidates · mapping ready",
+    "manualDisabled": true,
+    "sites": 0
+  },
+  "driveRequested": false,
+  "restart": {
+    "previousSession": "restart-20261021T020954Z-d72259",
+    "session": "restart-20261021T021310Z-1c77fc",
+    "knownCells": 0,
+    "storedCandidates": 0,
+    "mode": "stopped"
+  },
+  "after": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "Mapping paused · confirm the clear launch area to begin",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 84 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "0 mapped detection candidates · mapping ready",
+    "manualDisabled": true,
+    "sites": 0
+  }
+}

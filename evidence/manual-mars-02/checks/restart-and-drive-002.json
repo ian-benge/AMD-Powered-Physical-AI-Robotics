@@ -1,0 +1,108 @@
+{
+  "before": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "stopped · ready · invalid_odometry",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 99 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "0 mapped detection candidates · mapping ready",
+    "manualDisabled": false,
+    "sites": 0
+  },
+  "driveRequested": true,
+  "restart": {
+    "session": "restart-20261021T020954Z-d72259",
+    "knownCells": 0,
+    "storedCandidates": 0,
+    "mode": "stopped"
+  },
+  "held": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "manual · ready",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 129 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "3 mapped detection candidates · mapping ready",
+    "manualDisabled": true,
+    "sites": 3
+  },
+  "heldCommand": "Command: 0.05 m/s, 0.00 rad/s",
+  "idleAfterFirst": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "manual · ready",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 174 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "3 mapped detection candidates · mapping ready",
+    "manualDisabled": true,
+    "sites": 3
+  },
+  "repeatedCommands": [
+    {
+      "held": {
+        "heading": "Rover mapping and sample sites",
+        "guard": "manual · ready",
+        "camera": "Live detections matched to this image",
+        "detector": "Trained detector active · 189 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+        "mapping": "3 mapped detection candidates · mapping ready",
+        "manualDisabled": true,
+        "sites": 3
+      },
+      "command": "Command: 0.00 m/s, 0.30 rad/s",
+      "released": {
+        "heading": "Rover mapping and sample sites",
+        "guard": "manual · ready",
+        "camera": "Live detections matched to this image",
+        "detector": "Trained detector active · 235 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+        "mapping": "4 mapped detection candidates · mapping ready",
+        "manualDisabled": true,
+        "sites": 4
+      }
+    },
+    {
+      "held": {
+        "heading": "Rover mapping and sample sites",
+        "guard": "manual · ready",
+        "camera": "Live detections matched to this image",
+        "detector": "Trained detector active · 250 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+        "mapping": "4 mapped detection candidates · mapping ready",
+        "manualDisabled": true,
+        "sites": 4
+      },
+      "command": "Command: 0.00 m/s, -0.30 rad/s",
+      "released": {
+        "heading": "Rover mapping and sample sites",
+        "guard": "manual · ready",
+        "camera": "Live detections matched to this image",
+        "detector": "Trained detector active · 295 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+        "mapping": "4 mapped detection candidates · mapping ready",
+        "manualDisabled": true,
+        "sites": 4
+      }
+    }
+  ],
+  "explicitStop": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "stopped · ready · operator_stop",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 304 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "4 mapped detection candidates · mapping ready",
+    "manualDisabled": false,
+    "sites": 4
+  },
+  "connectionLoss": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "stopped · ready · command_timeout",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 363 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "4 mapped detection candidates · mapping ready",
+    "manualDisabled": false,
+    "sites": 4
+  },
+  "after": {
+    "heading": "Rover mapping and sample sites",
+    "guard": "stopped · ready · operator_stop",
+    "camera": "Live detections matched to this image",
+    "detector": "Trained detector active · 379 processed frames · rock, pale_soil_patch, yellow_crystal_rock, mudstone_slab",
+    "mapping": "4 mapped detection candidates · mapping ready",
+    "manualDisabled": false,
+    "sites": 4
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "test": "terrain_audit",
+  "motion_commanded": false,
+  "session": "/work/navigation_sessions/phase1-edge-20261021",
+  "fixture": "flat_edge",
+  "captures": [
+    {
+      "stamp": 87.352,
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "cause_cells": {
+        "slope": 616,
+        "height_change": 427
+      },
+      "evidence": "phase1-edge-001-frame-0001"
+    },
+    {
+      "stamp": 87.748,
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "cause_cells": {
+        "slope": 616,
+        "height_change": 427
+      },
+      "evidence": "phase1-edge-001-frame-0002"
+    },
+    {
+      "stamp": 88.738,
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "cause_cells": {
+        "slope": 616,
+        "height_change": 427
+      },
+      "evidence": "phase1-edge-001-frame-0003"
+    },
+    {
+      "stamp": 90.95,
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "cause_cells": {
+        "slope": 616,
+        "height_change": 427
+      },
+      "evidence": "phase1-edge-001-frame-0004"
+    },
+    {
+      "stamp": 91.94,
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "cause_cells": {
+        "slope": 616,
+        "height_change": 427
+      },
+      "evidence": "phase1-edge-001-frame-0005"
+    },
+    {
+      "stamp": 92.962,
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "cause_cells": {
+        "slope": 616,
+        "height_change": 427
+      },
+      "evidence": "phase1-edge-001-frame-0006"
+    },
+    {
+      "stamp": 93.952,
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "cause_cells": {
+        "slope": 616,
+        "height_change": 427
+      },
+      "evidence": "phase1-edge-001-frame-0007"
+    },
+    {
+      "stamp": 94.942,
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "cause_cells": {
+        "slope": 616,
+        "height_change": 427
+      },
+      "evidence": "phase1-edge-001-frame-0008"
+    }
+  ],
+  "capture_span_sim_seconds": 7.589999999999989,
+  "synchronization": "Exact sensor and published terrain stamps; image-time TF; no truth used by navigation",
+  "map": {
+    "known_cells": 2506,
+    "hazard_cells": 641,
+    "resolution_m": 0.05000000074505806
+  },
+  "frame": {
+    "stamp": 94.942,
+    "known_cells": 213,
+    "hazard_cells": 213,
+    "by_step": 213,
+    "by_slope": 0,
+    "slope_p95_deg": NaN
+  },
+  "passed": true,
+  "acceptance_scope": "Read-only synchronized evidence capture; interpret fixture results separately"
+}

@@ -1,0 +1,125 @@
+{
+  "test": "terrain_audit",
+  "motion_commanded": false,
+  "session": "/work/navigation_sessions/restart-20261021T030108Z-f702be",
+  "fixture": "flat",
+  "captures": [
+    {
+      "stamp": 26.566,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0001"
+    },
+    {
+      "stamp": 27.556,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0002"
+    },
+    {
+      "stamp": 28.546,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0003"
+    },
+    {
+      "stamp": 29.57,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0004"
+    },
+    {
+      "stamp": 30.56,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0005"
+    },
+    {
+      "stamp": 31.55,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0006"
+    },
+    {
+      "stamp": 32.572,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0007"
+    },
+    {
+      "stamp": 33.562,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0008"
+    },
+    {
+      "stamp": 34.552,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0009"
+    },
+    {
+      "stamp": 35.576,
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "cause_cells": {
+        "slope": 0,
+        "height_change": 0
+      },
+      "evidence": "phase1-static-001-frame-0010"
+    }
+  ],
+  "capture_span_sim_seconds": 9.010000000000002,
+  "synchronization": "Exact sensor and published terrain stamps; image-time TF; no truth used by navigation",
+  "map": {
+    "known_cells": 2958,
+    "hazard_cells": 0,
+    "resolution_m": 0.05000000074505806
+  },
+  "frame": {
+    "stamp": 35.576,
+    "known_cells": 10166,
+    "hazard_cells": 0,
+    "by_step": 0,
+    "by_slope": 0,
+    "slope_p95_deg": 0.8076071748057286
+  },
+  "passed": true,
+  "acceptance_scope": "Read-only synchronized evidence capture; interpret fixture results separately"
+}

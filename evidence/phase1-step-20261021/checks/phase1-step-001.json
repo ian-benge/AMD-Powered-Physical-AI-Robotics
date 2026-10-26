@@ -1,0 +1,85 @@
+{
+  "test": "terrain_audit",
+  "motion_commanded": false,
+  "session": "/work/navigation_sessions/phase1-step-20261021",
+  "fixture": "step",
+  "captures": [
+    {
+      "stamp": 95.57,
+      "known_cells": 2599,
+      "hazard_cells": 197,
+      "cause_cells": {
+        "slope": 197,
+        "height_change": 46
+      },
+      "evidence": "phase1-step-001-frame-0001"
+    },
+    {
+      "stamp": 96.56,
+      "known_cells": 2599,
+      "hazard_cells": 197,
+      "cause_cells": {
+        "slope": 197,
+        "height_change": 46
+      },
+      "evidence": "phase1-step-001-frame-0002"
+    },
+    {
+      "stamp": 97.55,
+      "known_cells": 2599,
+      "hazard_cells": 197,
+      "cause_cells": {
+        "slope": 197,
+        "height_change": 46
+      },
+      "evidence": "phase1-step-001-frame-0003"
+    },
+    {
+      "stamp": 98.572,
+      "known_cells": 2599,
+      "hazard_cells": 197,
+      "cause_cells": {
+        "slope": 197,
+        "height_change": 46
+      },
+      "evidence": "phase1-step-001-frame-0004"
+    },
+    {
+      "stamp": 99.562,
+      "known_cells": 2599,
+      "hazard_cells": 197,
+      "cause_cells": {
+        "slope": 197,
+        "height_change": 46
+      },
+      "evidence": "phase1-step-001-frame-0005"
+    },
+    {
+      "stamp": 100.552,
+      "known_cells": 2599,
+      "hazard_cells": 197,
+      "cause_cells": {
+        "slope": 197,
+        "height_change": 46
+      },
+      "evidence": "phase1-step-001-frame-0006"
+    }
+  ],
+  "capture_span_sim_seconds": 4.9820000000000135,
+  "synchronization": "Exact sensor and published terrain stamps; image-time TF; no truth used by navigation",
+  "map": {
+    "known_cells": 2599,
+    "hazard_cells": 197,
+    "resolution_m": 0.05000000074505806
+  },
+  "frame": {
+    "stamp": 100.552,
+    "known_cells": 8114,
+    "hazard_cells": 702,
+    "by_step": 91,
+    "by_slope": 702,
+    "slope_p95_deg": 36.620747294896674
+  },
+  "passed": true,
+  "acceptance_scope": "Read-only synchronized evidence capture; interpret fixture results separately"
+}

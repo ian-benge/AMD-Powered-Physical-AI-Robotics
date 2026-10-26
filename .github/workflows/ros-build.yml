@@ -1,0 +1,28 @@
+name: ROS build
+on:
+  push:
+    paths: ['src/**', 'docker/**', '.github/workflows/ros-build.yml']
+  pull_request:
+    paths: ['src/**', 'docker/**', '.github/workflows/ros-build.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  jazzy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Build Jazzy and navigation images
+        run: |
+          docker build -f docker/Dockerfile.jazzy -t rover-jazzy .
+          docker build -f docker/Dockerfile.navigation -t rover-navigation .
+      - name: Build ROS packages
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work rover-navigation bash -c '
+            set -e
+            source /opt/ros/jazzy/setup.bash
+            colcon --log-base log_navigation build --base-paths src \
+              --build-base build_navigation --install-base install_navigation \
+              --packages-up-to rover_navigation
+          '

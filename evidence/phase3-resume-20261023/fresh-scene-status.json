@@ -1,0 +1,730 @@
+{
+  "mission_status": {
+    "mission": "idle",
+    "home": null,
+    "goal_active": false,
+    "result": "",
+    "trial": 0,
+    "outbound_reached": false,
+    "selected_goal": null,
+    "selection_state": "none",
+    "selection_reason": "",
+    "starting": false,
+    "home_attempts": 0,
+    "sim_time": 66.272,
+    "age_seconds": 0.06488239500004056
+  },
+  "diagnostics": {
+    "stamp": 0.0,
+    "slope_cells": 0,
+    "height_change_cells": 0,
+    "age_seconds": 71.18984851599998
+  },
+  "map": {
+    "width": 400,
+    "height": 400,
+    "resolution": 0.05000000074505806,
+    "origin": [
+      -10.0,
+      -10.0
+    ],
+    "stamp": 0.0,
+    "known_cells": 0,
+    "hazard_cells": 0,
+    "age_seconds": 71.18718673900003
+  },
+  "status": {
+    "mode": "stopped",
+    "reason": "invalid_odometry",
+    "fault": {
+      "reason": "invalid_odometry",
+      "sim_time": 0.022,
+      "detail": {
+        "depth_age_seconds": null,
+        "pose_age_seconds": null,
+        "clock_age_seconds": 0.0010790320000069187,
+        "last_valid_pose": null,
+        "pose_stamp": null
+      }
+    },
+    "stop_generation": 0,
+    "sequence": 358,
+    "odometry_resets": 1,
+    "ready": false,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "geometry": {
+      "frame": "odom",
+      "stamp": 66.1,
+      "horizon_seconds": 1.0,
+      "padding_m": 0.025,
+      "footprint": [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      "sweep": [
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ],
+        [
+          [
+            0.22500002368986366,
+            0.19500475461768507
+          ],
+          [
+            -0.2249999763095341,
+            0.1950040183795097
+          ],
+          [
+            -0.2249993382364488,
+            -0.19499598161996834
+          ],
+          [
+            0.22500066176294897,
+            -0.19499524538179297
+          ]
+        ]
+      ]
+    },
+    "sim_time": 66.16,
+    "depth_age_seconds": null,
+    "pose_age_seconds": 0.02382238499990308,
+    "clock_age_seconds": 0.00036847499995928956,
+    "age_seconds": 0.17697864499996285
+  },
+  "camera_health": {
+    "available": true,
+    "stamp": 65.936,
+    "low_detail": false,
+    "sampled_luma_std": 46.234906416937946,
+    "age_seconds": 0.38965661099996396
+  },
+  "detector": {
+    "ready": true,
+    "backend": "remote_http",
+    "error": "",
+    "processed_frames": 2007,
+    "model": {
+      "backend": "npu",
+      "model": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/model.onnx",
+      "manifest": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/manifest.json",
+      "precision": "a16w8",
+      "input_size": [
+        576,
+        960
+      ],
+      "model_sha256": "2d47f7591563869cc7cbd6f118342d82db3427dbee8e8eff5c5b3b0589a8b03a",
+      "source_checkpoint_sha256": "89bbcf4ff124996fb6a520c5bf751287c2b5ea47bbd1d7e2adaf7f530ee44ca3",
+      "class_names": [
+        "rock",
+        "pale_soil_patch",
+        "yellow_crystal_rock",
+        "mudstone_slab"
+      ],
+      "output_format": "yolo_dfl",
+      "decoder": {
+        "reg_max": 16,
+        "strides": [
+          8,
+          16,
+          32
+        ]
+      },
+      "runtime_options": {
+        "intra_op_num_threads": 1,
+        "allow_spinning": false
+      },
+      "runtime_fingerprint": {
+        "system": "Linux",
+        "kernel": "7.0.0-38-generic",
+        "architecture": "x86_64",
+        "python": "3.12.15",
+        "onnxruntime": "1.27.0",
+        "packages": {
+          "onnxruntime-vitisai": "1.27.0",
+          "voe": "1.8.0",
+          "flexml": "1.8.0"
+        },
+        "runtime_binaries": {
+          "libonnxruntime_providers_shared.so": "f0e61e401eed9466d56da57b28f7ddd842f546d405a0077255c74b26a81ed044",
+          "libonnxruntime_providers_vitisai.so": "e92a6ad323c8a426f45c1b3211b202e1f598ad031face7e402332768ed846539",
+          "libonnxruntime_vitisai_ep.so": "cf5206d4810e503e017dfac1fb0cfe89789ff9c3eae57d6db1682a040d28a09b",
+          "onnxruntime_pybind11_state.so": "ce6ddb7209cec93162872cb39eeebe29f1a34b39ad1210330e2bff7c59592839"
+        },
+        "driver_files": {
+          "/sys/module/amdxdna/srcversion": "ae04f145932c2d32982750808081d21c6808dcd6e12d8def631dd9dbffbafc21",
+          "/sys/module/amdxdna/taint": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "/sys/class/accel/accel0/device/fw_version": "af8dffe3c29e22de0482dfa9f7959b4328fb8afb4570e6f18e6271b633d8c904",
+          "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/version.json": "832c5d18e3a31e0e7f07d20445fde7cc57d35b67eacd8d684e4a2d5a22753b05",
+          "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_core.so.2": "48decc294dbf1672167a8468fee947b1a756893792905eb71d2bc1acceaa75ae",
+          "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_coreutil.so.2": "acbc609939c35e9edc0aed3709a0b5bdc6d0b9e5f53e9e6d2e0a94100ada2e97",
+          "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2": "f93fa0af14984dbd8105765e8ecd9847ab408eb770d2636aee6d31f8980601d8"
+        }
+      },
+      "cache_key": "4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507",
+      "cache_dir": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507",
+      "providers": [
+        "VitisAIExecutionProvider",
+        "CPUExecutionProvider"
+      ],
+      "operator_assignment": {
+        "report_path": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507/operator_assignment.json",
+        "npu_nodes": 867,
+        "cpu_nodes": 10,
+        "total_nodes": 877,
+        "npu_ops": [
+          "::Add",
+          "::Concat",
+          "::Conv",
+          "::MaxPool",
+          "::Mul",
+          "::Reshape",
+          "::Resize",
+          "::Sigmoid",
+          "::Split",
+          "com.microsoft::DequantizeLinear",
+          "com.microsoft::QuantizeLinear"
+        ],
+        "cpu_ops": [
+          "::Concat",
+          "com.microsoft::DequantizeLinear",
+          "com.microsoft::QuantizeLinear"
+        ],
+        "state": "assigned"
+      },
+      "proof_state": "npu_executed",
+      "computation_offload_verified": true,
+      "compute_offload": {
+        "allowed_cpu_decoding_nodes": [],
+        "cpu_compute_ops": [],
+        "learned_cpu_nodes": [],
+        "npu_compute_ops": [
+          "Conv"
+        ],
+        "verified": true,
+        "state": "npu"
+      },
+      "execution_providers_seen": [
+        "CPUExecutionProvider",
+        "VitisAIExecutionProvider"
+      ],
+      "profile_path": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507/runtime_profile_2026-10-23_14-00-06_320.json",
+      "source_checkpoint": "/home/ian/capstone-training/mars-pilot50-v2/runs/detect/coverage500_fourclass_yolov8s_npu_960/weights/best.pt",
+      "compile_evidence": {
+        "path": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compile_report.json",
+        "verified": true,
+        "sha256": "96fbcd657875e3494adf55cd845b5b27d2c63e48db6ad7b2dee5dd165baa1c7d"
+      },
+      "executed_device": "npu",
+      "model_family": "YOLOv8"
+    },
+    "age_seconds": 0.01683662000004915
+  },
+  "mapping": {
+    "waiting_for_confirmation": true,
+    "clearance_confirmed": false,
+    "depth_received_age_seconds": 0.02350816000011946,
+    "accepted_depth_stamp": null,
+    "update_seconds": null,
+    "compute": {
+      "protocol": "rover-terrain-v1",
+      "backend": "rocm",
+      "device": "AMD Radeon 8060S Graphics",
+      "torch": "2.13.0+rocm10.1.0",
+      "hip": "7.16.26385",
+      "geometry": "float64"
+    },
+    "compute_error": "",
+    "compute_timings": {},
+    "coverage": null,
+    "thresholds": {
+      "slope_deg": 12.0,
+      "height_change_m": 0.03
+    },
+    "age_seconds": 0.13713096899982702
+  },
+  "sample_sites": {
+    "schema_version": 2,
+    "frame": "odom",
+    "map_projection": "current map->odom",
+    "ready": false,
+    "error": "localization or guard sensor readiness unavailable",
+    "suspended_reason": "localization or guard sensor readiness unavailable",
+    "evidence_score_description": "engineering evidence score; not calibrated detector accuracy",
+    "objects": [],
+    "tentative_objects": [],
+    "stored_count": 0,
+    "retired_count": 0,
+    "counts": {},
+    "archived_epochs": [
+      {
+        "epoch": 0,
+        "reason": "odometry_reset",
+        "objects": []
+      }
+    ],
+    "epoch": 1,
+    "odometry_resets": 1,
+    "accepted_stamp": null,
+    "map_transform_age_seconds": 0.0,
+    "processing_ms": 0.0,
+    "defaults": {
+      "min_views": 3,
+      "min_baseline_m": 0.2,
+      "min_view_span_s": 2.0,
+      "min_confidence": 0.5,
+      "min_class_support": 0.7,
+      "confirmation_score": 0.9,
+      "mahalanobis_squared": 11.34,
+      "maximum_distance_m": 0.5,
+      "position_std_floor_m": 0.05,
+      "tentative_timeout_s": 30.0,
+      "prior": 0.2,
+      "hit_log_odds": 1.3862943611198906,
+      "miss_log_odds": 1.0986122886681098,
+      "score_bounds": [
+        0.02,
+        0.98
+      ],
+      "automatic_classes": [
+        "rock",
+        "yellow_crystal_rock"
+      ]
+    },
+    "age_seconds": 0.3369563220001055
+  },
+  "session": "restart-20261023T190246Z-796854",
+  "scene": {
+    "available": true,
+    "phase": "ready",
+    "session": "restart-20261023T190246Z-796854",
+    "error": ""
+  },
+  "rover_pose": [
+    0.1300003427263833,
+    4.599189886798484e-06,
+    1.6360848340956202e-06
+  ],
+  "localization": {
+    "available": true,
+    "transform_age_seconds": 0.0379999999999967,
+    "healthy": true,
+    "clock_age_seconds": 0.002609983999946053
+  },
+  "motion_overlay": {
+    "frame": "map",
+    "source_frame": "odom",
+    "stamp": 66.1,
+    "footprint": [
+      [
+        0.22500002368986366,
+        0.19500475461768507
+      ],
+      [
+        -0.2249999763095341,
+        0.1950040183795097
+      ],
+      [
+        -0.2249993382364488,
+        -0.19499598161996834
+      ],
+      [
+        0.22500066176294897,
+        -0.19499524538179297
+      ]
+    ],
+    "sweep": [
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ],
+      [
+        [
+          0.22500002368986366,
+          0.19500475461768507
+        ],
+        [
+          -0.2249999763095341,
+          0.1950040183795097
+        ],
+        [
+          -0.2249993382364488,
+          -0.19499598161996834
+        ],
+        [
+          0.22500066176294897,
+          -0.19499524538179297
+        ]
+      ]
+    ]
+  }
+}

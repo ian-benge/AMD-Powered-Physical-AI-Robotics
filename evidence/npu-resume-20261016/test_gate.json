@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "map50_95_drop": -0.044882006393762275,
+  "class_recall_drops": {
+    "rock": -0.025048169556839972,
+    "pale_soil_patch": 0.013157894736842146,
+    "yellow_crystal_rock": -0.045454545454545414,
+    "mudstone_slab": -0.09523809523809523
+  }
+}

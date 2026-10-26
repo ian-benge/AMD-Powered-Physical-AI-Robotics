@@ -1,0 +1,93 @@
+{
+  "note": "Offline nearest-object distances only; not detector accuracy or one-to-one scoring. Navigation receives no scene positions.",
+  "rows": [
+    {
+      "id": 1,
+      "class_name": "rock",
+      "nearest_name": "pale_stone_000",
+      "nearest_asset": "cand_pale_stone",
+      "horizontal_distance_m": 0.06261155022305857,
+      "object_radius_m": 0.0945696773
+    },
+    {
+      "id": 2,
+      "class_name": "rock",
+      "nearest_name": "rock_010",
+      "nearest_asset": "rock_09",
+      "horizontal_distance_m": 0.03680078763059511,
+      "object_radius_m": 0.1604607161
+    },
+    {
+      "id": 3,
+      "class_name": "rock",
+      "nearest_name": "rock_026",
+      "nearest_asset": "rock_09",
+      "horizontal_distance_m": 0.03211995412934854,
+      "object_radius_m": 0.1049040066
+    },
+    {
+      "id": 4,
+      "class_name": "rock",
+      "nearest_name": "rock_027",
+      "nearest_asset": "moon_rock_06",
+      "horizontal_distance_m": 0.015028057654530365,
+      "object_radius_m": 0.0371779956
+    },
+    {
+      "id": 5,
+      "class_name": "rock",
+      "nearest_name": "veined_lookalike_000",
+      "nearest_asset": "cand_slab",
+      "horizontal_distance_m": 0.3408431996324437,
+      "object_radius_m": 0.5020895017
+    },
+    {
+      "id": 6,
+      "class_name": "mudstone_slab",
+      "nearest_name": "veined_lookalike_000",
+      "nearest_asset": "cand_slab",
+      "horizontal_distance_m": 0.12012176078485728,
+      "object_radius_m": 0.5020895017
+    },
+    {
+      "id": 7,
+      "class_name": "rock",
+      "nearest_name": "rock_001",
+      "nearest_asset": "moon_rock_06",
+      "horizontal_distance_m": 0.009922444050412458,
+      "object_radius_m": 0.0235561029
+    },
+    {
+      "id": 8,
+      "class_name": "yellow_crystal_rock",
+      "nearest_name": "sulfur_rock_000",
+      "nearest_asset": "cand_sulfur",
+      "horizontal_distance_m": 0.031698699191327305,
+      "object_radius_m": 0.083868525
+    },
+    {
+      "id": 9,
+      "class_name": "rock",
+      "nearest_name": "sulfur_rock_000",
+      "nearest_asset": "cand_sulfur",
+      "horizontal_distance_m": 0.02941756492530184,
+      "object_radius_m": 0.083868525
+    },
+    {
+      "id": 10,
+      "class_name": "yellow_crystal_rock",
+      "nearest_name": "sulfur_rock_002",
+      "nearest_asset": "cand_sulfur",
+      "horizontal_distance_m": 0.031983085574688666,
+      "object_radius_m": 0.0612875747
+    },
+    {
+      "id": 11,
+      "class_name": "rock",
+      "nearest_name": "sulfur_rock_002",
+      "nearest_asset": "cand_sulfur",
+      "horizontal_distance_m": 0.052272745929719276,
+      "object_radius_m": 0.0612875747
+    }
+  ]
+}

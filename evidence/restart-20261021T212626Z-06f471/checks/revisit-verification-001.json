@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "initial_ids": [
+    "1:2"
+  ],
+  "retained_ids": [
+    "1:2"
+  ],
+  "freshly_reobserved_ids": [
+    "1:2"
+  ],
+  "accepted_stamp": 104.908,
+  "criterion": "same confirmed ID, increased last observation stamp, <=0.6 simulated seconds old"
+}

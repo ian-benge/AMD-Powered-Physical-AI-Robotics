@@ -1,0 +1,15 @@
+........Retrying scene_000101 layout 2/3: infeasible
+Retrying scene_000101 layout 3/3: infeasible
+..Retrying scene_000101 layout 2/3: no crystal pose fits
+.............................................................................127.0.0.1 - - [25/Oct/2026 21:55:16] "GET /api/index HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:55:16] "POST /api/save HTTP/1.1" 403 -
+127.0.0.1 - - [25/Oct/2026 21:55:16] "POST /api/save HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 21:55:16] code 404, message Not Found
+127.0.0.1 - - [25/Oct/2026 21:55:16] "GET /file/metadata/train/scene_000103_view_000.json HTTP/1.1" 404 -
+127.0.0.1 - - [25/Oct/2026 21:55:16] code 404, message Not Found
+127.0.0.1 - - [25/Oct/2026 21:55:16] "GET /file/images/%2e%2e/%2e%2e/outside.txt HTTP/1.1" 404 -
+..........................................
+----------------------------------------------------------------------
+Ran 129 tests in 398.935s
+
+OK

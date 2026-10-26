@@ -1,0 +1,247 @@
+{
+  "test": "phase2_coverage",
+  "passed": false,
+  "fixture": "slope",
+  "camera": {
+    "boxes_topic": "/oak/boxes",
+    "camera_info_topic": "/oak/camera_info",
+    "depth_topic": "/oak/depth/image_raw",
+    "far_m": 8.0,
+    "height": 540,
+    "horizontal_fov_rad": 1.22,
+    "horizontal_fov_status": "provisional",
+    "image_topic": "/oak/image_raw",
+    "mount_xyz": [
+      0.2,
+      0.0,
+      0.682
+    ],
+    "near_m": 0.3,
+    "optical_center_height_m": 0.762,
+    "rate_hz": 30,
+    "tilt_rad": 0.4,
+    "width": 960
+  },
+  "session": "/work/navigation_sessions/phase2-slope-p04-20261021",
+  "drive_seconds": 0.0,
+  "motion_commanded": false,
+  "settled_wall_seconds": 30.063646470953245,
+  "settled_status": {
+    "kind": "status",
+    "wall": 413535.231077418,
+    "mode": "stopped",
+    "reason": "invalid_odometry",
+    "fault": {
+      "reason": "invalid_odometry",
+      "sim_time": 0.084,
+      "detail": {
+        "depth_age_seconds": null,
+        "pose_age_seconds": null,
+        "clock_age_seconds": 0.0022152310120873153,
+        "last_valid_pose": null,
+        "pose_stamp": null
+      }
+    },
+    "stop_generation": 1,
+    "sequence": 188,
+    "odometry_resets": 7,
+    "ready": false,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "geometry": null,
+    "sim_time": 32.76,
+    "depth_age_seconds": 32.54024764796486,
+    "pose_age_seconds": null,
+    "clock_age_seconds": 0.00037326395977288485
+  },
+  "initial_mapping": {
+    "kind": "mapping_status",
+    "wall": 413535.27066689,
+    "waiting_for_confirmation": false,
+    "clearance_confirmed": false,
+    "depth_received_age_seconds": 0.019927579967770725,
+    "accepted_depth_stamp": 0.034,
+    "update_seconds": 0.07335611298913136,
+    "coverage": {
+      "stamp": 0.034,
+      "frame": "odom",
+      "source": "single_depth_frame_before_memory_and_seed",
+      "base_pose": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "corridor_width_m": 0.39,
+      "length_m": 2.5,
+      "first_observed_strip_ahead_of_front_m": 0.8000000000000002,
+      "observed_sample_fraction": 0.6966666666666668,
+      "hazard_sample_fraction": 0.6966666666666668,
+      "bands": [
+        {
+          "kind": "unknown",
+          "near_m": 0.225,
+          "far_m": 0.975,
+          "polygon": [
+            [
+              0.225,
+              0.195
+            ],
+            [
+              0.975,
+              0.195
+            ],
+            [
+              0.975,
+              -0.195
+            ],
+            [
+              0.225,
+              -0.195
+            ]
+          ]
+        },
+        {
+          "kind": "hazard",
+          "near_m": 0.975,
+          "far_m": 2.725,
+          "polygon": [
+            [
+              0.975,
+              0.195
+            ],
+            [
+              2.725,
+              0.195
+            ],
+            [
+              2.725,
+              -0.195
+            ],
+            [
+              0.975,
+              -0.195
+            ]
+          ]
+        }
+      ]
+    },
+    "thresholds": {
+      "slope_deg": 12.0,
+      "height_change_m": 0.03
+    }
+  },
+  "error": "No fresh valid truth/visual odometry after bounded settling",
+  "cleanup_stop": {
+    "success": true,
+    "message": "Stopped; explicit mode selection required to resume"
+  },
+  "final_status": {
+    "kind": "status",
+    "wall": 413535.630888654,
+    "mode": "stopped",
+    "reason": "invalid_odometry",
+    "fault": {
+      "reason": "invalid_odometry",
+      "sim_time": 0.084,
+      "detail": {
+        "depth_age_seconds": null,
+        "pose_age_seconds": null,
+        "clock_age_seconds": 0.0022152310120873153,
+        "last_valid_pose": null,
+        "pose_stamp": null
+      }
+    },
+    "stop_generation": 2,
+    "sequence": 191,
+    "odometry_resets": 7,
+    "ready": false,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "geometry": null,
+    "sim_time": 33.16,
+    "depth_age_seconds": 32.9402535049594,
+    "pose_age_seconds": null,
+    "clock_age_seconds": 0.0003654329921118915
+  },
+  "final_mapping": {
+    "kind": "mapping_status",
+    "wall": 413535.470982065,
+    "waiting_for_confirmation": false,
+    "clearance_confirmed": false,
+    "depth_received_age_seconds": 0.02087031799601391,
+    "accepted_depth_stamp": 0.034,
+    "update_seconds": 0.07335611298913136,
+    "coverage": {
+      "stamp": 0.034,
+      "frame": "odom",
+      "source": "single_depth_frame_before_memory_and_seed",
+      "base_pose": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "corridor_width_m": 0.39,
+      "length_m": 2.5,
+      "first_observed_strip_ahead_of_front_m": 0.8000000000000002,
+      "observed_sample_fraction": 0.6966666666666668,
+      "hazard_sample_fraction": 0.6966666666666668,
+      "bands": [
+        {
+          "kind": "unknown",
+          "near_m": 0.225,
+          "far_m": 0.975,
+          "polygon": [
+            [
+              0.225,
+              0.195
+            ],
+            [
+              0.975,
+              0.195
+            ],
+            [
+              0.975,
+              -0.195
+            ],
+            [
+              0.225,
+              -0.195
+            ]
+          ]
+        },
+        {
+          "kind": "hazard",
+          "near_m": 0.975,
+          "far_m": 2.725,
+          "polygon": [
+            [
+              0.975,
+              0.195
+            ],
+            [
+              2.725,
+              0.195
+            ],
+            [
+              2.725,
+              -0.195
+            ],
+            [
+              0.975,
+              -0.195
+            ]
+          ]
+        }
+      ]
+    },
+    "thresholds": {
+      "slope_deg": 12.0,
+      "height_change_m": 0.03
+    }
+  },
+  "recorded_wall_seconds": 30.367422305978835
+}

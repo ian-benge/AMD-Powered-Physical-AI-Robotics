@@ -1,0 +1,113 @@
+# Dependencies
+
+The simulation target is ROS 2 Humble on Ubuntu 22.04 with Gazebo Classic 11.
+Ubuntu 24.04's default is ROS 2 Jazzy and Gazebo Harmonic. This repository
+does not use those. The Docker image in `docker/Dockerfile` is the isolated
+22.04 environment for a 24.04 host, including the Halo.
+
+A second image, `docker/Dockerfile.jazzy` (tag `rover-jazzy`), is ROS 2 Jazzy
+on Ubuntu 24.04 with Gazebo Harmonic. It runs the same rover through
+`four_wheel_sim/launch/gz_harmonic.launch.py`, which builds the xacro with
+`sim:=harmonic`. The Classic image and launch files are unchanged. See
+"Gazebo Harmonic" below.
+
+## Apt packages inside the image
+
+- `ros-humble-ros-base` (from the official image `ros:humble-ros-base`, Ubuntu 22.04)
+- `ros-humble-xacro`
+- `ros-humble-robot-state-publisher`
+- `ros-humble-gazebo-ros-pkgs` (Gazebo Classic 11 and `gazebo_ros`)
+- `ros-humble-gazebo-ros2-control`
+- `ros-humble-controller-manager`
+- `ros-humble-joint-state-broadcaster`
+- `ros-humble-diff-drive-controller`
+- `ros-humble-topic-tools`
+- `ros-humble-cv-bridge`
+- `ros-humble-vision-msgs`
+- `ros-humble-image-transport`
+- `python3-colcon-common-extensions`
+- `python3-numpy`
+- `python3-opencv`
+- `xvfb`, `mesa-utils`, `libgl1-mesa-dri` for headless software rendering
+
+Optional later, only if you launch `rtab_demo.py`: `ros-humble-rtabmap-launch`,
+`ros-humble-rviz2`. The physical camera launch in `custom_launch/` also needs
+`depthai_ros_driver_v3`, which is not in this image.
+
+`four_wheel_sim/package.xml` originally omitted the exec dependencies its
+launch file imports. Those names were added. The launch files themselves were
+not edited.
+
+## Not installed
+
+Do not install PyTorch, Ultralytics, or a CUDA wheel on this laptop. The GPU
+seen here is an AMD Radeon with no NVIDIA driver. The Halo is an AMD Ryzen AI
+machine. On that computer, check the AMD ROCm or Ryzen AI stack before
+installing a training framework. The detector runs with `backend: none` until
+a weights file exists.
+
+## Camera topics
+
+Humble `libgazebo_ros_camera` publishes `<camera_name>/image_raw`,
+`<camera_name>/camera_info`, and, for a depth sensor,
+`<camera_name>/depth/image_raw`, `<camera_name>/depth/camera_info`, and
+`<camera_name>/points`. The rover sets `camera_name` to `oak` and does not set
+a ROS namespace, so the expected simulator names are:
+
+- `/oak/image_raw`
+- `/oak/camera_info`
+- `/oak/depth/image_raw`
+
+The image is 1920 × 1080 at 30 Hz in simulation time. The Harmonic RGB-D
+sensor uses that same size for depth. The horizontal field of view, 1.22 rad,
+is provisional until an OAK-D calibration is measured. The optical center is
+0.762 m above level ground; the camera joint Z is 0.682 m because `base_link`
+rests 0.08 m up on the wheels.
+
+`rtab_demo.py` subscribes to those three. Depth is `32FC1` meters along the
+optical axis. Values outside the sensor near/far range (0.3 m to 8.0 m in the
+xacro) are stored as infinities.
+
+The physical DepthAI launch in `custom_launch/rtab_script.launch.py` uses
+different names:
+
+- `/oak/rgb/image_raw`
+- `/oak/rgb/camera_info`
+- `/oak/stereo/image_raw`
+
+`rover_perception/config/sim.yaml` and `oak.yaml` select which image the
+detector reads. Confirm the live names with `ros2 topic list` before a long
+capture. This laptop could not start Gazebo, so those names are from the
+Humble plugin source plus the launch files, not from a running simulator.
+
+## Gazebo Harmonic
+
+`rover-jazzy` installs `ros-jazzy-ros-gz`, `ros-jazzy-gz-ros2-control`,
+`ros-jazzy-ros2-controllers`, and the same xacro, state publisher, cv_bridge,
+and rendering packages as the Humble image. It also installs Ubuntu's
+`blender` (4.0), used headless by `mars_assets` to simplify scanned rocks.
+
+What changes with `sim:=harmonic`:
+
+| Classic | Harmonic |
+|---|---|
+| `gazebo_ros2_control/GazeboSystem` | `gz_ros2_control/GazeboSimSystem` |
+| `libgazebo_ros_p3d.so` on `odom_gt` | `OdometryPublisher` system, bridged to `/odom_gt` |
+| `depth` sensor with `libgazebo_ros_camera.so` | `rgbd_camera` sensor, bridged by `config/gz_bridge.yaml` |
+| `Gazebo/Blue`, `Gazebo/Black` materials | URDF material colors |
+| `use_stamped_vel: false` and a `/cmd_vel` relay | `twist_stamper` converts `/cmd_vel` (Twist) to TwistStamped |
+
+The bridge keeps the Classic ROS names (`/oak/image_raw`,
+`/oak/depth/image_raw`, `/oak/camera_info`, `/oak/points`, `/odom_gt`,
+`/clock`). Harmonic uses a different default physics engine, so skid-steer
+turning may need a different `wheel_separation_multiplier` in
+`config/controllers_jazzy.yaml`.
+
+## Assets
+
+See `../../src/rover_training/models/ATTRIBUTION.md` and `assets.json`.
+
+The Mars environment's scanned rocks and ground textures come from Poly Haven
+under CC0. They are listed in
+`../../src/mars_training_environment/config/assets.json`, pinned with checksums in
+`assets.lock.json`, and downloaded into `assets_cache/`, which is not committed.

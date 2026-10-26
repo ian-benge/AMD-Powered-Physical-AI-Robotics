@@ -1,0 +1,66 @@
+{
+  "test": "flat_manual_smoke",
+  "drive_requested": false,
+  "session": "/work/navigation_sessions/agent-manual-01",
+  "duration_wall_s": 1.0,
+  "speed_m_s": 0.05,
+  "stop_method": "service",
+  "passed": true,
+  "scope": "manual_simulation_only",
+  "owners": {
+    "/cmd_vel": [
+      "navigation_motion_guard"
+    ],
+    "/navigation/manual_cmd_vel": [
+      "navigation_manual_smoke"
+    ],
+    "/diff_drive_controller/cmd_vel": [
+      "twist_stamper"
+    ]
+  },
+  "contact_transport": "Publishers [Address, Message Type]:\n  tcp://<HALO_TAILSCALE_IP>:41851, gz.msgs.Contacts\nSubscribers [Address, Message Type]:\n  tcp://<HALO_TAILSCALE_IP>:38353, gz.msgs.Contacts",
+  "collision_acceptance": "physical_contact_test_pending",
+  "baseline": {
+    "truth": {
+      "kind": "truth",
+      "wall": 332827.364926851,
+      "x": 1.9100834052962337e-10,
+      "y": -1.4524044710688762e-20,
+      "yaw": 1.7297064470194154e-18,
+      "stamp": 16.48
+    },
+    "estimate": {
+      "kind": "estimate",
+      "wall": 332826.877709454,
+      "x": 0.004083871841430664,
+      "y": -0.00022084855299908668,
+      "yaw": -8.142731451004655e-05,
+      "stamp": 15.908
+    }
+  },
+  "counts": {
+    "truth": 521,
+    "mission": 12,
+    "estimate": 100,
+    "guard_command": 178,
+    "ground": 34,
+    "status": 45
+  },
+  "last_status": {
+    "kind": "status",
+    "wall": 332827.264486137,
+    "mode": "stopped",
+    "reason": "invalid_odometry",
+    "ready": true,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "sim_time": 16.378,
+    "depth_age_seconds": 0.24996655096765608,
+    "pose_age_seconds": 0.44950719899497926,
+    "clock_age_seconds": 0.0010979989892803133
+  },
+  "ready_false_samples": 0,
+  "max_ground_age_s": 0.5170555440126918
+}

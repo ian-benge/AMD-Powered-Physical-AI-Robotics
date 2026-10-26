@@ -1,0 +1,141 @@
+{
+  "backend": {
+    "backend": "npu",
+    "cache_dir": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507",
+    "cache_key": "4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507",
+    "class_names": [
+      "rock",
+      "pale_soil_patch",
+      "yellow_crystal_rock",
+      "mudstone_slab"
+    ],
+    "computation_offload_verified": true,
+    "compute_offload": {
+      "cpu_compute_ops": [],
+      "npu_compute_ops": [
+        "::Conv"
+      ],
+      "reason": "AMD assignment places learned operation types on the NPU and none on the CPU",
+      "state": "npu"
+    },
+    "decoder": {
+      "reg_max": 16,
+      "strides": [
+        8,
+        16,
+        32
+      ]
+    },
+    "execution_providers_seen": [
+      "CPUExecutionProvider",
+      "VitisAIExecutionProvider"
+    ],
+    "input_size": [
+      576,
+      960
+    ],
+    "manifest": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/manifest.json",
+    "model": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/model.onnx",
+    "model_sha256": "2d47f7591563869cc7cbd6f118342d82db3427dbee8e8eff5c5b3b0589a8b03a",
+    "operator_assignment": {
+      "cpu_nodes": 10,
+      "cpu_ops": [
+        "::Concat",
+        "com.microsoft::DequantizeLinear",
+        "com.microsoft::QuantizeLinear"
+      ],
+      "npu_nodes": 867,
+      "npu_ops": [
+        "::Add",
+        "::Concat",
+        "::Conv",
+        "::MaxPool",
+        "::Mul",
+        "::Reshape",
+        "::Resize",
+        "::Sigmoid",
+        "::Split",
+        "com.microsoft::DequantizeLinear",
+        "com.microsoft::QuantizeLinear"
+      ],
+      "report_path": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507/operator_assignment.json",
+      "state": "assigned",
+      "total_nodes": 877
+    },
+    "output_format": "yolo_dfl",
+    "precision": "a16w8",
+    "profile_path": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507/runtime_profile_2026-10-16_17-18-26_392.json",
+    "proof_state": "npu_executed",
+    "providers": [
+      "VitisAIExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "runtime_fingerprint": {
+      "architecture": "x86_64",
+      "driver_files": {
+        "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_core.so.2": "48decc294dbf1672167a8468fee947b1a756893792905eb71d2bc1acceaa75ae",
+        "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_coreutil.so.2": "acbc609939c35e9edc0aed3709a0b5bdc6d0b9e5f53e9e6d2e0a94100ada2e97",
+        "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2": "f93fa0af14984dbd8105765e8ecd9847ab408eb770d2636aee6d31f8980601d8",
+        "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/version.json": "832c5d18e3a31e0e7f07d20445fde7cc57d35b67eacd8d684e4a2d5a22753b05",
+        "/sys/class/accel/accel0/device/fw_version": "af8dffe3c29e22de0482dfa9f7959b4328fb8afb4570e6f18e6271b633d8c904",
+        "/sys/module/amdxdna/srcversion": "ae04f145932c2d32982750808081d21c6808dcd6e12d8def631dd9dbffbafc21",
+        "/sys/module/amdxdna/taint": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      "kernel": "7.0.0-38-generic",
+      "onnxruntime": "1.27.0",
+      "packages": {
+        "flexml": "1.8.0",
+        "onnxruntime-vitisai": "1.27.0",
+        "voe": "1.8.0"
+      },
+      "python": "3.12.15",
+      "runtime_binaries": {
+        "libonnxruntime_providers_shared.so": "f0e61e401eed9466d56da57b28f7ddd842f546d405a0077255c74b26a81ed044",
+        "libonnxruntime_providers_vitisai.so": "e92a6ad323c8a426f45c1b3211b202e1f598ad031face7e402332768ed846539",
+        "libonnxruntime_vitisai_ep.so": "cf5206d4810e503e017dfac1fb0cfe89789ff9c3eae57d6db1682a040d28a09b",
+        "onnxruntime_pybind11_state.so": "ce6ddb7209cec93162872cb39eeebe29f1a34b39ad1210330e2bff7c59592839"
+      },
+      "system": "Linux"
+    },
+    "runtime_options": {
+      "allow_spinning": false,
+      "intra_op_num_threads": 1
+    },
+    "source_checkpoint_sha256": "89bbcf4ff124996fb6a520c5bf751287c2b5ea47bbd1d7e2adaf7f530ee44ca3"
+  },
+  "candidate_inference_completed": true,
+  "compute_offload": {
+    "allowed_cpu_decoding_nodes": [],
+    "cpu_compute_ops": [],
+    "learned_cpu_nodes": [],
+    "npu_compute_ops": [
+      "Conv"
+    ],
+    "verified": true
+  },
+  "created_utc": "2026-10-16T22:18:34.804309+00:00",
+  "detections": 0,
+  "hardware_evidence": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/reference.json",
+  "hardware_evidence_sha256": "fbed23b9252bdb3ac6ac6903341eb586a2661705bc1c529c37c1e872be4c8770",
+  "manifest": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/manifest.json",
+  "manifest_sha256": "d852d4ecdf56b78439c6e49b1a62ec19bb696e4f4c860be74ca5dda4966074b7",
+  "model_sha256": "2d47f7591563869cc7cbd6f118342d82db3427dbee8e8eff5c5b3b0589a8b03a",
+  "reference_verification": {
+    "device_enumerated": true,
+    "inference_completed": true,
+    "operators_npu": 398
+  },
+  "runtime_versions": {
+    "onnx": "1.21.0",
+    "onnxruntime-vitisai": "1.27.0",
+    "python": "3.12.15",
+    "torch": "2.6.0+cpu"
+  },
+  "schema_version": 1,
+  "timings": {
+    "execution_ms": 22.906784999577212,
+    "postprocess_ms": 0.6060560008336324,
+    "preprocess_ms": 2.226795999376918
+  },
+  "verified": true
+}

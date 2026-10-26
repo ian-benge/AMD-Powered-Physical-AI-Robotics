@@ -1,0 +1,437 @@
+{
+  "schema_version": 1,
+  "kind": "detector_benchmark",
+  "created_utc": "2026-10-16T22:33:46.533572+00:00",
+  "host": {
+    "hostname": "halo-strix",
+    "system": "Linux",
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "kernel": "7.0.0-38-generic"
+  },
+  "runtime_versions": {
+    "python": "3.12.15",
+    "onnxruntime-vitisai": "1.27.0",
+    "onnx": "1.21.0",
+    "torch": "2.6.0+cpu",
+    "numpy": "1.26.4",
+    "aiohttp": "3.14.5"
+  },
+  "detector": {
+    "backend": "npu",
+    "model": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/model.onnx",
+    "manifest": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/manifest.json",
+    "precision": "a16w8",
+    "input_size": [
+      576,
+      960
+    ],
+    "model_sha256": "2d47f7591563869cc7cbd6f118342d82db3427dbee8e8eff5c5b3b0589a8b03a",
+    "source_checkpoint_sha256": "89bbcf4ff124996fb6a520c5bf751287c2b5ea47bbd1d7e2adaf7f530ee44ca3",
+    "class_names": [
+      "rock",
+      "pale_soil_patch",
+      "yellow_crystal_rock",
+      "mudstone_slab"
+    ],
+    "output_format": "yolo_dfl",
+    "decoder": {
+      "reg_max": 16,
+      "strides": [
+        8,
+        16,
+        32
+      ]
+    },
+    "runtime_options": {
+      "intra_op_num_threads": 1,
+      "allow_spinning": false
+    },
+    "runtime_fingerprint": {
+      "system": "Linux",
+      "kernel": "7.0.0-38-generic",
+      "architecture": "x86_64",
+      "python": "3.12.15",
+      "onnxruntime": "1.27.0",
+      "packages": {
+        "onnxruntime-vitisai": "1.27.0",
+        "voe": "1.8.0",
+        "flexml": "1.8.0"
+      },
+      "runtime_binaries": {
+        "libonnxruntime_providers_shared.so": "f0e61e401eed9466d56da57b28f7ddd842f546d405a0077255c74b26a81ed044",
+        "libonnxruntime_providers_vitisai.so": "e92a6ad323c8a426f45c1b3211b202e1f598ad031face7e402332768ed846539",
+        "libonnxruntime_vitisai_ep.so": "cf5206d4810e503e017dfac1fb0cfe89789ff9c3eae57d6db1682a040d28a09b",
+        "onnxruntime_pybind11_state.so": "ce6ddb7209cec93162872cb39eeebe29f1a34b39ad1210330e2bff7c59592839"
+      },
+      "driver_files": {
+        "/sys/module/amdxdna/srcversion": "ae04f145932c2d32982750808081d21c6808dcd6e12d8def631dd9dbffbafc21",
+        "/sys/module/amdxdna/taint": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "/sys/class/accel/accel0/device/fw_version": "af8dffe3c29e22de0482dfa9f7959b4328fb8afb4570e6f18e6271b633d8c904",
+        "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/version.json": "832c5d18e3a31e0e7f07d20445fde7cc57d35b67eacd8d684e4a2d5a22753b05",
+        "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_core.so.2": "48decc294dbf1672167a8468fee947b1a756893792905eb71d2bc1acceaa75ae",
+        "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_coreutil.so.2": "acbc609939c35e9edc0aed3709a0b5bdc6d0b9e5f53e9e6d2e0a94100ada2e97",
+        "/home/ian/capstone-training/npu-install/xrt-root/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2": "f93fa0af14984dbd8105765e8ecd9847ab408eb770d2636aee6d31f8980601d8"
+      }
+    },
+    "cache_key": "4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507",
+    "cache_dir": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507",
+    "providers": [
+      "VitisAIExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "operator_assignment": {
+      "report_path": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507/operator_assignment.json",
+      "npu_nodes": 867,
+      "cpu_nodes": 10,
+      "total_nodes": 877,
+      "npu_ops": [
+        "::Add",
+        "::Concat",
+        "::Conv",
+        "::MaxPool",
+        "::Mul",
+        "::Reshape",
+        "::Resize",
+        "::Sigmoid",
+        "::Split",
+        "com.microsoft::DequantizeLinear",
+        "com.microsoft::QuantizeLinear"
+      ],
+      "cpu_ops": [
+        "::Concat",
+        "com.microsoft::DequantizeLinear",
+        "com.microsoft::QuantizeLinear"
+      ],
+      "state": "assigned"
+    },
+    "proof_state": "npu_executed",
+    "computation_offload_verified": true,
+    "compute_offload": {
+      "allowed_cpu_decoding_nodes": [],
+      "cpu_compute_ops": [],
+      "learned_cpu_nodes": [],
+      "npu_compute_ops": [
+        "Conv"
+      ],
+      "verified": true,
+      "state": "npu"
+    },
+    "execution_providers_seen": [
+      "CPUExecutionProvider",
+      "VitisAIExecutionProvider"
+    ],
+    "profile_path": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compiled/4827d585c7a8e60cbc378b6877e146cd0cea0f48e65a493b87d6c14e32d57507/runtime_profile_2026-10-16_17-30-38_951.json",
+    "compile_evidence": {
+      "path": "/home/ian/capstone-training/mars-pilot50-v2/experiments/npu/resume_20261016T221548Z/candidate/compile_report.json",
+      "verified": true,
+      "sha256": "96fbcd657875e3494adf55cd845b5b27d2c63e48db6ad7b2dee5dd165baa1c7d"
+    }
+  },
+  "input_sha256": "8ee960982f7fbd4cf6921839e088092ad64a3bb2a584d7892097d0b75ce6d6b1",
+  "input_frames": 1436,
+  "input_shapes": [
+    [
+      540,
+      960,
+      3
+    ]
+  ],
+  "batch": 1,
+  "confidence": 0.25,
+  "jpeg_quality": 80,
+  "includes": "preprocessing, execution, decoding, annotation, JPEG; excludes disk IO and network",
+  "runs": [
+    {
+      "repeat": 1,
+      "frames": 2299,
+      "seconds": 60.01942133900047,
+      "processed_fps": 38.30426799710106,
+      "resource_usage": {
+        "cpu_percent_one_core": 32.07295167221381,
+        "sample_count": 117,
+        "process_rss_mb": {
+          "count": 117,
+          "mean": 2695.533219818376,
+          "median": 2695.5390625,
+          "p95": 2695.54296875
+        },
+        "available_memory_mb": {
+          "count": 117,
+          "mean": 58098.8687232906,
+          "median": 58108.9765625,
+          "p95": 58130.5546875
+        },
+        "gpu_busy_percent": {
+          "card1": {
+            "count": 117,
+            "mean": 0.0,
+            "median": 0.0,
+            "p95": 0.0
+          }
+        }
+      },
+      "context_before": {
+        "cpu_count": 32,
+        "npu_power_mode": "default",
+        "cpu_governor": "performance",
+        "platform_profile": null
+      },
+      "context_after": {
+        "cpu_count": 32,
+        "npu_power_mode": "default",
+        "cpu_governor": "performance",
+        "platform_profile": null
+      },
+      "timings": {
+        "preprocess_ms": {
+          "count": 2299,
+          "mean": 0.5965183319068207,
+          "median": 0.5924489996687043,
+          "p95": 0.6189169998833677
+        },
+        "execution_ms": {
+          "count": 2299,
+          "mean": 23.448165354479805,
+          "median": 23.38297399910516,
+          "p95": 24.235390800458845
+        },
+        "postprocess_ms": {
+          "count": 2299,
+          "mean": 0.9432040630974295,
+          "median": 0.9348750008939533,
+          "p95": 1.1173730996233644
+        },
+        "annotation_ms": {
+          "count": 2299,
+          "mean": 0.31446736102858225,
+          "median": 0.30986900128482375,
+          "p95": 0.34302299936825875
+        },
+        "encoding_ms": {
+          "count": 2299,
+          "mean": 0.6874720587194937,
+          "median": 0.6822350005677436,
+          "p95": 0.7139460003600107
+        },
+        "total_ms": {
+          "count": 2299,
+          "mean": 26.009466777730253,
+          "median": 25.964796999687678,
+          "p95": 26.792169400505372
+        }
+      }
+    },
+    {
+      "repeat": 2,
+      "frames": 2308,
+      "seconds": 60.00464844599992,
+      "processed_fps": 38.46368672715485,
+      "resource_usage": {
+        "cpu_percent_one_core": 32.197505527237084,
+        "sample_count": 116,
+        "process_rss_mb": {
+          "count": 116,
+          "mean": 2695.708041487069,
+          "median": 2695.70703125,
+          "p95": 2695.7109375
+        },
+        "available_memory_mb": {
+          "count": 116,
+          "mean": 58070.70413523707,
+          "median": 58084.849609375,
+          "p95": 58090.2109375
+        },
+        "gpu_busy_percent": {
+          "card1": {
+            "count": 116,
+            "mean": 0.0,
+            "median": 0.0,
+            "p95": 0.0
+          }
+        }
+      },
+      "context_before": {
+        "cpu_count": 32,
+        "npu_power_mode": "default",
+        "cpu_governor": "performance",
+        "platform_profile": null
+      },
+      "context_after": {
+        "cpu_count": 32,
+        "npu_power_mode": "default",
+        "cpu_governor": "performance",
+        "platform_profile": null
+      },
+      "timings": {
+        "preprocess_ms": {
+          "count": 2308,
+          "mean": 0.6004936079101993,
+          "median": 0.599402999796439,
+          "p95": 0.6219496502126276
+        },
+        "execution_ms": {
+          "count": 2308,
+          "mean": 23.377594087084415,
+          "median": 23.339309999755642,
+          "p95": 23.986400699686783
+        },
+        "postprocess_ms": {
+          "count": 2308,
+          "mean": 0.9217821841152167,
+          "median": 0.9147415003099013,
+          "p95": 1.0997051498634391
+        },
+        "annotation_ms": {
+          "count": 2308,
+          "mean": 0.3130078136912758,
+          "median": 0.31202350055536954,
+          "p95": 0.32232435050900676
+        },
+        "encoding_ms": {
+          "count": 2308,
+          "mean": 0.6930060567616203,
+          "median": 0.6938900005479809,
+          "p95": 0.7100569996509876
+        },
+        "total_ms": {
+          "count": 2308,
+          "mean": 25.926435961006803,
+          "median": 25.916307500665425,
+          "p95": 26.530263649510744
+        }
+      }
+    },
+    {
+      "repeat": 3,
+      "frames": 2317,
+      "seconds": 60.02559430600013,
+      "processed_fps": 38.60020091077039,
+      "resource_usage": {
+        "cpu_percent_one_core": 32.152951125501446,
+        "sample_count": 116,
+        "process_rss_mb": {
+          "count": 116,
+          "mean": 2695.7551858836205,
+          "median": 2695.734375,
+          "p95": 2695.85546875
+        },
+        "available_memory_mb": {
+          "count": 116,
+          "mean": 58085.19901670259,
+          "median": 58097.78515625,
+          "p95": 58105.80078125
+        },
+        "gpu_busy_percent": {
+          "card1": {
+            "count": 116,
+            "mean": 0.0,
+            "median": 0.0,
+            "p95": 0.0
+          }
+        }
+      },
+      "context_before": {
+        "cpu_count": 32,
+        "npu_power_mode": "default",
+        "cpu_governor": "performance",
+        "platform_profile": null
+      },
+      "context_after": {
+        "cpu_count": 32,
+        "npu_power_mode": "default",
+        "cpu_governor": "performance",
+        "platform_profile": null
+      },
+      "timings": {
+        "preprocess_ms": {
+          "count": 2317,
+          "mean": 0.598781442811288,
+          "median": 0.5964789997960906,
+          "p95": 0.6224260007002158
+        },
+        "execution_ms": {
+          "count": 2317,
+          "mean": 23.2954027233338,
+          "median": 23.27609700114408,
+          "p95": 23.812030599583522
+        },
+        "postprocess_ms": {
+          "count": 2317,
+          "mean": 0.9163871610087903,
+          "median": 0.91059700025653,
+          "p95": 1.1007930006599054
+        },
+        "annotation_ms": {
+          "count": 2317,
+          "mean": 0.31331476694309,
+          "median": 0.3105390005657682,
+          "p95": 0.3246422009397065
+        },
+        "encoding_ms": {
+          "count": 2317,
+          "mean": 0.6910276383397478,
+          "median": 0.6874549999338342,
+          "p95": 0.7085627988999477
+        },
+        "total_ms": {
+          "count": 2317,
+          "mean": 25.83579075487757,
+          "median": 25.814161001108005,
+          "p95": 26.38258639963169
+        }
+      }
+    }
+  ],
+  "processed_fps": {
+    "count": 3,
+    "mean": 38.456051878342095,
+    "median": 38.46368672715485,
+    "p95": 38.586549492408835
+  },
+  "timings": {
+    "preprocess_ms": {
+      "count": 6924,
+      "mean": 0.5986007358613915,
+      "median": 0.596329000472906,
+      "p95": 0.6212526505805727
+    },
+    "execution_ms": {
+      "count": 6924,
+      "mean": 23.373522156687507,
+      "median": 23.32356700026139,
+      "p95": 24.04318265089387
+    },
+    "postprocess_ms": {
+      "count": 6924,
+      "mean": 0.9270896120820736,
+      "median": 0.9203359995808569,
+      "p95": 1.1087359994235158
+    },
+    "annotation_ms": {
+      "count": 6924,
+      "mean": 0.3135951490484279,
+      "median": 0.31080900043889415,
+      "p95": 0.32619734874970163
+    },
+    "encoding_ms": {
+      "count": 6924,
+      "mean": 0.6905065395775752,
+      "median": 0.6877550003991928,
+      "p95": 0.7110895004188933
+    },
+    "total_ms": {
+      "count": 6924,
+      "mean": 25.923672082474997,
+      "median": 25.895400500303367,
+      "p95": 26.609457100585132
+    }
+  },
+  "total_latency_ms": {
+    "count": 6924,
+    "mean": 25.923672082474997,
+    "median": 25.895400500303367,
+    "p95": 26.609457100585132
+  },
+  "minimum_run_fps": 38.30426799710106
+}

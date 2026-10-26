@@ -1,0 +1,17 @@
+{
+  "sample_sites": {
+    "installed": "/work/install_navigation/rover_navigation/lib/python3.12/site-packages/rover_navigation/sample_sites.py",
+    "source_sha256": "e849473ce4bba9f508bc722bfb6fdbffa42b9a8cb1ece9387ad19338ce02ba17",
+    "matched": true
+  },
+  "sample_sites_node": {
+    "installed": "/work/install_navigation/rover_navigation/lib/python3.12/site-packages/rover_navigation/sample_sites_node.py",
+    "source_sha256": "c7d39d9f06e62919d3a492507cf163c95f8a38a16c2556dfe5858b2febc18ecd",
+    "matched": true
+  },
+  "site_geometry": {
+    "installed": "/work/install_navigation/rover_navigation/lib/python3.12/site-packages/rover_navigation/site_geometry.py",
+    "source_sha256": "d07265ed27c3ccafeb489cf59e1be99190ae382a720500dd3ac6f7ea0a1aa533",
+    "matched": true
+  }
+}

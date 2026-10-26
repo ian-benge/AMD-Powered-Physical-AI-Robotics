@@ -1,0 +1,1022 @@
+{
+  "published": "2026-10-25",
+  "upstream": "https://github.com/agfoti04/AMD-Capstone",
+  "base_commit": "14d616ea1f27f6442223cab8d2b20446e41da3ec",
+  "source_branch": "navigation/mapping-and-exploration",
+  "imported_files": {
+    "custom_launch/rtab_script.launch.py": {
+      "sha256": "fbeb4af466dc1e7cd8b86e5aa86a86e4b9e0cae69cf95f8ad2cbc4cf074002c4",
+      "bytes": 4713
+    },
+    "docker/Dockerfile": {
+      "sha256": "4658015a956d90d63b0c336bdaf1a92d5bf87db4c144980d4fb30f5bdd3237ff",
+      "bytes": 1149
+    },
+    "docker/Dockerfile.jazzy": {
+      "sha256": "29fdc4e3efa370dfff8b2822cafa325a0748f9e75ea8eb4f008badf0e3475084",
+      "bytes": 1234
+    },
+    "docker/Dockerfile.navigation": {
+      "sha256": "2c7d3c871dfc58a48d2b2c0688ae1ab33d362a1e5dbce594a48ea573a33f765e",
+      "bytes": 404
+    },
+    "docs/HALO_COMPUTE_BUDGET_20261021.md": {
+      "sha256": "5281a0cdd63d75833c5654f1602fa87ee23c109a878c02639a67d2914da70918",
+      "bytes": 8029
+    },
+    "docs/HALO_GPU_TERRAIN.md": {
+      "sha256": "09f2b8f4eba439e0a50b7362715742bee835ff5335070d04416c8b62870834e9",
+      "bytes": 10060
+    },
+    "docs/HALO_MANUAL_MAPPING_DETECTIONS.md": {
+      "sha256": "68fa182ea7c232e79691e4c29da9e86127b6eff822c9884a8e23321e71c5590f",
+      "bytes": 12734
+    },
+    "docs/HALO_MANUAL_MAPPING_REPORT_20261020.md": {
+      "sha256": "6a49d31bf5d8c7e0827d13526b5129adb6005eb9668b62e21bac382263b73303",
+      "bytes": 10381
+    },
+    "docs/HALO_NAVIGATION_NPU_SWITCH_20261021.md": {
+      "sha256": "a047f17977b1a0bff1a257526bf6c8d27eedfea7a1beeae8a40a6eacc594a2d3",
+      "bytes": 6758
+    },
+    "docs/HALO_NAVIGATION_PHASE_ONE_REPORT_20261020.md": {
+      "sha256": "26e8b6eb5e0e6f660103c0cd38ecba70d9bc2cbe834432c9040e12d8aeff7780",
+      "bytes": 7392
+    },
+    "docs/HALO_NAVIGATION_PHASE_THREE_REPORT_20261021.md": {
+      "sha256": "d56af182bd2fb5d20dbdda0ab4edf92352cd4d5edef9f5adc8451ac70bbaafae",
+      "bytes": 12069
+    },
+    "docs/HALO_NAVIGATION_PHASE_TWO_REPORT_20261021.md": {
+      "sha256": "e5ee20841121bae5a501a1041408bf21dc1c7fdf33b48e26bcf45a8b65b75dae",
+      "bytes": 8126
+    },
+    "docs/HALO_NAVIGATION_SMOKE_REPORT_20261020.md": {
+      "sha256": "610d3473853cd184bd719d212bfa746c600f5135793a5b19482b7b310dc3d2ee",
+      "bytes": 5652
+    },
+    "docs/LEGACY_WORKFLOWS.md": {
+      "sha256": "fa6bf3c4bda46f56f2a9bbff1b3c0e7449f6826750f78123a4d1dc6f9347190d",
+      "bytes": 13555
+    },
+    "docs/NAVIGATION.md": {
+      "sha256": "d69c8681d06b9a966985ca193b5b62439a008bb853f4d212122286c5f84b033f",
+      "bytes": 18213
+    },
+    "docs/NAVIGATION_DEMO.md": {
+      "sha256": "c13c06226b5a70e7dba4a29a1c52e8c84af022f31710e983665e3b75f7913090",
+      "bytes": 8697
+    },
+    "docs/NAVIGATION_PHASE_ONE.md": {
+      "sha256": "e1b6cf27587464d1c62d062bf1c1294340ba25f488398687c9a71fd212e0da68",
+      "bytes": 5565
+    },
+    "docs/NAVIGATION_PHASE_THREE.md": {
+      "sha256": "e453e245d6aa014b596c402b27fd09bbc4f184f8a522e3a50602949e27de9003",
+      "bytes": 7836
+    },
+    "docs/NAVIGATION_PHASE_TWO.md": {
+      "sha256": "97525cae6154df16e7847755e96be94a33452c32670e9a5554d61e6d84e2b327",
+      "bytes": 5205
+    },
+    "docs/NAVIGATION_TEST_REPORT.md": {
+      "sha256": "816e1316ceeecc2a9d67cedd93a5514292afb631c635adf3381413669edb30b4",
+      "bytes": 7153
+    },
+    "docs/NPU_TEST_REPORT.md": {
+      "sha256": "52b2d3f569a9ec2ae85b34b00895804eeb67729f119f80f88b97a0507208c9bf",
+      "bytes": 27737
+    },
+    "scripts/HALO_COVERAGE500_BALANCED.md": {
+      "sha256": "10bbb8a96019802ff0b8939b6d5e57aa9c0dad527d54d165f87a34ab5674e6b8",
+      "bytes": 6570
+    },
+    "scripts/HALO_FOUR_CLASS.md": {
+      "sha256": "53b2040c36d6e092bbece125cf9a8bfdc9a2d981f1796f6f011db9b10596b86a",
+      "bytes": 9628
+    },
+    "scripts/HALO_LIVE_VISION.md": {
+      "sha256": "abf4ba9aa5e9e2216ca082408b3ca84ad43955c151489f86580b43da222f8b51",
+      "bytes": 12767
+    },
+    "scripts/HALO_NPU_TESTING.md": {
+      "sha256": "5ecd3d50d62d85883033bebabbc83d69608b5f1e25c729f1c1669a9714d0a0d5",
+      "bytes": 21731
+    },
+    "scripts/HALO_PILOT50_V2.md": {
+      "sha256": "d8da9831c045398c2bd836fb30a0ab07496ad42e66f01746e6dd7ffef8d1e303",
+      "bytes": 15502
+    },
+    "scripts/capture_plan.sh": {
+      "sha256": "f4a045ebbbdf1974ff941599ea2ee49dba8af95fe381bb920c408382f7533801",
+      "bytes": 834
+    },
+    "scripts/halo_live_sim.sh": {
+      "sha256": "e48566324afee7ea658c0b447f89c92338164b141418995c2e5ed10c9d364b1f",
+      "bytes": 3679
+    },
+    "scripts/halo_live_vision.sh": {
+      "sha256": "de9bbdb26a58210a23d6110437f6f663c09439a01f915531aeb4fabc5e8587c2",
+      "bytes": 844
+    },
+    "scripts/halo_navigation.sh": {
+      "sha256": "a1c66b9ae88b8227cdf9b4058e7ce0a017fa2c1488ffae4394b9f027cb8a406f",
+      "bytes": 4305
+    },
+    "scripts/halo_navigation_capture.py": {
+      "sha256": "6c6a0653565250b095204a37c68cae394e522dc43b9f634331127ad0283b144a",
+      "bytes": 1951
+    },
+    "scripts/halo_navigation_coverage_check.py": {
+      "sha256": "1ad5933b4b698e1cf90b910e4bbb9e3e6e7bdeda2f74d72bdc40119910412076",
+      "bytes": 11810
+    },
+    "scripts/halo_navigation_detection_check.py": {
+      "sha256": "b30725f2787ef58ca310eedcb91c75647c551381ec12d4be2d258c1cee7fbef2",
+      "bytes": 5250
+    },
+    "scripts/halo_navigation_detector.sh": {
+      "sha256": "d672e28c961c7a9c62d9c53af63845bd1718be419f444bdbf00e66e96e12c35d",
+      "bytes": 2257
+    },
+    "scripts/halo_navigation_manual_check.py": {
+      "sha256": "3aeb4409803ee99ee94c4e71d2444ba260d84601e116dc574c16c53d77f19858",
+      "bytes": 7474
+    },
+    "scripts/halo_navigation_map_check.py": {
+      "sha256": "0b02af09978c1640febf1105c6127986057b22951cade43d4bbf85f83b265586",
+      "bytes": 10079
+    },
+    "scripts/halo_navigation_mission_check.py": {
+      "sha256": "2ed3b5cff8d539847d3e23d37699d436b22d44eff0d9fa6638f8c11893c3ba45",
+      "bytes": 16350
+    },
+    "scripts/halo_navigation_scene_control.sh": {
+      "sha256": "acfa9d8590d443a7f7d441ef639848b078b4cb873ee74b0cd11dd6a688ec44cd",
+      "bytes": 515
+    },
+    "scripts/halo_navigation_sensor_timing.py": {
+      "sha256": "f0d732d88011172195033daa93097a59c6de2508b4902aaa379004c423a7cfe3",
+      "bytes": 5107
+    },
+    "scripts/halo_navigation_smoke.py": {
+      "sha256": "bbbd13e99c59483ac0acde3ba61b28eb76b93750b0ecf7a3e2a7b72f1c2f50cc",
+      "bytes": 16721
+    },
+    "scripts/halo_navigation_terrain_audit.py": {
+      "sha256": "ce2a5d2af159befe586572ef8b81a991a563dfe57c37604ab851f601bd784367",
+      "bytes": 17557
+    },
+    "scripts/halo_navigation_tracking_check.py": {
+      "sha256": "13583f89d1db3b0dfc1e3267d941f1e279cc6de01de7e907b98289a78d0e200d",
+      "bytes": 9401
+    },
+    "scripts/halo_navigation_tracking_replay.py": {
+      "sha256": "fa5b8c208e4638ddf09e7409e71f2fa6e523efc279fdca44cea55c1a8cc7ed86",
+      "bytes": 4568
+    },
+    "scripts/halo_navigation_turn_check.py": {
+      "sha256": "caa02561dc9cab4b2351046093beb73a898b2ac476c4daaf6f0c0b0f1bd48c83",
+      "bytes": 5979
+    },
+    "scripts/halo_npu_env.sh": {
+      "sha256": "55ae88ec312ba2ccead75639451e1e5c5ce11ab61c005141690f849c69605fbe",
+      "bytes": 1196
+    },
+    "scripts/halo_terrain_gpu.sh": {
+      "sha256": "25e6f92ca7312a5f075805d2b7cf85bfcc450f34a9725479d2fc43bfea674815",
+      "bytes": 524
+    },
+    "scripts/halo_terrain_gpu_check.py": {
+      "sha256": "53501d358212744ac00b400e0269a1ec582a7746b40f1dae3d5fa8952b22f9ac",
+      "bytes": 6176
+    },
+    "scripts/halo_train_fourclass.sh": {
+      "sha256": "2884af7f89943027c0635620be9fae63656bfca2b016e9b7f08d290c733bf7f8",
+      "bytes": 1324
+    },
+    "scripts/halo_train_npu_fallback.sh": {
+      "sha256": "b181946d7ea523bf2b395bcee252eb6120432ed1f2f13c7727d11e4fe0bd01f7",
+      "bytes": 1922
+    },
+    "scripts/halo_update_npu_firmware.sh": {
+      "sha256": "32a8a5b0c0edeb45d71c1fc1a0ca8603854d6a899a96f625cfb293299a17a630",
+      "bytes": 1628
+    },
+    "scripts/navigation_browser_check.cjs": {
+      "sha256": "6852929825a30cbf234052d56a43d6adc180594fe666d8289c21180df0bb9c6d",
+      "bytes": 15730
+    },
+    "scripts/package_halo_live.py": {
+      "sha256": "ec1bdd157af60abe3c9fe69f22df9b2aa1c404eb7e8d5a5026de85065cf0e97a",
+      "bytes": 8669
+    },
+    "scripts/requirements-live.txt": {
+      "sha256": "b79e7fe9aa6ab0aadf13de508622ccffb3d1db856ff2a65b2c0181e0d47eb908",
+      "bytes": 97
+    },
+    "scripts/requirements-npu-export.txt": {
+      "sha256": "e280ec722bfe85c4940b8fe1eee56244b66fd36236a83265c00f5adcc0cd7ca1",
+      "bytes": 240
+    },
+    "src/four_wheel_sim/config/controllers.yaml": {
+      "sha256": "c5c20765749f5655909706c5b16c0bdd462c6c9e785b310f09b35862af63f403",
+      "bytes": 840
+    },
+    "src/four_wheel_sim/config/controllers_jazzy.yaml": {
+      "sha256": "55406d60dde2cdeb52e05035df28a54b99653b6b152846a71918fe1513d37c1c",
+      "bytes": 976
+    },
+    "src/four_wheel_sim/config/gz_bridge.yaml": {
+      "sha256": "e0cfe57c476501c1abcd4b738eb8ce186ac256b98c36869cbeb8bc3a3da70205",
+      "bytes": 1119
+    },
+    "src/four_wheel_sim/config/make_map.py": {
+      "sha256": "28ae7212443ef6242907819aa1264d4d7ca9d9f06180afcea3f88163a5fa08a3",
+      "bytes": 771
+    },
+    "src/four_wheel_sim/config/maze.pgm": {
+      "sha256": "f9d504f5ce4b1312a4a4a36bb64b8cf03578435c8a4badaa81899e970779bab0",
+      "bytes": 9614
+    },
+    "src/four_wheel_sim/config/maze.yaml": {
+      "sha256": "2a214e88ab89331ab23c0bc01a4e9bc4de0948137f82df86b32d8e54aa1a9bec",
+      "bytes": 115
+    },
+    "src/four_wheel_sim/config/nav2_params.yaml": {
+      "sha256": "899edaeb39680010d7c215f5477ea97b8121eeae4cde95fcdb03949d62e2b3ab",
+      "bytes": 10222
+    },
+    "src/four_wheel_sim/four_wheel_sim/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "src/four_wheel_sim/four_wheel_sim/base_controller.py": {
+      "sha256": "cdc26ba6aced5442b23dc0b82475abd38f15ea54ef93c0cd929d2785bceeefc0",
+      "bytes": 6675
+    },
+    "src/four_wheel_sim/four_wheel_sim/maze.py": {
+      "sha256": "164773a6537af5814aa132d4f0b531a1fa0487bd3d734582a3ff427f50efedde",
+      "bytes": 334
+    },
+    "src/four_wheel_sim/four_wheel_sim/maze_waypoints.py": {
+      "sha256": "0b6d90fe5e03d07d3b13e3e860a418d7da12cfc0bdacc944d1b0ed24c906f9f6",
+      "bytes": 1371
+    },
+    "src/four_wheel_sim/four_wheel_sim/odom_gt.py": {
+      "sha256": "c21cdd021336c8b52c87fbe41e13e5e28dada3c1375703edba7ff726aeba8e69",
+      "bytes": 1158
+    },
+    "src/four_wheel_sim/four_wheel_sim/path_runner.py": {
+      "sha256": "22ae4137cd2cce4489a6d0e8f30f712fd48ed721d13d0db5fa225604141aba4b",
+      "bytes": 874
+    },
+    "src/four_wheel_sim/four_wheel_sim/twist_stamper.py": {
+      "sha256": "4d580e25cc1f38237eabcd6d7b089785352c179f02c2962c3d9fda5c95419c1c",
+      "bytes": 1682
+    },
+    "src/four_wheel_sim/launch/gazebo.launch.py": {
+      "sha256": "eb23614c93de637f38030b9c21464c830ff0f14f892f42715391d3087ec48070",
+      "bytes": 3216
+    },
+    "src/four_wheel_sim/launch/gz_harmonic.launch.py": {
+      "sha256": "92000268cd82577b51196d4d982f9446da88d390d1e79c408033480c0f2677d8",
+      "bytes": 5512
+    },
+    "src/four_wheel_sim/launch/rtab_demo.py": {
+      "sha256": "85e842a5034b87482aff5d0df0db45b7fd795d1a0a53c9c0d8b6307a8f3c17e2",
+      "bytes": 2193
+    },
+    "src/four_wheel_sim/launch/sim.launch.py": {
+      "sha256": "0dbece6b715edfc4e6b62d48015f88c89a393a37665536b92deb085714281b37",
+      "bytes": 770
+    },
+    "src/four_wheel_sim/package.xml": {
+      "sha256": "54a7c45435eaecd430496cd852b2365c51ae0f1f300d9fe7f0bf24a5c1c700a0",
+      "bytes": 1636
+    },
+    "src/four_wheel_sim/resource/four_wheel_sim": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "src/four_wheel_sim/setup.cfg": {
+      "sha256": "3b650323c914da99da7e158fd35ab6415a4dcab901c7b693ef3ce7742ca94a02",
+      "bytes": 101
+    },
+    "src/four_wheel_sim/setup.py": {
+      "sha256": "96cba6830c8de9b8a5f50332945b80e5020421709aa6d05dc219fbe2ae082851",
+      "bytes": 1295
+    },
+    "src/four_wheel_sim/test/test_copyright.py": {
+      "sha256": "574bf3e769dc4c89d867a094ee02ea939a834f93f6acfe28b8b0e586e065f358",
+      "bytes": 987
+    },
+    "src/four_wheel_sim/test/test_flake8.py": {
+      "sha256": "0d9705658b073e95c71dc4173f1cbe4633250dc7bd83527dd1e5c26e899c0e6b",
+      "bytes": 909
+    },
+    "src/four_wheel_sim/test/test_pep257.py": {
+      "sha256": "2c2a8f9ac19efb12c18d02272706533bdaa47512d5b349143272ddfe3fed904b",
+      "bytes": 826
+    },
+    "src/four_wheel_sim/urdf/robot.urdf.xacro": {
+      "sha256": "0480c8f341510b7b6047dea0dff915df528f5e8cf565d883b8c1ce4a84357699",
+      "bytes": 8206
+    },
+    "src/mars_training_environment/README.md": {
+      "sha256": "807b5435710e861c49c32b87ba7e3c2e6ebf40aa7c5905c800a2a981a11bd0a7",
+      "bytes": 30813
+    },
+    "src/mars_training_environment/config/assets.json": {
+      "sha256": "2602b43b3dde3a43cc22af5125ae3da0fee7dfc46def3518e74d04281c69744c",
+      "bytes": 481
+    },
+    "src/mars_training_environment/config/assets.lock.json": {
+      "sha256": "3416fc4d98785dcaece5092a2950d67b4694707254d9edcd468fb9efd39604df",
+      "bytes": 19728
+    },
+    "src/mars_training_environment/config/coverage500_balanced.json": {
+      "sha256": "e65b41eedc3c271a445370f5bb4413dada320f6e30700779dbd3c0669ea351a0",
+      "bytes": 816
+    },
+    "src/mars_training_environment/config/live_eval.json": {
+      "sha256": "09ff2c1256e846e0cdce69a0fd2ebb3088afccdb4e7a103d2132fe98c464c09f",
+      "bytes": 411
+    },
+    "src/mars_training_environment/config/pilot50.json": {
+      "sha256": "873e02a2565b332a1c88365cf295f0b9353d20e107c4b4cd0792e360947d3b2c",
+      "bytes": 209
+    },
+    "src/mars_training_environment/config/sample.json": {
+      "sha256": "c2e965e76a32b728cf16f749879ff2bf4365fd797b6e4b8d502ece688897da7a",
+      "bytes": 3085
+    },
+    "src/mars_training_environment/config/train960.yaml": {
+      "sha256": "4e3e0024bc851a598f9294a14f6e0d918cc2d3d840767b722555be124e4a1017",
+      "bytes": 174
+    },
+    "src/mars_training_environment/launch/mars_live.launch.py": {
+      "sha256": "f94193e2d1f25769db9ec592cb6db68232c5284eb277968d3e7ed870f58feee5",
+      "bytes": 2733
+    },
+    "src/mars_training_environment/launch/mars_world.launch.py": {
+      "sha256": "930b08c39d67dcd184d3a2cee21a3fb52e32faddad60bad7681f94428292d64d",
+      "bytes": 5567
+    },
+    "src/mars_training_environment/mars_training_environment/__init__.py": {
+      "sha256": "e51bd3068fe4869f7027bf274e33ff100a446e918bc49b2b64184e99782eed30",
+      "bytes": 108
+    },
+    "src/mars_training_environment/mars_training_environment/annotation.py": {
+      "sha256": "c4e5781b10250eabccdadf082d97462da5b64fe5e744954051ea0c3ad7ec7ba3",
+      "bytes": 23958
+    },
+    "src/mars_training_environment/mars_training_environment/asset_cache.py": {
+      "sha256": "dbd597c05390a6dd670175a860a1b883eade3823b19f442f2565aebffa294c75",
+      "bytes": 12605
+    },
+    "src/mars_training_environment/mars_training_environment/blender_prepare.py": {
+      "sha256": "0900ab5b39d7299b4cf69ca593be83a0a577720e2d527a91a5fc0a46e11a148c",
+      "bytes": 7449
+    },
+    "src/mars_training_environment/mars_training_environment/candidates.py": {
+      "sha256": "6ef37e47ade0a33a4aa1131d0e7e6b8ba30503848ba07a76051167726ab3a60f",
+      "bytes": 27137
+    },
+    "src/mars_training_environment/mars_training_environment/capture.py": {
+      "sha256": "d0322d5fa7fe4563abf6fcba32ede6a2d49b8a11baeeb7b1031fde116265025d",
+      "bytes": 16179
+    },
+    "src/mars_training_environment/mars_training_environment/common.py": {
+      "sha256": "74a1e0832b8b02378962c3c7331dfc88bb4fbea92825388548123d6c7c4e90b8",
+      "bytes": 10126
+    },
+    "src/mars_training_environment/mars_training_environment/dataset.py": {
+      "sha256": "c13492580b65c37398f1881e76bddb99f0302b562772255acf44d3d049733c26",
+      "bytes": 7973
+    },
+    "src/mars_training_environment/mars_training_environment/dust.py": {
+      "sha256": "bb7568568cf98c5d50d5d4323eb0e2436d5054a7f1f654f85b4a26a29c8aeee7",
+      "bytes": 3862
+    },
+    "src/mars_training_environment/mars_training_environment/framing.py": {
+      "sha256": "63701f44271aec7ada9418a737984603e1a89c9575ad65243cdafd35c807dd5e",
+      "bytes": 3933
+    },
+    "src/mars_training_environment/mars_training_environment/generate.py": {
+      "sha256": "be87b891f8e1ef3f3598eb01987043f49fdf476534b8394fb031b5a0ac2cd5e7",
+      "bytes": 24082
+    },
+    "src/mars_training_environment/mars_training_environment/ground.py": {
+      "sha256": "c9084dc583dcdc015e973be7b40fb5aed351edb8cbd1c44e81baac2bc4bff196",
+      "bytes": 6332
+    },
+    "src/mars_training_environment/mars_training_environment/meshes.py": {
+      "sha256": "b0fcbc085b4ae2d4629c81a2639ae47f07c958a28ec3401c28171d55aa58bbd5",
+      "bytes": 13041
+    },
+    "src/mars_training_environment/mars_training_environment/planning.py": {
+      "sha256": "77fbe3656a17724ec4856f1302fba2553bb903f2ada4cdd48675faad73395bbc",
+      "bytes": 5670
+    },
+    "src/mars_training_environment/mars_training_environment/quality.py": {
+      "sha256": "7b1edc9d9d5582a5f893f1a068a55e5063643bfa8d1fa9e421d6b93b12e5712e",
+      "bytes": 1489
+    },
+    "src/mars_training_environment/mars_training_environment/reclassify.py": {
+      "sha256": "a85e9dcb90ac88db89196f3775b875476c50c2bcf1e475b8d8cd4d3c6bf40a55",
+      "bytes": 15333
+    },
+    "src/mars_training_environment/mars_training_environment/reframing.py": {
+      "sha256": "e3840247dbe3a894bbea2960fdd43ced7c8e0f44762e83d59c3d96f6260b46ce",
+      "bytes": 4146
+    },
+    "src/mars_training_environment/mars_training_environment/review.py": {
+      "sha256": "7cb7e24894abf21059d1d84205def73b1bf4e573abc73874e1308c3cd5581d48",
+      "bytes": 25631
+    },
+    "src/mars_training_environment/mars_training_environment/review_ui.html": {
+      "sha256": "bd1a5ace891a712959e08cfdbbde3521244f540902bb98f44cd61725f72395b5",
+      "bytes": 15691
+    },
+    "src/mars_training_environment/mars_training_environment/robot.py": {
+      "sha256": "bf63dcc55c8fba2dedd6d0fda59f319c793d9bf724f35ea80092f077a89d731b",
+      "bytes": 5330
+    },
+    "src/mars_training_environment/mars_training_environment/runtime_check.py": {
+      "sha256": "b7b25f4b2743584d747ed75e058c3ed8721f20bbfea5ed879562c2fae75c110b",
+      "bytes": 9601
+    },
+    "src/mars_training_environment/mars_training_environment/terrain.py": {
+      "sha256": "1aac66f8578384fb1bf4104938ae540ed35fb947c42d24779093dab338d1f8ec",
+      "bytes": 7399
+    },
+    "src/mars_training_environment/mars_training_environment/validate.py": {
+      "sha256": "c0855d06a92e4cb2bb3d6917270f5a2e569269c7311653542c825aa121d069f2",
+      "bytes": 15542
+    },
+    "src/mars_training_environment/package.xml": {
+      "sha256": "9b2ea6db928c9ed460196ff185ec3ba9931a4020a2fa2c2a9f8075243ac9d162",
+      "bytes": 1121
+    },
+    "src/mars_training_environment/resource/mars_training_environment": {
+      "sha256": "5d75ee557489026f6108cb7b61f6149e2cfeeefbedf00c3ca2881a2f4d24dcf0",
+      "bytes": 27
+    },
+    "src/mars_training_environment/setup.cfg": {
+      "sha256": "43c6239c1ea44880c5cedf6e342748e372ceb7c745c81f503e28f5cea05be5fc",
+      "bytes": 123
+    },
+    "src/mars_training_environment/setup.py": {
+      "sha256": "e50ccc08e45be6ed6a9aba4e52199cd443235d6138e9a0931f1258d9139d0b4f",
+      "bytes": 1341
+    },
+    "src/mars_training_environment/test/test_class_quotas.py": {
+      "sha256": "eaed9453dc4c9792a7056d34de9f2ba9fab0b1e6c7719937e92c02c64555aa46",
+      "bytes": 8015
+    },
+    "src/mars_training_environment/test/test_environment.py": {
+      "sha256": "95d22b96182a0103a18264fefc06bcd5339e6acd0e3fb5612139537dfb277343",
+      "bytes": 40599
+    },
+    "src/mars_training_environment/test/test_ground_projection.py": {
+      "sha256": "6fa3ec60aa17411941d016bfc8623d93685619d12670abd0460cc001a392a1d9",
+      "bytes": 6582
+    },
+    "src/mars_training_environment/test/test_live_camera.py": {
+      "sha256": "d1b94758d8b716c6eac7a88b6175947eaba22297c347f6fb385feee0b761b285",
+      "bytes": 2758
+    },
+    "src/mars_training_environment/test/test_quality_review.py": {
+      "sha256": "3e8b0f1ac9eb32346cbdb1b3fbdf991ec03a2f63008b2612d168e913cc70b308",
+      "bytes": 24206
+    },
+    "src/mars_training_environment/test/test_reclassify.py": {
+      "sha256": "73cfb79efb98236c47c3f654a13eb418e181746f9a32e95a396bc71ff6dc1167",
+      "bytes": 16383
+    },
+    "src/mars_training_environment/test/test_reframing.py": {
+      "sha256": "f0c7a0b3961322a6f50fb8df27d8dabbe1e3621b24ce078ca45656fd98504b74",
+      "bytes": 3209
+    },
+    "src/rover_navigation/config/fastdds.xml": {
+      "sha256": "1a04466a8d169bbda6ce1379db14f3b373c91a66c942bfa29a7486a07e318002",
+      "bytes": 1043
+    },
+    "src/rover_navigation/config/nav2.yaml": {
+      "sha256": "2f56718847d78c8e98e4ec3ec2953390883511e730389e289790ae8b0c3717a6",
+      "bytes": 4108
+    },
+    "src/rover_navigation/config/navigate.xml": {
+      "sha256": "8a06c5aaaac42813b2bb50c474d4873b201a65ed1ce0352c84ebb76942db7701",
+      "bytes": 912
+    },
+    "src/rover_navigation/config/navigation.rviz": {
+      "sha256": "d46c7b3392d28bc521b113dba34299351bfff8f6a82893d8f498cd54c93ae401",
+      "bytes": 3037
+    },
+    "src/rover_navigation/launch/navigation.launch.py": {
+      "sha256": "0281218ef452d14c0873d5f40dd40e75a49a89aaade21f6ca64bc83e0a3dbaaf",
+      "bytes": 16562
+    },
+    "src/rover_navigation/package.xml": {
+      "sha256": "54b630b0a6992561f259d3716819001b1c33b2cff5c0a12549df4f90ec6cabbf",
+      "bytes": 1929
+    },
+    "src/rover_navigation/resource/rover_navigation": {
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    "src/rover_navigation/rover_navigation/__init__.py": {
+      "sha256": "8bfee5d4f7db171625391d9a2a48bfa2b2d3036b1f385ea78d81eeae8225ef4d",
+      "bytes": 82
+    },
+    "src/rover_navigation/rover_navigation/core.py": {
+      "sha256": "e968cbd7ca588d6d28786b3d0696571d900e51bc6e3e91a9b095ece9afac53e5",
+      "bytes": 16736
+    },
+    "src/rover_navigation/rover_navigation/coverage.py": {
+      "sha256": "55032662d98ec35b20ba0c1eda10f2b68355c9316f5de32573ad06c610ed595e",
+      "bytes": 4667
+    },
+    "src/rover_navigation/rover_navigation/diagnostics.py": {
+      "sha256": "d6ab14aa1c2e50f506a13bc1e49733f2b8da6f35e26b23e06609873b9d2bd0af",
+      "bytes": 2656
+    },
+    "src/rover_navigation/rover_navigation/evaluate.py": {
+      "sha256": "567710223e5b5a6083f08eb1578fbbc8312c45799f3f0a42222c8fb48fc2c889",
+      "bytes": 4708
+    },
+    "src/rover_navigation/rover_navigation/fixtures.py": {
+      "sha256": "d56ea7b69abed2e639669c7b275bb1251fe8438ad6719d375e6529916cafb815",
+      "bytes": 5122
+    },
+    "src/rover_navigation/rover_navigation/goal_checks.py": {
+      "sha256": "ba0839b23444bca2b65015ff51fef8b165c397f2fb639c870d729673fd0bc347",
+      "bytes": 2240
+    },
+    "src/rover_navigation/rover_navigation/guard_node.py": {
+      "sha256": "68bc84e877e441a0a58d75e452c24a2cc0fe737ea0540458d53a972513b72208",
+      "bytes": 13419
+    },
+    "src/rover_navigation/rover_navigation/manual_input.py": {
+      "sha256": "7d7a49d9d94dae57bcd993f0deacb267330158c12116699015bbdf7692dd49a0",
+      "bytes": 1760
+    },
+    "src/rover_navigation/rover_navigation/metrics.py": {
+      "sha256": "a31a5945c62fff05f9bd5d23c6514f2516f0b39baa4202ce3cbbb8000023d290",
+      "bytes": 6755
+    },
+    "src/rover_navigation/rover_navigation/mission_controls.html": {
+      "sha256": "3f197db4c13181c344793cf8323e2173c971bdb77176750d16edd0a0523402aa",
+      "bytes": 20594
+    },
+    "src/rover_navigation/rover_navigation/mission_controls.py": {
+      "sha256": "2dad2942ae11933dfd01ad5591a6f7c8210a6e6a23ea2e01c775e4d8b24af66c",
+      "bytes": 17007
+    },
+    "src/rover_navigation/rover_navigation/mission_node.py": {
+      "sha256": "224e51ad35a01476b8ef35c9726fb6d86b1e92f883d0bf7f6291f027596a5c5c",
+      "bytes": 23193
+    },
+    "src/rover_navigation/rover_navigation/ros_utils.py": {
+      "sha256": "92c389a47540557aba2cfb7afbfb2c9fea3a820f29149d7e38aea895fce23eb9",
+      "bytes": 1444
+    },
+    "src/rover_navigation/rover_navigation/safety.py": {
+      "sha256": "0b2343c470bf840e94806d24e9ed6b1d490e012d96bb340d7540a4f94d25169a",
+      "bytes": 2816
+    },
+    "src/rover_navigation/rover_navigation/sample_sites.py": {
+      "sha256": "e849473ce4bba9f508bc722bfb6fdbffa42b9a8cb1ece9387ad19338ce02ba17",
+      "bytes": 14550
+    },
+    "src/rover_navigation/rover_navigation/sample_sites_node.py": {
+      "sha256": "c7d39d9f06e62919d3a492507cf163c95f8a38a16c2556dfe5858b2febc18ecd",
+      "bytes": 18126
+    },
+    "src/rover_navigation/rover_navigation/scene_control.py": {
+      "sha256": "6f347fb32f934d6cee4d5b14752aa2145313ec5b50e8a536cf7922d601a238d9",
+      "bytes": 13572
+    },
+    "src/rover_navigation/rover_navigation/site_geometry.py": {
+      "sha256": "d07265ed27c3ccafeb489cf59e1be99190ae382a720500dd3ac6f7ea0a1aa533",
+      "bytes": 8686
+    },
+    "src/rover_navigation/rover_navigation/terrain_compute.py": {
+      "sha256": "a28c557a8bf957ea236bc6d11b6d5eff8f8a4807a619866ac6513b78878c23f8",
+      "bytes": 9367
+    },
+    "src/rover_navigation/rover_navigation/terrain_node.py": {
+      "sha256": "0e61177f91d3cc855fea1361bace94454689061c2eabe0b87e238b60aaf0caf2",
+      "bytes": 16409
+    },
+    "src/rover_navigation/rover_navigation/terrain_service.py": {
+      "sha256": "4aa2c83175bf768d978d092d38b584b99f0bf8bc0fc36a38ff27050b60ed96d5",
+      "bytes": 10119
+    },
+    "src/rover_navigation/rover_navigation/tracking_evaluation.py": {
+      "sha256": "207f18108092ef1a8fef994c99c4350e2664ddd7301e38f777bca585f64e68e5",
+      "bytes": 2998
+    },
+    "src/rover_navigation/setup.cfg": {
+      "sha256": "a2d06b8919d89de13015471e0dc7436b71a4040aee69aa235181de8de271c96b",
+      "bytes": 101
+    },
+    "src/rover_navigation/setup.py": {
+      "sha256": "5886f37bbf8c1ba92687197c286bef6b7852d238ba6a6cc466f57cc44c405711",
+      "bytes": 1185
+    },
+    "src/rover_navigation/test/test_core.py": {
+      "sha256": "fd7cd38b2e8e3f8bb830d53a6a2eae4b3cf8586a70d31b1aa1c1d74920f268f3",
+      "bytes": 13523
+    },
+    "src/rover_navigation/test/test_coverage.py": {
+      "sha256": "e3c232e458df6caecdd3855fe914ee673e573046bc3e5678ecffea66125c1ea5",
+      "bytes": 3493
+    },
+    "src/rover_navigation/test/test_coverage_check.py": {
+      "sha256": "4cde99a9d3a3553e12908debfc3d248359a7249aa10fdc54b8df7c4821395ab8",
+      "bytes": 1834
+    },
+    "src/rover_navigation/test/test_diagnostics.py": {
+      "sha256": "f26241412a345b3cb8868e9bd17732e8a5af322311743b4c64d7b108a3de0a0e",
+      "bytes": 3367
+    },
+    "src/rover_navigation/test/test_fixtures.py": {
+      "sha256": "cc16d69a567d8ee423fed67c14b98fc54d780d97688e1d447f47fd840fc8c8e9",
+      "bytes": 2055
+    },
+    "src/rover_navigation/test/test_guard_adapter.py": {
+      "sha256": "345b0613c738500fff60c8b209c5a560c4d96f3a6f8632c909154a96982e82f4",
+      "bytes": 11143
+    },
+    "src/rover_navigation/test/test_launch.py": {
+      "sha256": "78a77014d75f275d9520a208ac84fb83aef3b6fa0dbe81c651ef57cd86b09f1c",
+      "bytes": 11285
+    },
+    "src/rover_navigation/test/test_manual_input.py": {
+      "sha256": "2ef2d5467156c992e3f78cfe7595685af5df74009d4caa6170975afc9388f2ee",
+      "bytes": 1675
+    },
+    "src/rover_navigation/test/test_metrics.py": {
+      "sha256": "d8e09d6388813fbf964017eb1b678832083503190c220805092c36d187a4a3c6",
+      "bytes": 4803
+    },
+    "src/rover_navigation/test/test_mission_controls.py": {
+      "sha256": "76d218832d33476d0f7cc656f756f87b749d87b66263c2c3d50aeebe1bbf0bf7",
+      "bytes": 4498
+    },
+    "src/rover_navigation/test/test_sample_sites.py": {
+      "sha256": "a4b125da3907603fb617145628d0500bacf3dab6f3236a593f1cb631c23fd663",
+      "bytes": 9141
+    },
+    "src/rover_navigation/test/test_scene_control.py": {
+      "sha256": "6e1a4c756f847de4669a9d7b3ebf26ff9bc0123c39db99d64d0dde94b3b55d7e",
+      "bytes": 6571
+    },
+    "src/rover_navigation/test/test_selected_goals.py": {
+      "sha256": "9d81d7a9eb18a4662ddd46974bd6979c21194815252b20d1f48ff33548320055",
+      "bytes": 11955
+    },
+    "src/rover_navigation/test/test_site_tracking.py": {
+      "sha256": "50d3d0237447c008959c2e67d6c9bbb145cb9ca4aa324f1e8c26147ec8443006",
+      "bytes": 10355
+    },
+    "src/rover_navigation/test/test_stamper.py": {
+      "sha256": "b6956d8180d89ad834a34af4f0b898e76a28cfaa8b2f8cd840edd112b3438d6b",
+      "bytes": 2612
+    },
+    "src/rover_navigation/test/test_syntax.py": {
+      "sha256": "4d569332c2a2fb1db556766eb88d620a6f2803a287c54ff8afedbca2657f3bb3",
+      "bytes": 474
+    },
+    "src/rover_navigation/test/test_terrain_adapter.py": {
+      "sha256": "ed1c95c48ab0aa4d63e9bb0ecce843c071d862dd5bcef4a8b1b22c64e9963dc6",
+      "bytes": 11075
+    },
+    "src/rover_navigation/test/test_terrain_audit.py": {
+      "sha256": "ed16ed57d458c1adbd4e9286f66d03f9b9b144e69761d939a1508d8345ef3955",
+      "bytes": 3325
+    },
+    "src/rover_navigation/test/test_terrain_compute.py": {
+      "sha256": "2c10c0707a23c3168cc7964e74aa39609521ed8986fc1d637a326654bcbca757",
+      "bytes": 7770
+    },
+    "src/rover_navigation/test/test_tracking_evaluation.py": {
+      "sha256": "4ea6bf8b97fab55b9bdf729426908cf7d8a487c7ae5628b9e9378a0007a50f17",
+      "bytes": 1919
+    },
+    "src/rover_navigation/test/test_tracking_replay.py": {
+      "sha256": "435a057a22243a8bef6d2444e2b717182abd3b5b5601072014c4d73e8d5690f3",
+      "bytes": 1727
+    },
+    "src/rover_perception/config/oak.yaml": {
+      "sha256": "508766b26888f5918a8e26b068b07a62574818e4a170080d9f0a0e57cc339ecc",
+      "bytes": 171
+    },
+    "src/rover_perception/config/sim.yaml": {
+      "sha256": "92cf08b734d564b0ad2fd9a54bea543556028fca17381c578a715edd2de805b3",
+      "bytes": 166
+    },
+    "src/rover_perception/launch/detector.launch.py": {
+      "sha256": "5e8f3f09627fc7293f31ef52bae4ed313b3b2e5d5a80ad23339d5c89218619a3",
+      "bytes": 904
+    },
+    "src/rover_perception/package.xml": {
+      "sha256": "2d9871b103f9b51c76653dddf6c14dbf3dacc5f171b78eca57c7938066c6b812",
+      "bytes": 931
+    },
+    "src/rover_perception/resource/rover_perception": {
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "bytes": 2
+    },
+    "src/rover_perception/rover_perception/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "src/rover_perception/rover_perception/detector_node.py": {
+      "sha256": "1de7be5034e92fa2a6884ed6a8e0fa87066411ac73dad77ddcf3299a9b3e3abf",
+      "bytes": 6073
+    },
+    "src/rover_perception/rover_perception/detector_service.py": {
+      "sha256": "7460973794d6e2b0ab51072a47bb5cb5d030a16d4ad2fd4dcb7ccceeb7ea5b0a",
+      "bytes": 11618
+    },
+    "src/rover_perception/rover_perception/detectors.py": {
+      "sha256": "aac311836070d168f3e82ae69c7cab9efb24c51992d01d8de7fbf5bcdf1ab2f2",
+      "bytes": 33745
+    },
+    "src/rover_perception/rover_perception/drive_mode.py": {
+      "sha256": "cc26df4e4fc7514f99e15a956e09268d528df779c9ea97057456badf7661991b",
+      "bytes": 505
+    },
+    "src/rover_perception/rover_perception/gazebo_drive.py": {
+      "sha256": "d342aa7e86c9b85240755723aabe17d7a701dd172a4f4f2710e9fde3db1f0e6c",
+      "bytes": 1665
+    },
+    "src/rover_perception/rover_perception/live_bridge.py": {
+      "sha256": "99214693bdd57c5a1d7c55aaee1a6e123315fed2b3fd3c3c9675035a7a533a9b",
+      "bytes": 8505
+    },
+    "src/rover_perception/rover_perception/live_core.py": {
+      "sha256": "f60cd3189680a6c019f4157bed5decea3b323597595b8081c00e3a0c0d31bf9e",
+      "bytes": 3506
+    },
+    "src/rover_perception/rover_perception/live_dashboard.html": {
+      "sha256": "1f0b07c4c8a21b62d7f9745163afaa7af19c88ce8183131055909cbf962f3bb4",
+      "bytes": 10608
+    },
+    "src/rover_perception/rover_perception/live_dashboard.py": {
+      "sha256": "55e320bb815a382b0222271601a740e5c76a2ee9bcafdcd500c4cdff837bca78",
+      "bytes": 18712
+    },
+    "src/rover_perception/rover_perception/live_web.py": {
+      "sha256": "610c254f892b0083e83f6e8f8aef48c8e38164fdecff5d7f9864c8df0f58d6f3",
+      "bytes": 6195
+    },
+    "src/rover_perception/rover_perception/npu_acceptance.py": {
+      "sha256": "7817f6eb3dd2030d68a3403684a4ad6603800ab7f168701b6dee960efdd75d6e",
+      "bytes": 11222
+    },
+    "src/rover_perception/rover_perception/npu_prepare.py": {
+      "sha256": "415f33260a2668e7c116c425325f50dd502455c8ea0dbfbd901ce91512d9fc48",
+      "bytes": 31668
+    },
+    "src/rover_perception/rover_perception/npu_tools.py": {
+      "sha256": "bb12f78a750933647c634e1f34a0ffb957a9ed82f6cb2c447bf06bb3f94fbf42",
+      "bytes": 50457
+    },
+    "src/rover_perception/rover_perception/npu_tune.py": {
+      "sha256": "7a34dd22bc330e7bd90bf27afca34cde181ddf7d4c7810786d93e003ccfc050f",
+      "bytes": 8684
+    },
+    "src/rover_perception/setup.cfg": {
+      "sha256": "89f7eb5cdf41d16bfc2eee68d1709ca22c3c2ba81bce92e42e902c9a244bd39b",
+      "bytes": 105
+    },
+    "src/rover_perception/setup.py": {
+      "sha256": "b101a6dc82608f65ef65fae648a306f30c1822e25d29dc868da7c0dbbb8d27b1",
+      "bytes": 1112
+    },
+    "src/rover_perception/test/test_deployment.py": {
+      "sha256": "4895b1b3f7e214e64662f054825453a852e76dc14c0d11a2a8174fd7687b26f2",
+      "bytes": 2681
+    },
+    "src/rover_perception/test/test_detector_service.py": {
+      "sha256": "d7f77d2176ed7c3e1460650917f721897d5f6b7d9f03bb7f9ee90bd9c824aee9",
+      "bytes": 8063
+    },
+    "src/rover_perception/test/test_detectors.py": {
+      "sha256": "50d3f79111c3f36219b4c0ab17b9f3295c1e9d6f94399d083a91149236a76d65",
+      "bytes": 27594
+    },
+    "src/rover_perception/test/test_live.py": {
+      "sha256": "973b21a154c90fb8c163456109af0707da8f6ebaadd5db2975ae50384dceebd7",
+      "bytes": 22656
+    },
+    "src/rover_perception/test/test_live_backends.py": {
+      "sha256": "fbd16d2ba555523c070da04efff0abeff3e56320516199d3b89d4c4336ee2b37",
+      "bytes": 4250
+    },
+    "src/rover_perception/test/test_live_controls.cjs": {
+      "sha256": "d89bef3f418ae1224570d64d5d1b24bfe037f268773cebf3c79f09cef6f51102",
+      "bytes": 6331
+    },
+    "src/rover_perception/test/test_live_launch.py": {
+      "sha256": "b45558e7270cb101ca0880b281da073ee98bd6bbc34dd41eeb9f1d343405eab9",
+      "bytes": 3605
+    },
+    "src/rover_perception/test/test_live_web.py": {
+      "sha256": "69156c67142e8494b95354e103fb68a31ac4200d8744ef9e810ed623db50b0e3",
+      "bytes": 7535
+    },
+    "src/rover_perception/test/test_npu_acceptance.py": {
+      "sha256": "5d79783d7c5ca38b606984aa43d6ff54fd0c16586b4c7627e01a82f864abe235",
+      "bytes": 6967
+    },
+    "src/rover_perception/test/test_npu_prepare.py": {
+      "sha256": "c2cb458ce307f195018799659d8fb39228ce0eecc58e1467ac77487ad542d603",
+      "bytes": 12057
+    },
+    "src/rover_perception/test/test_npu_tools.py": {
+      "sha256": "a35eaf9a123122809ce20f5905c7bc4058041f251763190f94fe03787fe29c41",
+      "bytes": 16917
+    },
+    "src/rover_perception/test/test_npu_tune.py": {
+      "sha256": "0b7db4529226895052cb10b6e2838f14b6c033ddec65058965df8cc9b4659a4c",
+      "bytes": 3694
+    },
+    "src/rover_training/launch/capture_scene.launch.py": {
+      "sha256": "3e2f55e5dcedff123f31e04253cf87fda1ef4d994e2439714e3c08f789e49ad7",
+      "bytes": 2372
+    },
+    "src/rover_training/launch/rocks_world.launch.py": {
+      "sha256": "dda3d53aee597698fe21ead5b66ab490b2c86aa1ef93b77bf8682b1692f974c9",
+      "bytes": 4594
+    },
+    "src/rover_training/models/ATTRIBUTION.md": {
+      "sha256": "f4edabf1f0b4a1bbbc3646288ef968b76ee3fc6832758cd3eeb4401e176b5ed6",
+      "bytes": 1779
+    },
+    "src/rover_training/models/assets.json": {
+      "sha256": "0c74d77da5117f2cdf1fa03655943c954ced5667ab0ddaac8d2ef0578e57fa9e",
+      "bytes": 4084
+    },
+    "src/rover_training/models/falling_rock1/materials/scripts/model.material": {
+      "sha256": "efb6953bd2f9ed5cdc896f84c851ceab825a70c5108916a6ac2f76a37387ab58",
+      "bytes": 176
+    },
+    "src/rover_training/models/falling_rock1/materials/textures/FallingRocks_Albedo.jpg": {
+      "sha256": "aa9a0f8061b165d01e6d5fbe2dbf621fca9b187c540f5d0a8221265efff6279b",
+      "bytes": 1918258
+    },
+    "src/rover_training/models/falling_rock1/meshes/FallingRock01.dae": {
+      "sha256": "68fd8d95c5a6a4ee80cec0f9052b447c3f6a860aa01691cb0f0e120889030d13",
+      "bytes": 84031
+    },
+    "src/rover_training/models/falling_rock1/model.config": {
+      "sha256": "abaebab23e8e19df92b0383e539e320575348f68ed3e828add9c39de4111d0a9",
+      "bytes": 578
+    },
+    "src/rover_training/models/falling_rock1/model.sdf": {
+      "sha256": "1d5bc004260cf6d73fe42a9092520bcf74d98f7dd2a262390e875637da3b6b2f",
+      "bytes": 963
+    },
+    "src/rover_training/models/falling_rock2/materials/scripts/model.material": {
+      "sha256": "efb6953bd2f9ed5cdc896f84c851ceab825a70c5108916a6ac2f76a37387ab58",
+      "bytes": 176
+    },
+    "src/rover_training/models/falling_rock2/materials/textures/FallingRocks_Albedo.jpg": {
+      "sha256": "aa9a0f8061b165d01e6d5fbe2dbf621fca9b187c540f5d0a8221265efff6279b",
+      "bytes": 1918258
+    },
+    "src/rover_training/models/falling_rock2/meshes/FallingRock02.dae": {
+      "sha256": "c741caf07ba7ea000c43fe19a9e4a20fdeeb38b7887e9fb9ed43144d9891f7a4",
+      "bytes": 31636
+    },
+    "src/rover_training/models/falling_rock2/model.config": {
+      "sha256": "c5aa36897f880d714b15fe54aa8909ee5ee46d3eb20f549a5a65eb94bb9e9e84",
+      "bytes": 578
+    },
+    "src/rover_training/models/falling_rock2/model.sdf": {
+      "sha256": "80c20b920e12fdb3306c2ca22179666868ea980330d3f205ea857c6b0c54201b",
+      "bytes": 963
+    },
+    "src/rover_training/models/falling_rock3/materials/scripts/model.material": {
+      "sha256": "efb6953bd2f9ed5cdc896f84c851ceab825a70c5108916a6ac2f76a37387ab58",
+      "bytes": 176
+    },
+    "src/rover_training/models/falling_rock3/materials/textures/FallingRocks_Albedo.jpg": {
+      "sha256": "aa9a0f8061b165d01e6d5fbe2dbf621fca9b187c540f5d0a8221265efff6279b",
+      "bytes": 1918258
+    },
+    "src/rover_training/models/falling_rock3/meshes/FallingRock03.dae": {
+      "sha256": "7ce74b5b915b84271dd623b3f7437c6df9c6462190edfd3706e2b88b0d8dc202",
+      "bytes": 26979
+    },
+    "src/rover_training/models/falling_rock3/model.config": {
+      "sha256": "1523015febf8ecfd61ef6c25c1779e45057ef7951e38431430fcfb4080d53f4d",
+      "bytes": 578
+    },
+    "src/rover_training/models/falling_rock3/model.sdf": {
+      "sha256": "421a93c18e058e870473ece16bd0a0f452f94d10fb2350f7225f2bed27ccfe5b",
+      "bytes": 963
+    },
+    "src/rover_training/models/falling_rock4/materials/scripts/model.material": {
+      "sha256": "efb6953bd2f9ed5cdc896f84c851ceab825a70c5108916a6ac2f76a37387ab58",
+      "bytes": 176
+    },
+    "src/rover_training/models/falling_rock4/materials/textures/FallingRocks_Albedo.jpg": {
+      "sha256": "aa9a0f8061b165d01e6d5fbe2dbf621fca9b187c540f5d0a8221265efff6279b",
+      "bytes": 1918258
+    },
+    "src/rover_training/models/falling_rock4/meshes/FallingRock04.dae": {
+      "sha256": "0a5d2d3cf52cba0238e0d89965069f7419579b9ff0473c9a73211fac731301f8",
+      "bytes": 12980
+    },
+    "src/rover_training/models/falling_rock4/model.config": {
+      "sha256": "42f8e47ae1992125e3a095f3f25be6cdaaaa68f1e7ad570303cfba16a90b5f92",
+      "bytes": 578
+    },
+    "src/rover_training/models/falling_rock4/model.sdf": {
+      "sha256": "0adab2cc31888710dda8e7ac3811357e578c99606813a0e8d98fdbaeb011e455",
+      "bytes": 963
+    },
+    "src/rover_training/package.xml": {
+      "sha256": "af9473d59955dad8ecc90b8b4e901f6ba546bfd8728c03c91bdbe4dabaec2a30",
+      "bytes": 1266
+    },
+    "src/rover_training/resource/rover_training": {
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "bytes": 2
+    },
+    "src/rover_training/rover_training/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "src/rover_training/rover_training/assets.py": {
+      "sha256": "059c9b4e7cfba307ce89fc17493168b25e8b3c0ee671d09b13e98aa485dc2946",
+      "bytes": 8969
+    },
+    "src/rover_training/rover_training/capture_node.py": {
+      "sha256": "08065413b4f81d494f283174947135c81a1dc71574dd242bcfc16476f0522e00",
+      "bytes": 13445
+    },
+    "src/rover_training/rover_training/geometry.py": {
+      "sha256": "70806cb75341ce4c2863b38ed4cc6cc30ac9cadbda9eb2f0ccf1c18a659a833b",
+      "bytes": 17002
+    },
+    "src/rover_training/rover_training/image_io.py": {
+      "sha256": "a7fcf025a1d21cab65bed2a8dab3f2394da71f02218ebd8a4803698f3053838a",
+      "bytes": 5020
+    },
+    "src/rover_training/rover_training/preview.py": {
+      "sha256": "93ecc9de7a7030cfc5eea80c2fdec910cf7d74c60099ff0741acb232139da9a2",
+      "bytes": 4005
+    },
+    "src/rover_training/rover_training/randomize.py": {
+      "sha256": "12139c4477df694b26f84bd1c0e56faa026a03de2ec1f1b70dbffe2ad6df9d3b",
+      "bytes": 13306
+    },
+    "src/rover_training/rover_training/world_builder.py": {
+      "sha256": "5b3164d8526a7d5a06063d6a03e2ba1dbb795a486ea79b279244701a59883dae",
+      "bytes": 3260
+    },
+    "src/rover_training/rover_training/yolo_export.py": {
+      "sha256": "c185787b12103fe5d12665a22e0307dc538e65e85f096a135577f4b914d15f32",
+      "bytes": 3410
+    },
+    "src/rover_training/setup.cfg": {
+      "sha256": "d30bb34e7bcc4791dedf718740bc8e7c23216fb3ac8547a4c305a88b48f4d8a1",
+      "bytes": 101
+    },
+    "src/rover_training/setup.py": {
+      "sha256": "2a1c89a71301ede970c589c728b14d1e2b80c785190d7cbf8221542d2caaf9db",
+      "bytes": 1403
+    },
+    "src/rover_training/test/test_pipeline.py": {
+      "sha256": "2af4ef2233281018980e2c2c8af74597c9fdc6c3c923ab641dc6c2ff0a1a1520",
+      "bytes": 17318
+    },
+    "testing/main.py": {
+      "sha256": "e46761924218d69db346c3b0013dba6e408ef415c33ce8278b047b630fc5218c",
+      "bytes": 6821
+    },
+    "testing/projector_device.py": {
+      "sha256": "1f5f767349dadbdeaa348e069a9504bc06ecac9803fe6d21069f85b3e351769c",
+      "bytes": 1814
+    },
+    "testing/requirements.txt": {
+      "sha256": "e1ebd6fa3b29e8deb49a6c6ce8a0173a328a7aaf4541cdd171c96b49bd5b7be8",
+      "bytes": 178
+    }
+  },
+  "notes": [
+    "Hashes describe the imported worktree bytes before publication documentation edits and Git newline normalization.",
+    "Generated build/install/log artifacts and private operational handoffs excluded.",
+    "Original destination webcam starter retained under examples/webcam; prior commit history preserved.",
+    "No changes or pushes made to the upstream repository or original worktrees."
+  ]
+}

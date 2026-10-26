@@ -1,0 +1,506 @@
+{
+  "restart-20261021T030108Z-f702be": {
+    "passed": true,
+    "error": null,
+    "map": {
+      "known_cells": 2958,
+      "hazard_cells": 0,
+      "resolution_m": 0.05000000074505806
+    },
+    "frame": {
+      "stamp": 35.576,
+      "known_cells": 10166,
+      "hazard_cells": 0,
+      "by_step": 0,
+      "by_slope": 0,
+      "slope_p95_deg": 0.8076071748057286
+    },
+    "timing": null,
+    "captures": [
+      {
+        "stamp": 26.566,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0001"
+      },
+      {
+        "stamp": 27.556,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0002"
+      },
+      {
+        "stamp": 28.546,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0003"
+      },
+      {
+        "stamp": 29.57,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0004"
+      },
+      {
+        "stamp": 30.56,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0005"
+      },
+      {
+        "stamp": 31.55,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0006"
+      },
+      {
+        "stamp": 32.572,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0007"
+      },
+      {
+        "stamp": 33.562,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0008"
+      },
+      {
+        "stamp": 34.552,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0009"
+      },
+      {
+        "stamp": 35.576,
+        "known_cells": 2958,
+        "hazard_cells": 0,
+        "cause_cells": {
+          "slope": 0,
+          "height_change": 0
+        },
+        "evidence": "phase1-static-001-frame-0010"
+      }
+    ],
+    "partial_sensor_evidence": null
+  },
+  "phase1-edge-20261021": {
+    "passed": true,
+    "error": null,
+    "map": {
+      "known_cells": 2506,
+      "hazard_cells": 641,
+      "resolution_m": 0.05000000074505806
+    },
+    "frame": {
+      "stamp": 94.942,
+      "known_cells": 213,
+      "hazard_cells": 213,
+      "by_step": 213,
+      "by_slope": 0,
+      "slope_p95_deg": NaN
+    },
+    "timing": null,
+    "captures": [
+      {
+        "stamp": 87.352,
+        "known_cells": 2506,
+        "hazard_cells": 641,
+        "cause_cells": {
+          "slope": 616,
+          "height_change": 427
+        },
+        "evidence": "phase1-edge-001-frame-0001"
+      },
+      {
+        "stamp": 87.748,
+        "known_cells": 2506,
+        "hazard_cells": 641,
+        "cause_cells": {
+          "slope": 616,
+          "height_change": 427
+        },
+        "evidence": "phase1-edge-001-frame-0002"
+      },
+      {
+        "stamp": 88.738,
+        "known_cells": 2506,
+        "hazard_cells": 641,
+        "cause_cells": {
+          "slope": 616,
+          "height_change": 427
+        },
+        "evidence": "phase1-edge-001-frame-0003"
+      },
+      {
+        "stamp": 90.95,
+        "known_cells": 2506,
+        "hazard_cells": 641,
+        "cause_cells": {
+          "slope": 616,
+          "height_change": 427
+        },
+        "evidence": "phase1-edge-001-frame-0004"
+      },
+      {
+        "stamp": 91.94,
+        "known_cells": 2506,
+        "hazard_cells": 641,
+        "cause_cells": {
+          "slope": 616,
+          "height_change": 427
+        },
+        "evidence": "phase1-edge-001-frame-0005"
+      },
+      {
+        "stamp": 92.962,
+        "known_cells": 2506,
+        "hazard_cells": 641,
+        "cause_cells": {
+          "slope": 616,
+          "height_change": 427
+        },
+        "evidence": "phase1-edge-001-frame-0006"
+      },
+      {
+        "stamp": 93.952,
+        "known_cells": 2506,
+        "hazard_cells": 641,
+        "cause_cells": {
+          "slope": 616,
+          "height_change": 427
+        },
+        "evidence": "phase1-edge-001-frame-0007"
+      },
+      {
+        "stamp": 94.942,
+        "known_cells": 2506,
+        "hazard_cells": 641,
+        "cause_cells": {
+          "slope": 616,
+          "height_change": 427
+        },
+        "evidence": "phase1-edge-001-frame-0008"
+      }
+    ],
+    "partial_sensor_evidence": null
+  },
+  "phase1-step-20261021": {
+    "passed": true,
+    "error": null,
+    "map": {
+      "known_cells": 2599,
+      "hazard_cells": 197,
+      "resolution_m": 0.05000000074505806
+    },
+    "frame": {
+      "stamp": 100.552,
+      "known_cells": 8114,
+      "hazard_cells": 702,
+      "by_step": 91,
+      "by_slope": 702,
+      "slope_p95_deg": 36.620747294896674
+    },
+    "timing": null,
+    "captures": [
+      {
+        "stamp": 95.57,
+        "known_cells": 2599,
+        "hazard_cells": 197,
+        "cause_cells": {
+          "slope": 197,
+          "height_change": 46
+        },
+        "evidence": "phase1-step-001-frame-0001"
+      },
+      {
+        "stamp": 96.56,
+        "known_cells": 2599,
+        "hazard_cells": 197,
+        "cause_cells": {
+          "slope": 197,
+          "height_change": 46
+        },
+        "evidence": "phase1-step-001-frame-0002"
+      },
+      {
+        "stamp": 97.55,
+        "known_cells": 2599,
+        "hazard_cells": 197,
+        "cause_cells": {
+          "slope": 197,
+          "height_change": 46
+        },
+        "evidence": "phase1-step-001-frame-0003"
+      },
+      {
+        "stamp": 98.572,
+        "known_cells": 2599,
+        "hazard_cells": 197,
+        "cause_cells": {
+          "slope": 197,
+          "height_change": 46
+        },
+        "evidence": "phase1-step-001-frame-0004"
+      },
+      {
+        "stamp": 99.562,
+        "known_cells": 2599,
+        "hazard_cells": 197,
+        "cause_cells": {
+          "slope": 197,
+          "height_change": 46
+        },
+        "evidence": "phase1-step-001-frame-0005"
+      },
+      {
+        "stamp": 100.552,
+        "known_cells": 2599,
+        "hazard_cells": 197,
+        "cause_cells": {
+          "slope": 197,
+          "height_change": 46
+        },
+        "evidence": "phase1-step-001-frame-0006"
+      }
+    ],
+    "partial_sensor_evidence": null
+  },
+  "phase1-mars-20261021": {
+    "passed": true,
+    "error": null,
+    "map": {
+      "known_cells": 2994,
+      "hazard_cells": 147,
+      "resolution_m": 0.05000000074505806
+    },
+    "frame": {
+      "stamp": 61.744,
+      "known_cells": 9359,
+      "hazard_cells": 289,
+      "by_step": 15,
+      "by_slope": 276,
+      "slope_p95_deg": 10.675041854560673,
+      "hazards_near_rocks": 26,
+      "hazards_away_from_rocks": 263
+    },
+    "timing": {
+      "map": {
+        "count": 62,
+        "rate_wall_hz": 5.0570087330289395,
+        "max_gap_wall_seconds": 0.2528332629590295,
+        "p95_gap_wall_seconds": 0.23380647297017276,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      },
+      "depth": {
+        "count": 372,
+        "rate_wall_hz": 30.3102241919684,
+        "max_gap_wall_seconds": 0.13424650800880045,
+        "p95_gap_wall_seconds": 0.03544764348771423,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "rgb": {
+        "count": 372,
+        "rate_wall_hz": 30.310306051605004,
+        "max_gap_wall_seconds": 0.13458286499371752,
+        "p95_gap_wall_seconds": 0.03556202398613095,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "info": {
+        "count": 372,
+        "rate_wall_hz": 30.304470355753356,
+        "max_gap_wall_seconds": 0.13781873701373115,
+        "p95_gap_wall_seconds": 0.03466629653121345,
+        "max_stamp_gap_sim_seconds": 0.034000000000006025
+      },
+      "local": {
+        "count": 62,
+        "rate_wall_hz": 5.069761787196632,
+        "max_gap_wall_seconds": 0.28306217602221295,
+        "p95_gap_wall_seconds": 0.26568859501276165,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      },
+      "reasons": {
+        "count": 62,
+        "rate_wall_hz": 5.057920427939839,
+        "max_gap_wall_seconds": 0.25528553395997733,
+        "p95_gap_wall_seconds": 0.235601858003065,
+        "max_stamp_gap_sim_seconds": 0.23199999999999932
+      }
+    },
+    "captures": [
+      {
+        "stamp": 50.756,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0001"
+      },
+      {
+        "stamp": 51.746,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0002"
+      },
+      {
+        "stamp": 52.934,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0003"
+      },
+      {
+        "stamp": 53.956,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0004"
+      },
+      {
+        "stamp": 55.144,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0005"
+      },
+      {
+        "stamp": 56.134,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0006"
+      },
+      {
+        "stamp": 57.356,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0007"
+      },
+      {
+        "stamp": 58.346,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0008"
+      },
+      {
+        "stamp": 59.534,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0009"
+      },
+      {
+        "stamp": 60.556,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0010"
+      },
+      {
+        "stamp": 61.744,
+        "known_cells": 2994,
+        "hazard_cells": 147,
+        "cause_cells": {
+          "slope": 145,
+          "height_change": 6
+        },
+        "evidence": "phase1-mars-001-frame-0011"
+      }
+    ],
+    "partial_sensor_evidence": null
+  },
+  "phase1-slope-20261021": {
+    "passed": false,
+    "error": "No exact-stamp RGB/depth/calibration/terrain/reasons/local grid and image-time transforms",
+    "map": null,
+    "frame": null,
+    "timing": null,
+    "captures": null,
+    "partial_sensor_evidence": {
+      "evidence": "phase1-slope-002-unmapped",
+      "stamp": 215.392,
+      "partial": true
+    }
+  },
+  "edge_independent_comparison": {
+    "estimated_base_xy": [
+      0.6799315810203552,
+      0.3793278932571411
+    ],
+    "truth_xy": [
+      0.5769996787357401,
+      8.774724280427738e-17
+    ],
+    "pose_disagreement_m": 0.39304532449938967,
+    "receipt_skew_wall_s": 0.011261504958383739
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "terrain": {
+    "size_m": 20.0, "grid_size": 65, "visual_grid_size": 129, "relief_m": 0.8,
+    "max_slope_deg": 10.0, "spawn_clearance_m": 1.3, "texture_size": 512,
+    "ground_textures": ["red_sand", "sand_03"],
+    "ground_layers": 2, "texture_tile_m": 8.0, "composite_px": 4096,
+    "tint_strength": [0.35, 0.7],
+    "ripples": {"waves": 4, "wavelength_m": [0.35, 0.9], "height_m": [0.012, 0.028],
+                "ridges": 2, "ridge_wavelength_m": [1.6, 4.0], "ridge_height_m": [0.02, 0.05]}
+  },
+  "rocks": {
+    "procedural_count": 0, "include_existing": false,
+    "scanned_ids": ["moon_rock_01", "moon_rock_02", "moon_rock_03", "moon_rock_04",
+                    "moon_rock_05", "moon_rock_06", "moon_rock_07", "rock_07", "rock_09",
+                    "boulder_01"],
+    "held_out_ids": ["moon_rock_06", "rock_09"],
+    "count_range": [38, 55], "sampling_size_m": [0.02, 0.12],
+    "obstacle_size_m": [0.15, 0.45], "sampling_probability": 0.55,
+    "burial_fraction": [0.22, 0.44], "clearance_m": 0.07,
+    "cluster_probability": 0.65, "max_tilt_deg": 22.0
+  },
+  "candidates": {
+    "enabled": true,
+    "categories": ["silica_soil", "pale_lookalike", "sulfur_rock", "pale_stone", "cheyava_rock", "veined_lookalike"],
+    "silica_count": [1, 2], "pale_lookalike_count": [1, 2], "silica_size_m": [0.40, 1.20],
+    "sulfur_count": [1, 2], "pale_stone_count": [2, 4], "sulfur_size_m": [0.08, 0.16],
+    "cheyava_count": [1, 1], "veined_lookalike_count": [1, 1], "cheyava_size_m": [0.75, 1.05],
+    "exaggerated_spots": false, "spot_scale": 1.0,
+    "slab_surface_height_m": 0.008, "slab_embed_m": 0.02, "slab_edge_blend_m": 0.03
+  },
+  "camera": {
+    "mount_xyz": [0.2, 0.0, 0.682], "tilt_rad": 0.1,
+    "width": 1920, "height": 1080, "horizontal_fov_rad": 1.22,
+    "horizontal_fov_status": "provisional",
+    "optical_center_height_m": 0.762,
+    "rate_hz": 30.0, "near_m": 0.3, "far_m": 8.0,
+    "image_topic": "/oak/image_raw", "depth_topic": "/oak/depth/image_raw",
+    "camera_info_topic": "/oak/camera_info", "boxes_topic": "/oak/boxes"
+  },
+  "capture": {
+    "views_per_scene": 10, "distance_m": [1.8, 3.2],
+    "training_imgsz": 960, "target_margin_fraction": 0.10,
+    "target_min_visible_fraction": 0.70, "target_min_side_px": 24,
+    "difficult_view_every": 5, "planning_width": 384,
+    "target_class_views": {}, "class_quota_scene_attempts": 8,
+    "settle_sim_sec": 0.7, "timeout_wall_sec": 180.0,
+    "max_pose_gap_sec": 0.06, "save_depth": false, "previews": true,
+    "require_depth_check": true, "require_bbox_check": true,
+    "require_visibility_check": true
+  },
+  "labels": {"min_visible_pixels": 24, "min_box_side_px": 5, "min_visible_fraction": 0.30,
+             "bbox_min_iou": 0.5, "depth_support_fraction": 0.90,
+             "depth_support_tolerance_m": 0.03, "patch_support_fraction": 0.85},
+  "dataset": {"seeds": [100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119],
+              "empty_seeds": [100,110,117], "rocks_only_seeds": [102,107,108,114]}
+}

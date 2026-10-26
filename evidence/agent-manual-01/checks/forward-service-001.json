@@ -1,0 +1,111 @@
+{
+  "test": "flat_manual_smoke",
+  "drive_requested": true,
+  "session": "/work/navigation_sessions/agent-manual-01",
+  "duration_wall_s": 1.0,
+  "speed_m_s": 0.05,
+  "stop_method": "service",
+  "passed": true,
+  "scope": "manual_simulation_only",
+  "owners": {
+    "/cmd_vel": [
+      "navigation_motion_guard"
+    ],
+    "/navigation/manual_cmd_vel": [
+      "navigation_manual_smoke"
+    ],
+    "/diff_drive_controller/cmd_vel": [
+      "twist_stamper"
+    ]
+  },
+  "contact_transport": "Publishers [Address, Message Type]:\n  tcp://<HALO_TAILSCALE_IP>:41851, gz.msgs.Contacts\nSubscribers [Address, Message Type]:\n  tcp://<HALO_TAILSCALE_IP>:38353, gz.msgs.Contacts",
+  "collision_acceptance": "physical_contact_test_pending",
+  "baseline": {
+    "truth": {
+      "kind": "truth",
+      "wall": 332858.645604497,
+      "x": 1.9100834052962337e-10,
+      "y": -1.4524044710688762e-20,
+      "yaw": 1.7297064470194154e-18,
+      "stamp": 47.76
+    },
+    "estimate": {
+      "kind": "estimate",
+      "wall": 332858.525149377,
+      "x": 0.004083871841430664,
+      "y": -0.00022084855299908668,
+      "yaw": -8.142731451004655e-05,
+      "stamp": 47.62
+    }
+  },
+  "clear_start": {
+    "success": true,
+    "message": "Confirmed clear launch area; manual control can now be selected"
+  },
+  "drive_start_wall": 332858.664524028,
+  "last_command_wall": 332859.665010878,
+  "stop_response": {
+    "success": true,
+    "message": "Stopped; explicit mode selection required to resume"
+  },
+  "final": {
+    "truth": {
+      "kind": "truth",
+      "wall": 332861.165119027,
+      "x": 0.047999970692371635,
+      "y": 1.4137361270585945e-17,
+      "yaw": 8.184725304385219e-17,
+      "stamp": 50.28
+    },
+    "estimate": {
+      "kind": "estimate",
+      "wall": 332861.104295863,
+      "x": 0.03817575052380562,
+      "y": -0.00040788028854876757,
+      "yaw": 0.0006500376415061686,
+      "stamp": 50.194
+    }
+  },
+  "truth_yaw_change_rad": 8.011754659683277e-17,
+  "estimate_yaw_change_rad": 0.0007314649560162151,
+  "distance_m": {
+    "truth": 0.047999970501363294,
+    "estimate": 0.034092391716684746
+  },
+  "distance_disagreement_m": 0.013907578784678548,
+  "cleanup_stop": {
+    "success": true,
+    "message": "Stopped; explicit mode selection required to resume"
+  },
+  "counts": {
+    "ground": 34,
+    "guard_command": 163,
+    "status": 42,
+    "estimate": 83,
+    "truth": 394,
+    "mission": 9,
+    "service_confirm_clear_start": 1,
+    "service_manual": 1,
+    "drive_start": 1,
+    "manual_commands_sent": 20,
+    "drive_publication_ended": 1,
+    "service_stop": 2
+  },
+  "last_status": {
+    "kind": "status",
+    "wall": 332861.464860249,
+    "mode": "stopped",
+    "reason": "operator_stop",
+    "ready": true,
+    "command": [
+      0.0,
+      0.0
+    ],
+    "sim_time": 50.578,
+    "depth_age_seconds": 0.03380074200686067,
+    "pose_age_seconds": 0.031132030009757727,
+    "clock_age_seconds": 0.0015842810389585793
+  },
+  "ready_false_samples": 0,
+  "max_ground_age_s": 0.4274325509904884
+}
