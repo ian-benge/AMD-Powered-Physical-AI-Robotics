@@ -14,7 +14,7 @@ class AcceptanceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         model = self.root / 'model.onnx'
         model.write_bytes(b'frozen model')
         manifest = self.root / 'manifest.json'

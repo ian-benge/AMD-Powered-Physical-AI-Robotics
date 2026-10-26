@@ -44,7 +44,7 @@ class LaunchTests(unittest.TestCase):
 
     def test_isolated_world_sensor_profiles_and_truth_ownership(self):
         with tempfile.TemporaryDirectory() as directory:
-            folder = Path(directory)
+            folder = Path(directory).resolve()
             lattice = folder/'nav2_smac_planner/sample_primitives/5cm_resolution/0.5m_turning_radius/diff/output.json'
             lattice.parent.mkdir(parents=True)
             lattice.write_text('{}')

@@ -140,7 +140,7 @@ class GenerationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
-        cls.root = Path(cls.tmp.name)
+        cls.root = Path(cls.tmp.name).resolve()
         cls.config = offline_config(cls.root)
         cls.assets = build_library(cls.root/'assets',cls.config['rocks'])
         cls.scene = make_scene(cls.root,cls.config,101,cls.assets)

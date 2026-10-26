@@ -1017,6 +1017,7 @@
     "Hashes describe the imported worktree bytes before publication documentation edits and Git newline normalization.",
     "Generated build/install/log artifacts and private operational handoffs excluded.",
     "Original destination webcam starter retained under examples/webcam; prior commit history preserved.",
+    "Three imported test fixtures canonicalize temporary paths for Windows hosted-runner short-name aliases; runtime code is unchanged by this portability fix.",
     "No changes or pushes made to the upstream repository or original worktrees."
   ]
 }
