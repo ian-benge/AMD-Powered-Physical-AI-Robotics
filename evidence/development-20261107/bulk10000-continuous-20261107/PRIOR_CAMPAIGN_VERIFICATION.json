@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-07T22:52:18.804817+00:00",
+  "status": "PASS",
+  "verified_batches": 9,
+  "verified_images": 1800,
+  "reservation_sha256": "737554d0383ebe3eae574afb55f6c4e983b4e17283e2377e4312355e941c5558",
+  "retained_v9_runtime": true
+}

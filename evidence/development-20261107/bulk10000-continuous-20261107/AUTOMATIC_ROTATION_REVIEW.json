@@ -1,0 +1,96 @@
+{
+  "utc": "2026-11-07T22:55:23.395017+00:00",
+  "status": "AUTOMATIC_ROTATION_QUALIFIED_AND_COLLECTION_RUNNING",
+  "linux_controller_tests": 61,
+  "qualification_run": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-continuous-20261107T225141Z-lpdysrvu",
+  "qualification_windows": [
+    {
+      "window": "window-001",
+      "case": "/home/ian/capstone-training/rover-navigation/navigation_sessions/oem617-7141-rocm-manual-20261107t225141z-9435-20261107T225141Z-bjd39hgj",
+      "kit": "/home/ian/capstone-training/rover-sim/runs/rocm-manual-20261107t225141z-9435",
+      "cooldown_seconds": 60.046858,
+      "temperature_samples": 32,
+      "maximum_temperature_sample_gap_s": 2.021311,
+      "peak_tctl_c": 52.5,
+      "protected_teardown_clean": true,
+      "monitoring_gap": false,
+      "monitor_stop_after_final_journal": true
+    },
+    {
+      "window": "window-002",
+      "case": "/home/ian/capstone-training/rover-navigation/navigation_sessions/oem617-7141-rocm-manual-20261107t225255z-120f-20261107T225255Z-gi0dp_hj",
+      "kit": "/home/ian/capstone-training/rover-sim/runs/rocm-manual-20261107t225255z-120f",
+      "cooldown_seconds": 60.047758,
+      "temperature_samples": 32,
+      "maximum_temperature_sample_gap_s": 2.107636,
+      "peak_tctl_c": 29.5,
+      "protected_teardown_clean": true,
+      "monitoring_gap": false,
+      "monitor_stop_after_final_journal": true
+    }
+  ],
+  "current_supervisor_run": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-continuous-20261107T225409Z-mvhu5r79",
+  "current_stage": "COLLECTING",
+  "current_batch": "batch-010",
+  "accepted_images": 1800,
+  "processes": [
+    {
+      "pid": 1834256,
+      "effective_uid": 0,
+      "command": [
+        "sudo",
+        "/usr/bin/python3",
+        "-I",
+        "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-continuous-20261107/start_bulk10000_continuous.py",
+        "--run"
+      ]
+    },
+    {
+      "pid": 1834257,
+      "effective_uid": 0,
+      "command": [
+        "sudo",
+        "/usr/bin/python3",
+        "-I",
+        "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-continuous-20261107/start_bulk10000_continuous.py",
+        "--run"
+      ]
+    },
+    {
+      "pid": 1834258,
+      "effective_uid": 0,
+      "command": [
+        "/usr/bin/python3",
+        "-I",
+        "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-continuous-20261107/start_bulk10000_continuous.py",
+        "--run"
+      ]
+    },
+    {
+      "pid": 1834713,
+      "effective_uid": 1001,
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-collection-20261106/start_bulk10000_collection.py",
+        "--run",
+        "--collection",
+        "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-20261106T163426Z"
+      ]
+    }
+  ],
+  "container": {
+    "name": "rover-bulk10000-20261107t225432858751z",
+    "image": "sha256:0b607598f65a9355057a28a8e36dedcab72baf33ee8955882fd43460314477fa",
+    "user": "1001:1001",
+    "application": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-capture-recovery-20261106/application-v9"
+  },
+  "prior_1800_images_verified": true,
+  "native_duration_seconds": 7200,
+  "retained_inputs_unchanged": 15,
+  "supervision": "Local sudo parent; planning, capture workload and temperature display run as ian",
+  "active_session_finished": false,
+  "automatic_monitoring_renewal_enabled": true,
+  "training_approved": false,
+  "scope": "Two real monitor/cooldown/journal cycles plus live collection startup; not a long-duration endurance claim"
+}

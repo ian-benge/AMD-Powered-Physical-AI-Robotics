@@ -22,9 +22,19 @@ The simulated vehicle's measured turning center lies 0.13 m ahead of `base_link`
 
 Only the navigation guard publishes `/cmd_vel`; only the Twist stamper publishes the wheel-controller command. Manual and autonomous sources send requests through separate guard inputs. Browser control uses held input and expiring leases. Stop, stale sensors, clock faults and invalid localization latch a stop; planning never rearms the guard automatically.
 
+Manual speed controls default to 0.20 m/s forward and 0.30 rad/s turning, with
+guard-enforced caps of 0.50 m/s and 0.60 rad/s. Changing a requested speed
+releases held movement without deselecting manual mode. The autonomous launch
+speed remains 0.10 m/s. [Controls verification](HALO_DASHBOARD_CONTROLS_20261027.md)
+
 Depth geometry marks terrain unsafe above a 12° slope or 3 cm per-cell height span. Unknown terrain is blocked. An operator can confirm the inspected 1.1 m launch disk once per session; this is an explicit clearance assumption, not camera-observed terrain. Measured hazards override launch seeding.
 
-Confirmed terrain hazards currently persist for the session. The proposed reversible-evidence extension is not implemented. A depth ray through empty space does not prove that supporting ground exists at a destination.
+The initial [adaptive terrain policy](ADAPTIVE_TERRAIN.md) can reconsider weak
+hazards after three closer, translated views positively observe dense safe
+ground. Established hazards remain protected. Unknown terrain, missing depth
+and elapsed time cannot clear a cell, and clearing never rearms the guard.
+Live traversability acceptance remains open. A depth ray through empty space
+does not prove that supporting ground exists at a destination.
 
 ## Object confirmation and association
 

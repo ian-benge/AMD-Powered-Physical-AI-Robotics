@@ -1,0 +1,27 @@
+{
+  "utc": "2026-11-07T21:33:35.164499+00:00",
+  "status": "VERIFIED_OFFHOST",
+  "archive": "C:\\Projects\\Capstone\\AMD-Powered-Physical-AI-Robotics\\navigation_sessions\\bulk-framing-reliability-fix-20261107\\bulk-capture-reliability-v9-evidence.tar.gz",
+  "archive_sha256": "89f8fd0ea2efb28e854f7888cdec2949a774de40c7e24f6a002404817afd22e3",
+  "archive_bytes": 671430055,
+  "member_hashes_verified": 4583,
+  "canonical_batch_files": {
+    "batch-007": {
+      "images": 200,
+      "labels": 200,
+      "metadata": 200,
+      "previews": 201
+    },
+    "batch-008": {
+      "images": 200,
+      "labels": 200,
+      "metadata": 200,
+      "previews": 201
+    }
+  },
+  "workspace_source_files_verified": 10,
+  "accepted_campaign_images": 1600,
+  "prior_frames_preserved": 1600,
+  "protected_finish_run": false,
+  "monitoring": "Retained for continuation; no final teardown claim"
+}

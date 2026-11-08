@@ -11,9 +11,41 @@ python scripts/run_checks.py --output-dir outputs/source-checks
 
 Suites run in separate Python processes to isolate ROS test doubles. GitHub Actions runs the CPU suites on Linux and Windows. Real ROCm execution tests skip without compatible hardware; the ROS build workflow compiles the five integrated packages in Docker and does not drive a simulator.
 
-The October 25 publication check ran **480 tests on Windows**, with four actual-ROCm cases skipped: 166 navigation, 157 perception, 129 environment, 24 training/geometry and four webcam-contract tests. The browser-control JavaScript harness also passed, and the offline procedural profile generated one scene with four planned views. See [the publication summary](../evidence/publication-20261025/checks.json) and its accompanying logs. These are fresh source checks, separate from the historical Halo measurements below.
+The October 25 publication check ran **480 tests on Windows**, with four actual-ROCm cases skipped: 166 navigation, 157 perception, 129 environment, 24 training/geometry and four webcam-contract tests. The browser-control JavaScript harness also passed, and the offline procedural profile generated one scene with four planned views. See [the publication summary](../evidence/publication-20261025/checks.json) and its accompanying logs. These were fresh checks for the October publication; the November check summary above is separate from the historical Halo measurements.
+
+The [October 27 camera/adaptive-terrain change](HALO_CAMERA_ADAPTIVE_REPORT_20261027.md)
+ran **182 navigation tests** on both Windows and Halo Linux/ROS, with four
+actual-ROCm cases skipped in each run. The package rebuilt on Halo, and the
+camera-recovery and speed-control JavaScript harnesses passed. This scoped
+verification does not replace the historical full-suite run or live terrain
+acceptance.
+
+The later [October 27 dashboard follow-up](HALO_DASHBOARD_UPDATE_20261027.md)
+ran **189 navigation tests** on Windows and Halo Linux/ROS, with four actual-ROCm
+cases skipped in each run. The package build and three JavaScript harnesses
+passed. A live browser check verified retained idle manual selection, camera
+expansion, generation of a new layout and fresh-map Restart using only zero
+drive commands. It does not qualify motion or adaptive clearing.
+
+## November development verification
+
+The [November evidence index](../evidence/development-20261107/README.md) contains selected original summaries, archive receipts and source/published SHA-256 identities. Fresh publication checks cover six isolated CPU suites and four JavaScript browser harnesses. The collection suite runs without operator kits or hardware; native-only checks explicitly skip. See [the fresh check summary](../evidence/development-20261107/source-checks/checks.json) for exact counts and runtimes.
+
+The [rendering](PHASE1_RENDERING_ACCEPTANCE_20261104.md), [reachable-terrain](PHASE2_TERRAIN_ACCEPTANCE_20261104.md) and [adaptive-mapping](PHASE3_MAPPING_ACCEPTANCE_20261105.md) phases have bounded acceptance records. Mapping replay compared 408 published local/global cost arrays exactly across ten actual CPU/ROCm ROS cases; its [scope note](../evidence/development-20261107/phase3-mapping-20261105/CPU_ROCM_REPLAY_SCOPE_NOTE.json) distinguishes cost-array comparison from cause-grid assertions.
+
+The [40 m closeout](SIMULATION_ENVIRONMENT_V2_CLOSEOUT.md) records completed offline/CPU/ROCm checks and an experimental default decision. Sparse traversal and real-time factor passed, but **267.73 ms p95 local-publication latency exceeds the 200 ms target**. The live optimization, other density representatives and recorded staged-speed checks remain open. Monitoring gaps are retained; no endurance acceptance is claimed.
+
+The [200-image pilot cleanup review](PILOT200_PROCESS_CLEANUP_FIX_20261106.md) records zero validation errors and zero surviving owned renderer processes. The [continuous-controller record](BULK_CONTINUOUS_ACCEPTANCE_20261107.md) records 61 Linux tests, two actual protected monitoring/cooldown cycles and live batch-10 startup with 1,800 prior images verified. These are dated measurements, not proof of full campaign completion, reviewed four-class export, detector training or unattended endurance.
+
+Historical guides below retain the results and pending steps as recorded on their dates. Later reports supersede status decisions only within their stated scope.
 
 ## Recorded Halo measurements
+
+The [November 4 rendering acceptance report](PHASE1_RENDERING_ACCEPTANCE_20261104.md)
+records the separate baseline/candidate identities, image-level material and
+range comparisons, published camera calibration, source/build checks and each
+timed visibility trial. Use its current verdict and limitations; source checks
+and baseline readiness do not establish long-duration full-stack stability.
 
 | Area | Evidence | Meaning and limits |
 | --- | --- | --- |
@@ -39,6 +71,7 @@ The October 23 recovery restored outage-damaged copies from the verified Windows
 - Physical wheel/obstacle contact coverage and complete fixed-obstacle detour/blockage tests.
 - Reliable startup/localization across flat, edge, steep-ramp and other fixtures.
 - Repeated autonomous travel to a reviewed soil site, stopped waiting and explicit return home.
-- Broader scenes, long-duration mapping, physical OAK-D calibration and hardware motion.
+- Full live 40 m latency/density/speed qualification, long-duration mapping, physical OAK-D calibration and hardware motion.
+- Completion and review of the 10,000-image campaign, metadata-based four-class export and any subsequent detector update.
 
 The [roadmap](ROADMAP.md) describes the next milestone without presenting it as implemented.

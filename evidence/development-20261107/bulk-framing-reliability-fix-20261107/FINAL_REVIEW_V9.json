@@ -1,0 +1,1830 @@
+{
+  "diagnostic_frames": 20,
+  "diagnostic_attempts": [
+    {
+      "error": "Scene launch produced no completed capture report; see /collection/dataset/attempts/scene_4320122/attempt-0001/launch.log",
+      "exit_code": 0,
+      "result": "FAILED_PRESERVED"
+    },
+    {
+      "exit_code": 0,
+      "result": "COMMITTED"
+    }
+  ],
+  "mixed_rejection_continuation_diagnostics": 4,
+  "diagnostics_in_bulk_collection": false,
+  "fresh_feedback_audited_frames": 60,
+  "utc": "2026-11-07T21:29:19.351351+00:00",
+  "status": "TWO_BATCH_RELIABILITY_VERIFIED",
+  "campaign": {
+    "collection": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-20261106T163426Z",
+    "recorded_images": 1600,
+    "planned_images": 10000,
+    "completed_batches": 8,
+    "planned_batches": 50,
+    "split_images": {
+      "train": 1600
+    },
+    "progress": {
+      "stage": "BATCH_COMPLETE",
+      "batch": "batch-008",
+      "split": "train",
+      "progress_log": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-20261106T163426Z/invocations/20261107T200052118203Z/guarded-step/log.txt"
+    },
+    "current_batch": {
+      "batch": "batch-008",
+      "planned_images": 200,
+      "committed_images": 200,
+      "committed_scenes": 10,
+      "scene": "scene_4320127",
+      "attempt": "attempt-0001",
+      "attempt_saved_views": 20
+    },
+    "training_approved": false,
+    "human_review_required": true
+  },
+  "preserved_previous_frames": 1600,
+  "preserved_previous_files": 6498,
+  "previously_accepted_files_unchanged": true,
+  "reviewed_batch_frames": 400,
+  "new_frames": 300,
+  "batches": [
+    {
+      "batch": "batch-007",
+      "frames": 200,
+      "background_frames": 40,
+      "validation_errors": [],
+      "sensor_depth_frames_checked": 200,
+      "sensor_depth_frames_agreeing": 200,
+      "objects_checked": 2657,
+      "geometry_only_objects": 1002
+    },
+    {
+      "batch": "batch-008",
+      "frames": 200,
+      "background_frames": 40,
+      "validation_errors": [],
+      "sensor_depth_frames_checked": 200,
+      "sensor_depth_frames_agreeing": 200,
+      "objects_checked": 2088,
+      "geometry_only_objects": 806
+    }
+  ],
+  "adjusted_views": [
+    {
+      "scene": "scene_4320107",
+      "view": "view_011",
+      "target": "rock_003",
+      "framing": {
+        "bbox_xyxy": [
+          471,
+          65,
+          588,
+          169
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 104.0,
+        "target_name": "rock_003",
+        "visible_fraction": 0.7843520327
+      },
+      "history": [
+        {
+          "from_measured_xyz": [
+            0.8982298838,
+            10.1640914883,
+            0.0285012222
+          ],
+          "minimum_side_at_training_px": 24.0,
+          "reason": "target_outside_frame_margin",
+          "side_at_training_px": 93.0,
+          "to_xyz": [
+            0.8983787686,
+            10.0370310362,
+            0.033760524
+          ]
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 0.94,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            0.8988700325,
+            10.0361375417,
+            0.0228813983
+          ],
+          "geometry_predictions": 14,
+          "orbit_angle_rad": -0.48,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              471,
+              60,
+              588,
+              164
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 104.0,
+            "target_name": "rock_003",
+            "visible_fraction": 0.7836440834
+          },
+          "reason": "target_framing_recovery",
+          "rejected_diagnostics": "diagnostics/scene_4320107/view_011/reframe_01",
+          "rejected_errors": [
+            "target_outside_frame_margin"
+          ],
+          "settling_probes": 3,
+          "to_xyz": [
+            1.9467860822,
+            9.6360094269,
+            -0.023897274
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320104",
+      "view": "view_011",
+      "target": "rock_004",
+      "framing": {
+        "bbox_xyxy": [
+          494,
+          96,
+          554,
+          139
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 43.0,
+        "target_name": "rock_004",
+        "visible_fraction": 0.7511457379
+      },
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 1.0,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            11.9115233582,
+            -12.9048818243,
+            -0.0127996456
+          ],
+          "geometry_predictions": 12,
+          "orbit_angle_rad": -0.48,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              498,
+              93,
+              557,
+              136
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 43.0,
+            "target_name": "rock_004",
+            "visible_fraction": 0.7484018265
+          },
+          "reason": "target_framing_preflight",
+          "rejected_diagnostics": null,
+          "rejected_errors": [],
+          "settling_probes": 3,
+          "to_xyz": [
+            11.9510348978,
+            -11.410353892,
+            0.0344128674
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320117",
+      "view": "view_013",
+      "target": "rock_005",
+      "framing": {
+        "bbox_xyxy": [
+          411,
+          150,
+          459,
+          181
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 31.0,
+        "target_name": "rock_005",
+        "visible_fraction": 0.7485898469
+      },
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 1.0,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            -11.472965369,
+            -7.8364479309,
+            0.0834199969
+          ],
+          "geometry_predictions": 10,
+          "orbit_angle_rad": 0.3,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              415,
+              166,
+              462,
+              197
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 31.0,
+            "target_name": "rock_005",
+            "visible_fraction": 0.7518610422
+          },
+          "reason": "target_framing_preflight",
+          "rejected_diagnostics": null,
+          "rejected_errors": [],
+          "settling_probes": 3,
+          "to_xyz": [
+            -11.5301271277,
+            -8.6164173138,
+            0.03026466
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320122",
+      "view": "view_012",
+      "target": "rock_004",
+      "framing": {
+        "bbox_xyxy": [
+          477,
+          232,
+          529,
+          273
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 41.0,
+        "target_name": "rock_004",
+        "visible_fraction": 0.7492811961
+      },
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 0.94,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            -10.6850516131,
+            -16.0913173875,
+            0.2230904245
+          ],
+          "geometry_predictions": 21,
+          "orbit_angle_rad": 0.3,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              502,
+              240,
+              553,
+              280
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 40.0,
+            "target_name": "rock_004",
+            "visible_fraction": 0.7459770115
+          },
+          "reason": "target_framing_preflight",
+          "rejected_diagnostics": null,
+          "rejected_errors": [],
+          "settling_probes": 3,
+          "to_xyz": [
+            -10.1776609418,
+            -16.7387563013,
+            0.2252090718
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320113",
+      "view": "view_000",
+      "target": "sulfur_rock_002",
+      "framing": {
+        "bbox_xyxy": [
+          413,
+          216,
+          449,
+          247
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 31.0,
+        "target_name": "sulfur_rock_002",
+        "visible_fraction": 0.7453250223
+      },
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 1.0,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            -0.4966337017,
+            14.6946706269,
+            0.032682392
+          ],
+          "geometry_predictions": 12,
+          "orbit_angle_rad": -0.48,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              413,
+              216,
+              449,
+              247
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 31.0,
+            "target_name": "sulfur_rock_002",
+            "visible_fraction": 0.7484388938
+          },
+          "reason": "target_framing_preflight",
+          "rejected_diagnostics": null,
+          "rejected_errors": [],
+          "settling_probes": 3,
+          "to_xyz": [
+            -0.5321849593,
+            15.8257589408,
+            0.0551480557
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320122",
+      "view": "view_013",
+      "target": "rock_004",
+      "framing": {
+        "bbox_xyxy": [
+          426,
+          206,
+          479,
+          247
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 41.0,
+        "target_name": "rock_004",
+        "visible_fraction": 0.7240406321
+      },
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 0.94,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            -10.7807450973,
+            -15.9768851889,
+            0.2213035457
+          ],
+          "geometry_predictions": 24,
+          "orbit_angle_rad": 0.48,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              423,
+              231,
+              472,
+              271
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 40.0,
+            "target_name": "rock_004",
+            "visible_fraction": 0.7498455837
+          },
+          "reason": "target_framing_preflight",
+          "rejected_diagnostics": null,
+          "rejected_errors": [],
+          "settling_probes": 3,
+          "to_xyz": [
+            -10.0035056666,
+            -17.0432573972,
+            0.2118030751
+          ]
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 1.0,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            -9.2652638127,
+            -17.6065832523,
+            0.2118171109
+          ],
+          "geometry_predictions": 11,
+          "orbit_angle_rad": -0.3,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              423,
+              236,
+              470,
+              276
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 40.0,
+            "target_name": "rock_004",
+            "visible_fraction": 0.7475062344
+          },
+          "reason": "target_framing_recovery",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_013/recovery_05/reframe_01",
+          "rejected_errors": [
+            "target_too_occluded"
+          ],
+          "settling_probes": 3,
+          "to_xyz": [
+            -9.9111786185,
+            -17.1386822164,
+            0.209840063
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320116",
+      "view": "view_012",
+      "target": "rock_002",
+      "framing": {
+        "bbox_xyxy": [
+          384,
+          248,
+          478,
+          324
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 76.0,
+        "target_name": "rock_002",
+        "visible_fraction": 0.7473723724
+      },
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 0.86,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            -7.1518303525,
+            -10.3290684644,
+            -0.1627194626
+          ],
+          "geometry_predictions": 35,
+          "orbit_angle_rad": 0.48,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              383,
+              251,
+              476,
+              327
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 76.0,
+            "target_name": "rock_002",
+            "visible_fraction": 0.7462630323
+          },
+          "reason": "target_framing_preflight",
+          "rejected_diagnostics": null,
+          "rejected_errors": [],
+          "settling_probes": 3,
+          "to_xyz": [
+            -6.1295048671,
+            -10.7125045565,
+            -0.2020004997
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320124",
+      "view": "view_000",
+      "target": "sulfur_rock_000",
+      "framing": {
+        "bbox_xyxy": [
+          456,
+          200,
+          496,
+          233
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 33.0,
+        "target_name": "sulfur_rock_000",
+        "visible_fraction": 0.7453462398
+      },
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 1.0,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            6.9039297248,
+            -1.0807074515,
+            -0.0502586801
+          ],
+          "geometry_predictions": 13,
+          "orbit_angle_rad": -0.48,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              457,
+              202,
+              496,
+              236
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 34.0,
+            "target_name": "sulfur_rock_000",
+            "visible_fraction": 0.7475728155
+          },
+          "reason": "target_framing_preflight",
+          "rejected_diagnostics": null,
+          "rejected_errors": [],
+          "settling_probes": 3,
+          "to_xyz": [
+            7.0274496125,
+            -2.219880478,
+            0.0118353649
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320117",
+      "view": "view_008",
+      "target": "cheyava_rock_001",
+      "framing": {
+        "bbox_xyxy": [
+          360,
+          66,
+          524,
+          157
+        ],
+        "difficult": false,
+        "minimum_side_at_training_px": 24.0,
+        "passed": true,
+        "reasons": [],
+        "side_at_training_px": 91.0,
+        "target_name": "cheyava_rock_001",
+        "visible_fraction": 0.9220934197
+      },
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "distance_scale": 1.0,
+          "fresh_sensor_acceptance_required": true,
+          "from_measured_xyz": [
+            0.9951531213,
+            -6.5703115638,
+            0.0468709695
+          ],
+          "geometry_predictions": 6,
+          "orbit_angle_rad": 0.045,
+          "predicted_framing": {
+            "bbox_xyxy": [
+              361,
+              73,
+              524,
+              164
+            ],
+            "difficult": false,
+            "minimum_side_at_training_px": 24.0,
+            "passed": true,
+            "reasons": [],
+            "side_at_training_px": 91.0,
+            "target_name": "cheyava_rock_001",
+            "visible_fraction": 0.9217466494
+          },
+          "reason": "target_framing_preflight",
+          "rejected_diagnostics": null,
+          "rejected_errors": [],
+          "settling_probes": 3,
+          "to_xyz": [
+            1.0552204489,
+            -6.4540883209,
+            0.043481719
+          ]
+        }
+      ]
+    }
+  ],
+  "depth_recovered_views": [
+    {
+      "scene": "scene_4320108",
+      "view": "view_002",
+      "target": "rock_000",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "from_measured_xyz": [
+            -10.0255308538,
+            -11.9618837119,
+            0.0474497935
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 9.58363e-05,
+            "expected_usable_pixels": 479985,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.28746e-05,
+            "global_p95_error_m": 0.0001988411,
+            "global_support_fraction": 0.9997999912,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "rock_197": {
+                "median_error_m": 1.21593e-05,
+                "rejected_support_fraction": 0.8913043478,
+                "usable_pixels": 46
+              }
+            },
+            "valid_fraction": 0.9999874996,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -10.025579837,
+            -11.9618983442,
+            0.057451777
+          ],
+          "original_yaw": 1.1096813726,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320108/view_002",
+          "rejected_errors": [
+            "rock_197: insufficient_sensor_depth_support",
+            "rock_197: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320107",
+      "view": "view_013",
+      "target": "silica_soil_002",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "from_measured_xyz": [
+            17.8605106918,
+            1.9399413602,
+            0.1163638409
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0030487805,
+            "expected_usable_pixels": 492656,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 6.1989e-06,
+            "global_p95_error_m": 0.0001006126,
+            "global_support_fraction": 0.9995514111,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "cheyava_rock_002": {
+                "median_error_m": 0.0065104961,
+                "rejected_support_fraction": 0.862183755,
+                "usable_pixels": 1502
+              }
+            },
+            "valid_fraction": 1.0,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            17.8628109624,
+            1.9388458088,
+            0.1213081133
+          ],
+          "original_yaw": -2.585579699,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320107/view_013",
+          "rejected_errors": [
+            "cheyava_rock_002: insufficient_sensor_depth_support",
+            "cheyava_rock_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 1,
+          "from_measured_xyz": [
+            17.8605116761,
+            1.9399405493,
+            0.1163688313
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0031158276,
+            "expected_usable_pixels": 492646,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.52588e-05,
+            "global_p95_error_m": 0.000146389,
+            "global_support_fraction": 0.9984552771,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "cheyava_rock_002": {
+                "median_error_m": 0.029722929,
+                "rejected_support_fraction": 0.5059920107,
+                "usable_pixels": 1502
+              },
+              "rock_146": {
+                "median_error_m": 2.0504e-05,
+                "rejected_support_fraction": 0.8484848485,
+                "usable_pixels": 33
+              }
+            },
+            "valid_fraction": 0.9999979701,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            17.8628109624,
+            1.9388458088,
+            0.1213081133
+          ],
+          "original_yaw": -2.585579699,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320107/view_013/recovery_01",
+          "rejected_errors": [
+            "rock_146: insufficient_sensor_depth_support",
+            "cheyava_rock_002: insufficient_sensor_depth_support",
+            "rock_146: insufficient_sensor_depth_box_support",
+            "cheyava_rock_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": -0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320107",
+      "view": "view_015",
+      "target": "cheyava_rock_003",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "from_measured_xyz": [
+            12.8133883131,
+            6.5036828675,
+            0.1736970816
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0019333581,
+            "expected_usable_pixels": 449477,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.15633e-05,
+            "global_p95_error_m": 0.0001239777,
+            "global_support_fraction": 0.9997975411,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "veined_lookalike_003": {
+                "median_error_m": 9.29832e-05,
+                "rejected_support_fraction": 0.8964326812,
+                "usable_pixels": 869
+              }
+            },
+            "valid_fraction": 0.9999933256,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            12.8132161207,
+            6.5039962872,
+            0.1854827183
+          ],
+          "original_yaw": -1.278508558,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320107/view_015",
+          "rejected_errors": [
+            "veined_lookalike_003: insufficient_sensor_depth_support",
+            "veined_lookalike_003: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320098",
+      "view": "view_016",
+      "target": "sulfur_rock_007",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "from_measured_xyz": [
+            -12.8576570759,
+            3.2857074762,
+            0.1528181403
+          ],
+          "original_yaw": -1.984674451,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320098/view_016",
+          "rejected_errors": [
+            "veined_lookalike_003: insufficient_sensor_depth_support",
+            "veined_lookalike_003: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "from_measured_xyz": [
+            -12.8576488575,
+            3.2856887442,
+            0.1529403189
+          ],
+          "original_yaw": -1.984674451,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320098/view_016/recovery_01",
+          "rejected_errors": [
+            "veined_lookalike_003: insufficient_sensor_depth_support",
+            "veined_lookalike_003: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": -0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320100",
+      "view": "view_016",
+      "target": "sulfur_rock_003",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "from_measured_xyz": [
+            -3.5860159596,
+            -16.154474999,
+            0.121591413
+          ],
+          "original_yaw": 1.2905819901,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320100/view_016",
+          "rejected_errors": [
+            "rock_065: insufficient_sensor_depth_support",
+            "rock_065: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320108",
+      "view": "view_004",
+      "target": "silica_soil_000",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "from_measured_xyz": [
+            -8.1880495853,
+            -1.1748614974,
+            0.3017449471
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.003031864,
+            "expected_usable_pixels": 390189,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.97887e-05,
+            "global_p95_error_m": 0.0001654625,
+            "global_support_fraction": 0.9993464605,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "cheyava_rock_001": {
+                "median_error_m": 0.0001478195,
+                "rejected_support_fraction": 0.8131868132,
+                "usable_pixels": 1183
+              }
+            },
+            "valid_fraction": 0.9999846228,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -8.1873100347,
+            -1.1737075594,
+            0.3107590912
+          ],
+          "original_yaw": -0.3519355399,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320108/view_004",
+          "rejected_errors": [
+            "cheyava_rock_001: insufficient_sensor_depth_support",
+            "cheyava_rock_001: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320117",
+      "view": "view_013",
+      "target": "rock_005",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "from_measured_xyz": [
+            -11.5277039262,
+            -8.6160454095,
+            0.023875876
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0002841351,
+            "expected_usable_pixels": 482165,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.71661e-05,
+            "global_p95_error_m": 0.000181675,
+            "global_support_fraction": 0.9998714128,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "cheyava_rock_000": {
+                "median_error_m": 0.0008597374,
+                "rejected_support_fraction": 0.6788321168,
+                "usable_pixels": 137
+              }
+            },
+            "valid_fraction": 0.999995852,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -11.5301271277,
+            -8.6164173138,
+            0.03026466
+          ],
+          "original_yaw": 0.0138441287,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320117/view_013/reframe_01",
+          "rejected_errors": [
+            "cheyava_rock_000: insufficient_sensor_depth_support",
+            "cheyava_rock_000: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320122",
+      "view": "view_012",
+      "target": "rock_004",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "candidate_limit": 8,
+          "from_measured_xyz": [
+            -10.1770444984,
+            -16.7382524476,
+            0.214371296
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0023343784,
+            "expected_usable_pixels": 410816,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 2.21729e-05,
+            "global_p95_error_m": 0.0001597404,
+            "global_support_fraction": 0.9990019717,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "veined_lookalike_002": {
+                "median_error_m": 0.0199589729,
+                "rejected_support_fraction": 0.6131386861,
+                "usable_pixels": 959
+              }
+            },
+            "valid_fraction": 0.9999853949,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -10.1776609418,
+            -16.7387563013,
+            0.2252090718
+          ],
+          "original_yaw": 0.6772669399,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_012/reframe_01",
+          "rejected_errors": [
+            "veined_lookalike_002: insufficient_sensor_depth_support",
+            "veined_lookalike_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 1,
+          "candidate_limit": 8,
+          "from_measured_xyz": [
+            -10.1770541289,
+            -16.7383046306,
+            0.2144301837
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0023943044,
+            "expected_usable_pixels": 410140,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 2.24113e-05,
+            "global_p95_error_m": 0.0001673698,
+            "global_support_fraction": 0.9994075165,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "veined_lookalike_002": {
+                "median_error_m": 0.0065658092,
+                "rejected_support_fraction": 0.7718940937,
+                "usable_pixels": 982
+              }
+            },
+            "valid_fraction": 0.9999951236,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -10.1776609418,
+            -16.7387563013,
+            0.2252090718
+          ],
+          "original_yaw": 0.6772669399,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_012/recovery_01/reframe_01",
+          "rejected_errors": [
+            "veined_lookalike_002: insufficient_sensor_depth_support",
+            "veined_lookalike_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": -0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320122",
+      "view": "view_013",
+      "target": "rock_004",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "candidate_limit": 8,
+          "from_measured_xyz": [
+            -10.0036312046,
+            -17.0439052458,
+            0.2034912548
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0023057545,
+            "expected_usable_pixels": 402905,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 2.43187e-05,
+            "global_p95_error_m": 0.000161171,
+            "global_support_fraction": 0.9987217735,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "veined_lookalike_002": {
+                "median_error_m": 0.0303974152,
+                "rejected_support_fraction": 0.491926803,
+                "usable_pixels": 929
+              }
+            },
+            "valid_fraction": 0.9999925541,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -10.0035056666,
+            -17.0432573972,
+            0.2118030751
+          ],
+          "original_yaw": 0.6966903424,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_013/reframe_01",
+          "rejected_errors": [
+            "veined_lookalike_002: insufficient_sensor_depth_support",
+            "veined_lookalike_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 1,
+          "candidate_limit": 8,
+          "from_measured_xyz": [
+            -10.003610095,
+            -17.0439349392,
+            0.2034933404
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0033086325,
+            "expected_usable_pixels": 402281,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 2.2769e-05,
+            "global_p95_error_m": 0.0001626015,
+            "global_support_fraction": 0.9985532357,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "rock_166": {
+                "median_error_m": 2.28882e-05,
+                "rejected_support_fraction": 0.8808290155,
+                "usable_pixels": 386
+              },
+              "veined_lookalike_002": {
+                "median_error_m": 0.0321846008,
+                "rejected_support_fraction": 0.4560846561,
+                "usable_pixels": 945
+              }
+            },
+            "valid_fraction": 0.9999900567,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -10.0035056666,
+            -17.0432573972,
+            0.2118030751
+          ],
+          "original_yaw": 0.6966903424,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_013/recovery_01/reframe_01",
+          "rejected_errors": [
+            "rock_166: insufficient_sensor_depth_support",
+            "veined_lookalike_002: insufficient_sensor_depth_support",
+            "rock_166: insufficient_sensor_depth_box_support",
+            "veined_lookalike_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": -0.035
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 2,
+          "candidate_limit": 8,
+          "from_measured_xyz": [
+            -10.0036527029,
+            -17.0438794868,
+            0.2034916067
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0022508955,
+            "expected_usable_pixels": 403395,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 2.21729e-05,
+            "global_p95_error_m": 0.0001525879,
+            "global_support_fraction": 0.9988175215,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "veined_lookalike_002": {
+                "median_error_m": 0.0312886238,
+                "rejected_support_fraction": 0.486784141,
+                "usable_pixels": 908
+              }
+            },
+            "valid_fraction": 0.9999876052,
+            "version": 2
+          },
+          "orbit_about_target": true,
+          "original_xyz": [
+            -10.0035056666,
+            -17.0432573972,
+            0.2118030751
+          ],
+          "original_yaw": 0.6966903424,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_013/recovery_02/reframe_01",
+          "rejected_errors": [
+            "veined_lookalike_002: insufficient_sensor_depth_support",
+            "veined_lookalike_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.18
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 3,
+          "candidate_limit": 8,
+          "from_measured_xyz": [
+            -9.6475509307,
+            -17.3657962408,
+            0.199524832
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0025576083,
+            "expected_usable_pixels": 402720,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.5974e-05,
+            "global_p95_error_m": 0.0001206398,
+            "global_support_fraction": 0.9985721948,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "veined_lookalike_002": {
+                "median_error_m": 0.0314748287,
+                "rejected_support_fraction": 0.4708737864,
+                "usable_pixels": 1030
+              }
+            },
+            "valid_fraction": 0.9999900675,
+            "version": 2
+          },
+          "orbit_about_target": true,
+          "original_xyz": [
+            -10.0035056666,
+            -17.0432573972,
+            0.2118030751
+          ],
+          "original_yaw": 0.6966903424,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_013/recovery_03/reframe_01",
+          "rejected_errors": [
+            "veined_lookalike_002: insufficient_sensor_depth_support",
+            "veined_lookalike_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": -0.18
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 4,
+          "candidate_limit": 8,
+          "from_measured_xyz": [
+            -10.295004696,
+            -16.6624500587,
+            0.2141484133
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0021722393,
+            "expected_usable_pixels": 414319,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.96695e-05,
+            "global_p95_error_m": 0.0001425743,
+            "global_support_fraction": 0.9994786613,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "veined_lookalike_002": {
+                "median_error_m": 0.0001707077,
+                "rejected_support_fraction": 0.7722222222,
+                "usable_pixels": 900
+              }
+            },
+            "valid_fraction": 0.9999975864,
+            "version": 2
+          },
+          "orbit_about_target": true,
+          "original_xyz": [
+            -10.0035056666,
+            -17.0432573972,
+            0.2118030751
+          ],
+          "original_yaw": 0.6966903424,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_013/recovery_04/reframe_01",
+          "rejected_errors": [
+            "veined_lookalike_002: insufficient_sensor_depth_support",
+            "veined_lookalike_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.35
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 5,
+          "candidate_limit": 8,
+          "from_measured_xyz": [
+            -9.9109215082,
+            -17.1390364785,
+            0.2007364222
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0023683994,
+            "expected_usable_pixels": 401537,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 2.45571e-05,
+            "global_p95_error_m": 0.000164032,
+            "global_support_fraction": 0.999561681,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "veined_lookalike_002": {
+                "median_error_m": 0.0001626015,
+                "rejected_support_fraction": 0.8286014721,
+                "usable_pixels": 951
+              }
+            },
+            "valid_fraction": 0.9999925287,
+            "version": 2
+          },
+          "orbit_about_target": true,
+          "original_xyz": [
+            -10.0035056666,
+            -17.0432573972,
+            0.2118030751
+          ],
+          "original_yaw": 0.6966903424,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320122/view_013/recovery_05/reframe_02",
+          "rejected_errors": [
+            "veined_lookalike_002: insufficient_sensor_depth_support",
+            "veined_lookalike_002: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": -0.35
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320120",
+      "view": "view_012",
+      "target": "rock_003",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "from_measured_xyz": [
+            -13.1467858085,
+            -2.4069772181,
+            -0.0876498084
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0010538423,
+            "expected_usable_pixels": 477301,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 0.0001431704,
+            "global_p95_error_m": 0.0017499924,
+            "global_support_fraction": 0.9997087761,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "cheyava_rock_001": {
+                "median_error_m": 0.0010328293,
+                "rejected_support_fraction": 0.7992047714,
+                "usable_pixels": 503
+              }
+            },
+            "valid_fraction": 0.9999895244,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -13.1458578819,
+            -2.4060469403,
+            -0.0771399654
+          ],
+          "original_yaw": 0.1724664277,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320120/view_012",
+          "rejected_errors": [
+            "cheyava_rock_001: insufficient_sensor_depth_support",
+            "cheyava_rock_001: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 1,
+          "from_measured_xyz": [
+            -13.1467775192,
+            -2.4070314348,
+            -0.0875762854
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0010539417,
+            "expected_usable_pixels": 477256,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.27554e-05,
+            "global_p95_error_m": 0.0001769066,
+            "global_support_fraction": 0.9996940832,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "cheyava_rock_001": {
+                "median_error_m": 0.0002570152,
+                "rejected_support_fraction": 0.7375745527,
+                "usable_pixels": 503
+              }
+            },
+            "valid_fraction": 0.9999958094,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -13.1458578819,
+            -2.4060469403,
+            -0.0771399654
+          ],
+          "original_yaw": 0.1724664277,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320120/view_012/recovery_01",
+          "rejected_errors": [
+            "cheyava_rock_001: insufficient_sensor_depth_support",
+            "cheyava_rock_001: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": -0.035
+        }
+      ]
+    },
+    {
+      "scene": "scene_4320120",
+      "view": "view_004",
+      "target": "rock_003",
+      "history": [
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 0,
+          "from_measured_xyz": [
+            -12.5844536497,
+            -3.1558875739,
+            -0.1734725351
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0011641313,
+            "expected_usable_pixels": 444967,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.10865e-05,
+            "global_p95_error_m": 0.0001511574,
+            "global_support_fraction": 0.9997797589,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "cheyava_rock_001": {
+                "median_error_m": 0.000171423,
+                "rejected_support_fraction": 0.8359073359,
+                "usable_pixels": 518
+              }
+            },
+            "valid_fraction": 1.0,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -12.5837895727,
+            -3.1533868715,
+            -0.1668272499
+          ],
+          "original_yaw": 0.1539282555,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320120/view_004",
+          "rejected_errors": [
+            "cheyava_rock_001: insufficient_sensor_depth_support",
+            "cheyava_rock_001: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": 0.035
+        },
+        {
+          "acceptance_policy_unchanged": true,
+          "candidate_index": 1,
+          "from_measured_xyz": [
+            -12.5844573716,
+            -3.1558900425,
+            -0.1734647248
+          ],
+          "localized_depth_context": {
+            "affected_pixel_fraction": 0.0011709497,
+            "expected_usable_pixels": 444938,
+            "full_frame_acceptance_required": true,
+            "global_median_error_m": 1.41859e-05,
+            "global_p95_error_m": 0.000187397,
+            "global_support_fraction": 0.9998314357,
+            "kind": "localized_incidental_depth",
+            "objects": {
+              "cheyava_rock_001": {
+                "median_error_m": 0.0002145767,
+                "rejected_support_fraction": 0.896353167,
+                "usable_pixels": 521
+              }
+            },
+            "valid_fraction": 0.99999101,
+            "version": 2
+          },
+          "orbit_about_target": false,
+          "original_xyz": [
+            -12.5837895727,
+            -3.1533868715,
+            -0.1668272499
+          ],
+          "original_yaw": 0.1539282555,
+          "reason": "localized_incidental_depth_support",
+          "rejected_diagnostics": "diagnostics/scene_4320120/view_004/recovery_01",
+          "rejected_errors": [
+            "cheyava_rock_001: insufficient_sensor_depth_support",
+            "cheyava_rock_001: insufficient_sensor_depth_box_support"
+          ],
+          "yaw_offset": -0.035
+        }
+      ]
+    }
+  ],
+  "recovered_depth_view": {
+    "scene": "scene_4320107",
+    "view": "view_013",
+    "retained_objects": {
+      "rock_146": {
+        "appearance_name": "rock",
+        "asset_id": "rock_07",
+        "bbox_xyxy": [
+          331,
+          64,
+          341,
+          69
+        ],
+        "class_id": 0,
+        "class_name": "rock",
+        "name": "rock_146",
+        "projected_pixels": 45,
+        "rejected_reason": null,
+        "source": "mesh",
+        "truncated": false,
+        "visibility_check": {
+          "depth_check_scope": "usable_depth",
+          "median_error_m": 9.0599e-06,
+          "name": "rock_146",
+          "passed": true,
+          "reasons": [],
+          "rgb_only_pixels": 0,
+          "sensor_valid_depth_pixels": 32,
+          "source": "mesh",
+          "support_fraction": 1.0,
+          "supported_pixels": 32,
+          "usable_depth_expected_pixels": 32,
+          "valid_depth_pixels": 32,
+          "visible_pixels": 32
+        },
+        "visible_fraction": 0.7111111111,
+        "visible_pixels": 32,
+        "xmax": 341,
+        "xmin": 331,
+        "ymax": 69,
+        "ymin": 64
+      },
+      "pale_stone_003": {
+        "appearance_name": "pale_stone",
+        "asset_id": "cand_pale_stone",
+        "bbox_xyxy": [
+          315,
+          59,
+          327,
+          67
+        ],
+        "class_id": 0,
+        "class_name": "rock",
+        "name": "pale_stone_003",
+        "projected_pixels": 107,
+        "rejected_reason": null,
+        "source": "mesh",
+        "truncated": false,
+        "visibility_check": {
+          "depth_check_scope": "usable_depth",
+          "median_error_m": 1.23978e-05,
+          "name": "pale_stone_003",
+          "passed": true,
+          "reasons": [],
+          "rgb_only_pixels": 0,
+          "sensor_valid_depth_pixels": 69,
+          "source": "mesh",
+          "support_fraction": 0.9855072464,
+          "supported_pixels": 68,
+          "usable_depth_expected_pixels": 69,
+          "valid_depth_pixels": 69,
+          "visible_pixels": 69
+        },
+        "visible_fraction": 0.6448598131,
+        "visible_pixels": 69,
+        "xmax": 327,
+        "xmin": 315,
+        "ymax": 67,
+        "ymin": 59
+      },
+      "cheyava_rock_002": {
+        "appearance_name": "cheyava_rock",
+        "asset_id": "cand_slab",
+        "bbox_xyxy": [
+          79,
+          80,
+          198,
+          97
+        ],
+        "class_id": 0,
+        "class_name": "rock",
+        "name": "cheyava_rock_002",
+        "projected_pixels": 1752,
+        "rejected_reason": null,
+        "source": "mesh",
+        "synthetic_analogue": true,
+        "truncated": false,
+        "visibility_check": {
+          "depth_check_scope": "usable_depth",
+          "median_error_m": 0.00010252,
+          "name": "cheyava_rock_002",
+          "passed": true,
+          "reasons": [],
+          "rgb_only_pixels": 0,
+          "sensor_valid_depth_pixels": 1402,
+          "source": "mesh",
+          "support_fraction": 0.9572039943,
+          "supported_pixels": 1342,
+          "usable_depth_expected_pixels": 1402,
+          "valid_depth_pixels": 1402,
+          "visible_pixels": 1402
+        },
+        "visible_fraction": 0.8002283105,
+        "visible_pixels": 1402,
+        "xmax": 198,
+        "xmin": 79,
+        "ymax": 97,
+        "ymin": 80
+      }
+    },
+    "history": [
+      {
+        "acceptance_policy_unchanged": true,
+        "candidate_index": 0,
+        "from_measured_xyz": [
+          17.8605106918,
+          1.9399413602,
+          0.1163638409
+        ],
+        "localized_depth_context": {
+          "affected_pixel_fraction": 0.0030487805,
+          "expected_usable_pixels": 492656,
+          "full_frame_acceptance_required": true,
+          "global_median_error_m": 6.1989e-06,
+          "global_p95_error_m": 0.0001006126,
+          "global_support_fraction": 0.9995514111,
+          "kind": "localized_incidental_depth",
+          "objects": {
+            "cheyava_rock_002": {
+              "median_error_m": 0.0065104961,
+              "rejected_support_fraction": 0.862183755,
+              "usable_pixels": 1502
+            }
+          },
+          "valid_fraction": 1.0,
+          "version": 2
+        },
+        "orbit_about_target": false,
+        "original_xyz": [
+          17.8628109624,
+          1.9388458088,
+          0.1213081133
+        ],
+        "original_yaw": -2.585579699,
+        "reason": "localized_incidental_depth_support",
+        "rejected_diagnostics": "diagnostics/scene_4320107/view_013",
+        "rejected_errors": [
+          "cheyava_rock_002: insufficient_sensor_depth_support",
+          "cheyava_rock_002: insufficient_sensor_depth_box_support"
+        ],
+        "yaw_offset": 0.035
+      },
+      {
+        "acceptance_policy_unchanged": true,
+        "candidate_index": 1,
+        "from_measured_xyz": [
+          17.8605116761,
+          1.9399405493,
+          0.1163688313
+        ],
+        "localized_depth_context": {
+          "affected_pixel_fraction": 0.0031158276,
+          "expected_usable_pixels": 492646,
+          "full_frame_acceptance_required": true,
+          "global_median_error_m": 1.52588e-05,
+          "global_p95_error_m": 0.000146389,
+          "global_support_fraction": 0.9984552771,
+          "kind": "localized_incidental_depth",
+          "objects": {
+            "cheyava_rock_002": {
+              "median_error_m": 0.029722929,
+              "rejected_support_fraction": 0.5059920107,
+              "usable_pixels": 1502
+            },
+            "rock_146": {
+              "median_error_m": 2.0504e-05,
+              "rejected_support_fraction": 0.8484848485,
+              "usable_pixels": 33
+            }
+          },
+          "valid_fraction": 0.9999979701,
+          "version": 2
+        },
+        "orbit_about_target": false,
+        "original_xyz": [
+          17.8628109624,
+          1.9388458088,
+          0.1213081133
+        ],
+        "original_yaw": -2.585579699,
+        "reason": "localized_incidental_depth_support",
+        "rejected_diagnostics": "diagnostics/scene_4320107/view_013/recovery_01",
+        "rejected_errors": [
+          "rock_146: insufficient_sensor_depth_support",
+          "cheyava_rock_002: insufficient_sensor_depth_support",
+          "rock_146: insufficient_sensor_depth_box_support",
+          "cheyava_rock_002: insufficient_sensor_depth_box_support"
+        ],
+        "yaw_offset": -0.035
+      }
+    ]
+  },
+  "session_scan_retries": 1,
+  "transient_ssh_session_stress_count": 12,
+  "recovered_view": {
+    "scene": "scene_4320104",
+    "view": "view_011",
+    "framing": {
+      "bbox_xyxy": [
+        494,
+        96,
+        554,
+        139
+      ],
+      "difficult": false,
+      "minimum_side_at_training_px": 24.0,
+      "passed": true,
+      "reasons": [],
+      "side_at_training_px": 43.0,
+      "target_name": "rock_004",
+      "visible_fraction": 0.7511457379
+    },
+    "adjustments": [
+      {
+        "acceptance_policy_unchanged": true,
+        "distance_scale": 1.0,
+        "fresh_sensor_acceptance_required": true,
+        "from_measured_xyz": [
+          11.9115233582,
+          -12.9048818243,
+          -0.0127996456
+        ],
+        "geometry_predictions": 12,
+        "orbit_angle_rad": -0.48,
+        "predicted_framing": {
+          "bbox_xyxy": [
+            498,
+            93,
+            557,
+            136
+          ],
+          "difficult": false,
+          "minimum_side_at_training_px": 24.0,
+          "passed": true,
+          "reasons": [],
+          "side_at_training_px": 43.0,
+          "target_name": "rock_004",
+          "visible_fraction": 0.7484018265
+        },
+        "reason": "target_framing_preflight",
+        "rejected_diagnostics": null,
+        "rejected_errors": [],
+        "settling_probes": 3,
+        "to_xyz": [
+          11.9510348978,
+          -11.410353892,
+          0.0344128674
+        ]
+      }
+    ]
+  },
+  "guard_results": [
+    "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-20261106T163426Z/invocations/20261107T185343555058Z/guarded-step/result.json",
+    "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-20261106T163426Z/invocations/20261107T200052118203Z/guarded-step/result.json"
+  ],
+  "guard_passed": true,
+  "peak_tctl_c": 85.125,
+  "cleanup_records": 31,
+  "cleanup_survivors": 0,
+  "native_case": "/home/ian/capstone-training/rover-navigation/navigation_sessions/oem617-7141-rocm-manual-20261107t201452z-cea3-20261107T202215Z-4rdfhpqb",
+  "native_capture_state": "running",
+  "collection_running": false,
+  "protected_finish": "NOT_RUN; monitoring retained for continuation",
+  "monitoring_gap_during_verification": false,
+  "next_batch": "batch-009",
+  "remaining_images": 8400,
+  "environment_tests": 219,
+  "controller_tests": 33,
+  "original_quality_thresholds_unchanged": true,
+  "scene_reservations_unchanged": true,
+  "operational_limit": "Native two-hour monitoring and hardware/quality stops remain enforced; no fault-free guarantee for uncollected scenes."
+}

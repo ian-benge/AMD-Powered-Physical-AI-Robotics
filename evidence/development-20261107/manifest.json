@@ -1,0 +1,314 @@
+{
+  "publication_date": "2026-11-07",
+  "scope": "Selected recorded development summaries; historical dates and failures retained. Raw datasets and archives excluded.",
+  "source_root": "navigation_sessions (local-only)",
+  "files": [
+    {
+      "source": "navigation_sessions/rendering-phase1-resume-20261104/completion-archive-verification.json",
+      "published": "evidence/development-20261107/rendering-phase1-resume-20261104/completion-archive-verification.json",
+      "source_bytes": 353,
+      "published_bytes": 344,
+      "source_sha256": "c387d43d7c8fa4cb5976e21f634e7bb902cedcf3f09d4dc5696071c4aab46477",
+      "published_sha256": "555ac3d2c669d9715662c9000bc554977a1a96db5ad538e4bb5d3d46b8e36b95",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/terrain-phase2-20261104/final-archive-verification.json",
+      "published": "evidence/development-20261107/terrain-phase2-20261104/final-archive-verification.json",
+      "source_bytes": 537,
+      "published_bytes": 527,
+      "source_sha256": "2ec508d6a7a74480adb21d332311fe7c24032bf9bc0ed7b85488c8af147f9be4",
+      "published_sha256": "411f69647bc6fd3c86fe9d2fd8e702c71e5286c0b3eead32910c71dc77786903",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/terrain-phase2-20261104/final-evidence.json",
+      "published": "evidence/development-20261107/terrain-phase2-20261104/final-evidence.json",
+      "source_bytes": 455,
+      "published_bytes": 455,
+      "source_sha256": "a3ce8096421c317c828e840e046e1585784914100c45ff01291c625de824b827",
+      "published_sha256": "a3ce8096421c317c828e840e046e1585784914100c45ff01291c625de824b827",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/phase3-mapping-20261105/PHASE3_ACCEPTANCE.json",
+      "published": "evidence/development-20261107/phase3-mapping-20261105/PHASE3_ACCEPTANCE.json",
+      "source_bytes": 3615,
+      "published_bytes": 3615,
+      "source_sha256": "acf154694d9033e90979899ce7eaa078b72f16e03309a35a8f78c92cb8d53d76",
+      "published_sha256": "acf154694d9033e90979899ce7eaa078b72f16e03309a35a8f78c92cb8d53d76",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/phase3-mapping-20261105/CPU_ROCM_REPLAY_REVIEW.json",
+      "published": "evidence/development-20261107/phase3-mapping-20261105/CPU_ROCM_REPLAY_REVIEW.json",
+      "source_bytes": 4291,
+      "published_bytes": 4291,
+      "source_sha256": "90ee5f53f72f48f4161db16b1173baf902de9dbaf0021cd617d05621ec326ee7",
+      "published_sha256": "90ee5f53f72f48f4161db16b1173baf902de9dbaf0021cd617d05621ec326ee7",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/phase3-mapping-20261105/CPU_ROCM_REPLAY_SCOPE_NOTE.json",
+      "published": "evidence/development-20261107/phase3-mapping-20261105/CPU_ROCM_REPLAY_SCOPE_NOTE.json",
+      "source_bytes": 257,
+      "published_bytes": 257,
+      "source_sha256": "5583260045511d4e0807e7c945ed0766e099bdff9626e84b3092060527b1f5f4",
+      "published_sha256": "5583260045511d4e0807e7c945ed0766e099bdff9626e84b3092060527b1f5f4",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/phase3-mapping-20261105/ATTENDED_GUARD_REVIEW_v2.json",
+      "published": "evidence/development-20261107/phase3-mapping-20261105/ATTENDED_GUARD_REVIEW_v2.json",
+      "source_bytes": 1365,
+      "published_bytes": 1365,
+      "source_sha256": "bfd6f4964967a5e016df3832e25b148f5cb628fa3048d996026e7c2ff21b5bae",
+      "published_sha256": "bfd6f4964967a5e016df3832e25b148f5cb628fa3048d996026e7c2ff21b5bae",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/phase3-mapping-20261105/ATTENDED_VISUAL_REVIEW.json",
+      "published": "evidence/development-20261107/phase3-mapping-20261105/ATTENDED_VISUAL_REVIEW.json",
+      "source_bytes": 537,
+      "published_bytes": 537,
+      "source_sha256": "2e450ba9d3c3d8c4d5ef1bbdfeb77ed0c2430d079f8816189dcce14dad68ce72",
+      "published_sha256": "2e450ba9d3c3d8c4d5ef1bbdfeb77ed0c2430d079f8816189dcce14dad68ce72",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/phase3-mapping-20261105/PROTECTED_CLOSURE_REVIEW.json",
+      "published": "evidence/development-20261107/phase3-mapping-20261105/PROTECTED_CLOSURE_REVIEW.json",
+      "source_bytes": 1565,
+      "published_bytes": 1565,
+      "source_sha256": "a8bbe632c832eb2f6c2bb44687e941a33b09e331600c887a333f2b0c0d35f864",
+      "published_sha256": "a8bbe632c832eb2f6c2bb44687e941a33b09e331600c887a333f2b0c0d35f864",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/phase3-mapping-20261105/final-archive-verification.json",
+      "published": "evidence/development-20261107/phase3-mapping-20261105/final-archive-verification.json",
+      "source_bytes": 536,
+      "published_bytes": 526,
+      "source_sha256": "fa5eda6d17b5bcc07c6814a3e6294bf27bbb6c940c0018a3c7f845ea66619248",
+      "published_sha256": "7cf8d9e5778a476ffd669505d0e13c35f0f6c0332ceae1b36534ccf3a9e488cc",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/phase3-mapping-20261105/final-evidence.json",
+      "published": "evidence/development-20261107/phase3-mapping-20261105/final-evidence.json",
+      "source_bytes": 374,
+      "published_bytes": 374,
+      "source_sha256": "506d5a089768619f1548100149ff74562fa23def437072f8238c8548768fd598",
+      "published_sha256": "506d5a089768619f1548100149ff74562fa23def437072f8238c8548768fd598",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/environment-v2-20261105/CLOSEOUT_STATUS.json",
+      "published": "evidence/development-20261107/environment-v2-20261105/CLOSEOUT_STATUS.json",
+      "source_bytes": 2236,
+      "published_bytes": 2236,
+      "source_sha256": "82b7111d4e2fcbe08aa4e0a33e2cae27328859129f7812f9579c5a25ea2daac2",
+      "published_sha256": "82b7111d4e2fcbe08aa4e0a33e2cae27328859129f7812f9579c5a25ea2daac2",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/environment-v2-20261105/CLOSEOUT_MEASUREMENTS.json",
+      "published": "evidence/development-20261107/environment-v2-20261105/CLOSEOUT_MEASUREMENTS.json",
+      "source_bytes": 2547,
+      "published_bytes": 2547,
+      "source_sha256": "1e951cb1ee3d3b08d682040af0424989a3efb1920a3a92b2a78abfe9d14db1a7",
+      "published_sha256": "1e951cb1ee3d3b08d682040af0424989a3efb1920a3a92b2a78abfe9d14db1a7",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/environment-v2-20261105/PRIOR_V8_RUN_REVIEW.json",
+      "published": "evidence/development-20261107/environment-v2-20261105/PRIOR_V8_RUN_REVIEW.json",
+      "source_bytes": 5398,
+      "published_bytes": 5398,
+      "source_sha256": "ef5736976483182260c3f213bde0d2672f85ff9986fdb13d147e9dd514a0b81c",
+      "published_sha256": "ef5736976483182260c3f213bde0d2672f85ff9986fdb13d147e9dd514a0b81c",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/environment-v2-20261105/FINAL_CLOSEOUT_OFF_HOST_VERIFIED.json",
+      "published": "evidence/development-20261107/environment-v2-20261105/FINAL_CLOSEOUT_OFF_HOST_VERIFIED.json",
+      "source_bytes": 1387,
+      "published_bytes": 1365,
+      "source_sha256": "1cc14745452f749aa66bd46013c1976cda679a4b3314de056dc5aea2af163a25",
+      "published_sha256": "4a69830e0d47a0d71568e5336f77a9ed27a1d7a601eaffaf57cc5322d0fb4182",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/process-cleanup-fix-20261106/FINAL_CAPTURE_REVIEW.json",
+      "published": "evidence/development-20261107/process-cleanup-fix-20261106/FINAL_CAPTURE_REVIEW.json",
+      "source_bytes": 5540,
+      "published_bytes": 5540,
+      "source_sha256": "bf2e6a76e45ef1c2d3173535a3067769158fb46816ca0fc34f1b4cf3ca4d78a8",
+      "published_sha256": "bf2e6a76e45ef1c2d3173535a3067769158fb46816ca0fc34f1b4cf3ca4d78a8",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/process-cleanup-fix-20261106/OFFHOST_VERIFICATION.json",
+      "published": "evidence/development-20261107/process-cleanup-fix-20261106/OFFHOST_VERIFICATION.json",
+      "source_bytes": 495,
+      "published_bytes": 485,
+      "source_sha256": "8a80eef51d982208fc981cd19e8902787f89fafcdd2a2e4d0555b924d3b43987",
+      "published_sha256": "82aa70830734b37dea48ebde653f9de79be0030ae04d7a7d13ea463169ed9a8b",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/process-cleanup-fix-20261106/READINESS_UPDATE.json",
+      "published": "evidence/development-20261107/process-cleanup-fix-20261106/READINESS_UPDATE.json",
+      "source_bytes": 409,
+      "published_bytes": 409,
+      "source_sha256": "39b9e653c3433cc7d3c4ac18eee877ce50d630fda2796a423ca166224ab50c69",
+      "published_sha256": "39b9e653c3433cc7d3c4ac18eee877ce50d630fda2796a423ca166224ab50c69",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-framing-reliability-fix-20261107/FINAL_REVIEW_V9.json",
+      "published": "evidence/development-20261107/bulk-framing-reliability-fix-20261107/FINAL_REVIEW_V9.json",
+      "source_bytes": 57525,
+      "published_bytes": 57525,
+      "source_sha256": "9b2e6dac34d12573bff405aab5e85f0111ee13d191efa5874e497a2560143ada",
+      "published_sha256": "9b2e6dac34d12573bff405aab5e85f0111ee13d191efa5874e497a2560143ada",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-framing-reliability-fix-20261107/DEPLOYMENT_V9.json",
+      "published": "evidence/development-20261107/bulk-framing-reliability-fix-20261107/DEPLOYMENT_V9.json",
+      "source_bytes": 762,
+      "published_bytes": 762,
+      "source_sha256": "c2a0794ce285a6e4df392d1ee8f38b2f6b18cabb3d16603981b7345109096b8c",
+      "published_sha256": "c2a0794ce285a6e4df392d1ee8f38b2f6b18cabb3d16603981b7345109096b8c",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-framing-reliability-fix-20261107/OFFHOST_VERIFICATION.json",
+      "published": "evidence/development-20261107/bulk-framing-reliability-fix-20261107/OFFHOST_VERIFICATION.json",
+      "source_bytes": 908,
+      "published_bytes": 882,
+      "source_sha256": "42937e0e8adac084bf3e6a82ca669787789d50e006c830168857d5ee67ccfef8",
+      "published_sha256": "2a73683369baaab392494ea71e15cfff8e0794d7d099cf043f285c63b3df5d41",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/bulk-framing-reliability-fix-20261107/ARCHIVE_RECEIPT.json",
+      "published": "evidence/development-20261107/bulk-framing-reliability-fix-20261107/ARCHIVE_RECEIPT.json",
+      "source_bytes": 472,
+      "published_bytes": 472,
+      "source_sha256": "3e863b9735c4ac2d6956dd8dd626b35211593df5979df6364cc66271a73b396c",
+      "published_sha256": "3e863b9735c4ac2d6956dd8dd626b35211593df5979df6364cc66271a73b396c",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-framing-reliability-fix-20261107/LINUX_ENVIRONMENT_TESTS-v9.txt",
+      "published": "evidence/development-20261107/bulk-framing-reliability-fix-20261107/LINUX_ENVIRONMENT_TESTS-v9.txt",
+      "source_bytes": 37095,
+      "published_bytes": 37095,
+      "source_sha256": "897effd02e70c3023e26e3a3c2aaa8cda10816b868e5ee2226901019e33b4387",
+      "published_sha256": "897effd02e70c3023e26e3a3c2aaa8cda10816b868e5ee2226901019e33b4387",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-framing-reliability-fix-20261107/LINUX_CONTROLLER_TESTS-v9.txt",
+      "published": "evidence/development-20261107/bulk-framing-reliability-fix-20261107/LINUX_CONTROLLER_TESTS-v9.txt",
+      "source_bytes": 5605,
+      "published_bytes": 5605,
+      "source_sha256": "465417e26d42dd0bd6f3df6d711e2bed4bd0d53991f1d2c291086d430ad24a9f",
+      "published_sha256": "465417e26d42dd0bd6f3df6d711e2bed4bd0d53991f1d2c291086d430ad24a9f",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk10000-continuous-20261107/AUTOMATIC_ROTATION_REVIEW.json",
+      "published": "evidence/development-20261107/bulk10000-continuous-20261107/AUTOMATIC_ROTATION_REVIEW.json",
+      "source_bytes": 3747,
+      "published_bytes": 3747,
+      "source_sha256": "5a7783eba35d9805cb9711af3fda0208bbc79e216c75a430d6f9e5e36f535b18",
+      "published_sha256": "5a7783eba35d9805cb9711af3fda0208bbc79e216c75a430d6f9e5e36f535b18",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk10000-continuous-20261107/OFFHOST_VERIFICATION.json",
+      "published": "evidence/development-20261107/bulk10000-continuous-20261107/OFFHOST_VERIFICATION.json",
+      "source_bytes": 610,
+      "published_bytes": 597,
+      "source_sha256": "923a025abcffe0e1f60c591cd37bc49042e37e3f7b210238e377255629d2e658",
+      "published_sha256": "dd90fe387ff9107cdbb374dcdce29da18e3338ef3c7b2603e75e6c1aff60044c",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/bulk10000-continuous-20261107/PRIOR_CAMPAIGN_VERIFICATION.json",
+      "published": "evidence/development-20261107/bulk10000-continuous-20261107/PRIOR_CAMPAIGN_VERIFICATION.json",
+      "source_bytes": 243,
+      "published_bytes": 243,
+      "source_sha256": "90ac259165423314d5b65e58287763a2df312767811a383c791867fb6b60e70e",
+      "published_sha256": "90ac259165423314d5b65e58287763a2df312767811a383c791867fb6b60e70e",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk10000-continuous-20261107/DEPLOYMENT.json",
+      "published": "evidence/development-20261107/bulk10000-continuous-20261107/DEPLOYMENT.json",
+      "source_bytes": 726,
+      "published_bytes": 726,
+      "source_sha256": "071525fa81c731445d949ab1e6133163be486ccf751cf80e383db6a15316a52b",
+      "published_sha256": "071525fa81c731445d949ab1e6133163be486ccf751cf80e383db6a15316a52b",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk10000-continuous-20261107/ARCHIVE_RECEIPT.json",
+      "published": "evidence/development-20261107/bulk10000-continuous-20261107/ARCHIVE_RECEIPT.json",
+      "source_bytes": 436,
+      "published_bytes": 436,
+      "source_sha256": "a7ebbde7573d78860fd7081c841865ae716620a597416c86ec2c6e55ab255961",
+      "published_sha256": "a7ebbde7573d78860fd7081c841865ae716620a597416c86ec2c6e55ab255961",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk10000-continuous-20261107/LINUX_CONTROLLER_TESTS.txt",
+      "published": "evidence/development-20261107/bulk10000-continuous-20261107/LINUX_CONTROLLER_TESTS.txt",
+      "source_bytes": 10284,
+      "published_bytes": 10284,
+      "source_sha256": "ef9563af4487392477f8b46a671d82603bb26222c62d7e45119f759f9b6e1224",
+      "published_sha256": "ef9563af4487392477f8b46a671d82603bb26222c62d7e45119f759f9b6e1224",
+      "transformation": "none"
+    }
+  ],
+  "publication_checks": [
+    {
+      "published": "evidence/development-20261107/source-checks/checks.json",
+      "published_bytes": 3154,
+      "published_sha256": "7947f5f956641e46c75f36b597cc2f388540ef89aead3264948c44ff00c35c63"
+    },
+    {
+      "published": "evidence/development-20261107/source-checks/collection.txt",
+      "published_bytes": 667,
+      "published_sha256": "00c12f738d61843cad010b0d2972fec5837a426dfd9613b03655836a6805ef77"
+    },
+    {
+      "published": "evidence/development-20261107/source-checks/environment.txt",
+      "published_bytes": 1119,
+      "published_sha256": "b782bd7a073721ef8897adc175ef2d6982bdef668f934ae74b20cf0a31e326bb"
+    },
+    {
+      "published": "evidence/development-20261107/source-checks/navigation.txt",
+      "published_bytes": 553,
+      "published_sha256": "399fdb5df60a30991caa2a3f33bbf440fbf05a7bd16980ba4152187f7a622187"
+    },
+    {
+      "published": "evidence/development-20261107/source-checks/perception.txt",
+      "published_bytes": 387,
+      "published_sha256": "f7b016bc2588d4b02448bfdf80a6b1c771a8785eb9aeb5c0f0e1f5f472758ecc"
+    },
+    {
+      "published": "evidence/development-20261107/source-checks/training.txt",
+      "published_bytes": 123,
+      "published_sha256": "d1f53523a3ec7ebb90b437e73e080e8f5468807bfba93252c3806053259c0e91"
+    },
+    {
+      "published": "evidence/development-20261107/source-checks/webcam.txt",
+      "published_bytes": 102,
+      "published_sha256": "feabb4add9e2ca3374e538560634d1ec97dc4f4ce89aab12f3d726e36ea9b2f6"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-07T22:56:18.659517+00:00",
+  "archive": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-continuous-20261107/bulk10000-continuous-qualification-evidence.tar.gz",
+  "sha256": "ecc5b3f21461b5491531b75956c9391e1af564770e7b6403a67c1def308ea62e",
+  "bytes": 968558,
+  "member_hashes": 119,
+  "qualification_windows": 2,
+  "linux_controller_tests": 61,
+  "active_collection_not_finished": true
+}

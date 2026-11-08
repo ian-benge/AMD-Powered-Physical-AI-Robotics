@@ -1,0 +1,23 @@
+{
+  "result": "PROTECTED_MANUAL_CLOSURE_VERIFIED_WITH_MONITORING_GAP",
+  "manual_verdict": {
+    "utc": "2026-11-05T17:27:05.333932+00:00",
+    "case": "/home/ian/capstone-training/rover-navigation/navigation_sessions/oem617-7141-rocm-manual-20261105t162414z-eb53-20261105T162421Z-ckgkz0sl",
+    "condition": "interactive manual use",
+    "post_teardown_clean": true,
+    "timed_hour_completed": false,
+    "result": "MANUAL_SESSION_CLOSED_CLEANLY",
+    "limitation": "No endurance/stability or autonomous navigation claim"
+  },
+  "post_teardown_utc": "2026-11-05T17:27:04.871530+00:00",
+  "post_teardown_clean": true,
+  "kernel_incident_matches": [],
+  "post_teardown_generic_verdict": "INCOMPLETE_OR_FAILED_REVIEW_REQUIRED",
+  "generic_verdict_explanation": "No timed-hour measurement was requested/completed; the protected manual-session verdict is authoritative for this bounded manual use.",
+  "capture_last_utc": "2026-11-05T17:22:07.991483+00:00",
+  "capture_last_event": "operator_capture_stop",
+  "temperature_last_utc": "2026-11-05T17:22:31.344387+00:00",
+  "temperature_max_tctl_c": 75.375,
+  "monitoring_gap": "Capture stopped at 17:22:07 UTC and temperatures ended at 17:22:31 UTC before the 17:27:04 UTC final teardown/journal record. No continuous final cooldown or end-to-end monitoring claim. All attended rendering and offline-review workload containers had stopped before capture ended.",
+  "scope": "Functional Phase 3 acceptance remains bounded to the monitored CPU/ROCm and live recordings; no endurance or autonomous-navigation acceptance."
+}

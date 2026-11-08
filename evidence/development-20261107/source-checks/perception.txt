@@ -1,0 +1,7 @@
+.....................................................................................Control connection stopped: ValueError: Commands must have increasing sequence numbers
+....Control connection stopped: TimeoutError:
+....................................................................
+----------------------------------------------------------------------
+Ran 157 tests in 30.881s
+
+OK

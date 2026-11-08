@@ -1,0 +1,17 @@
+{
+  "result": "SAMPLED_CAMERA_REVIEW_PASS",
+  "utc": "2026-11-05T17:19:25.571877+00:00",
+  "frames": [
+    1,
+    22,
+    43,
+    64,
+    85,
+    107
+  ],
+  "artifact": "RENDERED_RGB_CONTACT_SHEET.png",
+  "finding": "Textured ground, rocks and pale patches remain rendered in sampled views; no uniform/blank-camera defect observed.",
+  "scope": "Six recorded views plus operator completion report; not exhaustive object-visibility or detector-accuracy acceptance",
+  "candidate_pins_after_live": "PASS",
+  "no_containers_running": true
+}

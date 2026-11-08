@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-07T21:28:35.133886+00:00",
+  "application": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-capture-recovery-20261106/application-v9",
+  "runtime_sha256": "0ddc865b17e6949a9b70b16ee999d516193006787744d235090a50a9ea3512e6",
+  "controller_pins_sha256": "e9992a6e9ed7f9173d40a0de8c62a04dc3e6d44b11680ffb3c8af1777c4e21da",
+  "preserved_frames": 1600,
+  "preserved_scenes": 80,
+  "preserved_files": 6498,
+  "saved_planned_views_audited": 1600,
+  "views_triggering_new_headroom_check": 72,
+  "all_500_scene_reservations_unchanged": true,
+  "original_camera_application_unchanged": true,
+  "geometry_and_quality_thresholds_unchanged": true,
+  "static_check": "PASS",
+  "rendered_validation": "20_DIAGNOSTIC_FRAMES_PASS"
+}

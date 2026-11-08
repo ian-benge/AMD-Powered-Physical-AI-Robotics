@@ -1,0 +1,153 @@
+{
+  "status": "PROCESS_CLEANUP_FIX_AND_PILOT200_AUTOMATED_ACCEPTANCE_PASS",
+  "utc": "2026-11-06T16:02:29.088721+00:00",
+  "collection": "/home/ian/capstone-training/rover-navigation/navigation_sessions/pilot200-20261106T144029Z",
+  "frames": 200,
+  "populated_frames": 160,
+  "background_frames": 40,
+  "primary_export_target_counts": {
+    "3": 40,
+    "2": 40,
+    "1": 40,
+    "0": 40
+  },
+  "source_label_counts": {
+    "0": 2316,
+    "2": 212,
+    "1": 279
+  },
+  "geometry_only_object_appearances": 914,
+  "minimum_depth_support": 0.9026548673,
+  "minimum_sensor_box_iou": 0.8571428571,
+  "validation_errors": [],
+  "scene_results": [
+    {
+      "id": "scene_4312000",
+      "frames": 20,
+      "scene_sha256": "30ef9fa85a8191c2e8be1c63ca2c84d5d1ffd2a83b4c4d3c2d4096432174b256",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-001",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312001",
+      "frames": 20,
+      "scene_sha256": "120fa18034d240a385d108780085d174b24546abe20a91292062bf310f38d3d7",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-002",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312003",
+      "frames": 20,
+      "scene_sha256": "97a71b7480c06431f5d64807897f3469d4a0a40dd3b0f22824fff7bf4afdda8a",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-003",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312005",
+      "frames": 20,
+      "scene_sha256": "43826c8658fde8933b06cae6a251fdc04f60da9653214a379d1cbcb119103db9",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-004",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312006",
+      "frames": 20,
+      "scene_sha256": "43cca1d3dbc0e703f01a65d06f2b5795d2f2c114d5037c18fb8d4142e04d95b5",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-005",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312009",
+      "frames": 20,
+      "scene_sha256": "83d68c8cc06191a346ba1b5debc0f91e46d00408eaa9fb451f105531931efefc",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-007",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312010",
+      "frames": 20,
+      "scene_sha256": "75fd84f8b9a29d9245c71bf71e1b7e59823c3de6e9b4ee5e92d342073606dbde",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-008",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312012",
+      "frames": 20,
+      "scene_sha256": "cabceb280f612e815a4ece33c4cf50b602e99f0979b0741e74541a9755fcce90",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-009",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312013",
+      "frames": 20,
+      "scene_sha256": "d2f50744f09c1660fb86b06426fdb3474ade8aac0623b357936e7e8960a56ce4",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-011",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    },
+    {
+      "id": "scene_4312016",
+      "frames": 20,
+      "scene_sha256": "58fb1aee63c526fe3e3ac7a9a7a569fd995804b6de820598a7b5f6345eab5aae",
+      "proof": "renderer-provenance/2026-11-06T154634.877299-0000/launch-012",
+      "evidence_hashes_verified": 80,
+      "cleanup_remaining": [],
+      "cleanup_actions": 1
+    }
+  ],
+  "bundle_files_verified": 1186,
+  "legacy_frames_preserved_and_hash_verified": 40,
+  "legacy_runtime_proof_reused": false,
+  "failed_attempts_preserved": [
+    {
+      "attempt": "attempts/scene_4312013/attempt-0001",
+      "error": "Capture launch has no unique owned partition",
+      "exit_code": null,
+      "result": "FAILED_PRESERVED"
+    },
+    {
+      "attempt": "attempts/scene_4312009/attempt-0001",
+      "error": "Scene launch produced no completed capture report; see /collection/dataset/attempts/scene_4312009/attempt-0001/launch.log",
+      "exit_code": 0,
+      "result": "FAILED_PRESERVED"
+    }
+  ],
+  "rendered_cleanup_records": 11,
+  "all_rendered_cleanups_zero_remaining": true,
+  "capture_wall_seconds": 554.13916191,
+  "guard_peak_tctl_c": 80.75,
+  "temperature_log_peak_tctl_c": 80.875,
+  "protected_finish": {
+    "utc": "2026-11-06T15:59:08.846723+00:00",
+    "case": "/home/ian/capstone-training/rover-navigation/navigation_sessions/oem617-7141-rocm-manual-20261106t152926z-12cb-20261106T152930Z-qn9ddws_",
+    "condition": "interactive manual use",
+    "post_teardown_clean": true,
+    "timed_hour_completed": false,
+    "result": "MANUAL_SESSION_CLOSED_CLEANLY",
+    "limitation": "No endurance/stability or autonomous navigation claim"
+  },
+  "post_teardown_result": "INCOMPLETE_OR_FAILED_REVIEW_REQUIRED",
+  "kernel_incident_matches": [],
+  "capture_last_event_utc": "2026-11-06T15:59:10.374377+00:00",
+  "temperature_last_utc": "2026-11-06T15:59:10.045472+00:00",
+  "monitoring_covers_protected_finish": true,
+  "dataset_human_review_approved": false,
+  "detector_training_started": false
+}

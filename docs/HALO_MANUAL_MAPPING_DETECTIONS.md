@@ -73,13 +73,20 @@ bash scripts/halo_navigation.sh \
   /home/ian/capstone-training/mars-pilot50-v2/dataset/live_eval_scenes \
   scene_050000 manual-mapping-001 \
   gui:=true rviz:=true preview:=true mission_controls:=true \
+  sensor_render_engine:=ogre sensor_headless:=false \
   controls_port:=8777 mapping_on_confirm:=true \
   detector_model:="$MODEL"
 ```
 
 The wrapper rejects existing session directories and an occupied container name.
 Keep the full Ubuntu remote desktop connected for Gazebo/RViz. For headless use,
-set `gui:=false rviz:=false`. Omit `detector_model` to run camera/manual mapping
+select `sensor_render_engine:=ogre2 sensor_headless:=true gui:=false rviz:=false`.
+The visible Ogre profile above is the current Halo workaround for reproduced
+Ogre2 blank RGB-D output. Its bounded comparison and remaining limitations are
+in the [October 27 camera report](HALO_CAMERA_ADAPTIVE_REPORT_20261027.md).
+Source defaults remain Ogre2; Restart preserves the selected renderer. Ogre
+requires an active display, and earlier detector accuracy results do not
+qualify its changed image appearance. Omit `detector_model` to run camera/manual mapping
 without inference; the page explicitly reports that no detector is configured.
 `detector_backend:=remote_http` is the default when a model is supplied.
 
@@ -119,8 +126,13 @@ the Halo port 8773; use the forwarded URL explicitly on Windows.
    clearance with **Confirm clear launch area**. Confirmation cannot erase
    measured hazards or make unseen terrain outside that disk traversable.
 2. Wait for fresh sensors and **ready**, then click **Enable manual drive**.
-3. Hold **W / Up** for 0.05 m/s forward motion. Hold **A / Left** or **D / Right**
-   for 0.3 rad/s turns. Pointer buttons provide the same hold behavior. Reverse
+3. Set **Drive speed** and **Turn speed** with the sliders or minus/plus buttons.
+   Forward defaults to **0.20 m/s**, adjustable from 0.01 to **0.50 m/s**.
+   Turning defaults to **0.30 rad/s**, adjustable from 0.05 to **0.60 rad/s**.
+   Hold **W / Up** to move forward; hold **A / Left** or **D / Right** to turn.
+   Pointer buttons provide the same hold behavior. Changing either speed releases
+   held movement while retaining manual selection; press a direction again to move.
+   **Reset speeds**, page reload and scene Restart restore the defaults. Reverse
    is unavailable. Releasing a key stops that input and sends zero velocity when
    no drive keys remain held. Manual mode stays selected between commands.
    The active page continues sending zero commands at rest; the guard's
@@ -140,6 +152,20 @@ mapping** is pressed. Camera and localization initialize in the background.
 After confirmation, wait for ready and select manual mode. A new session never
 reuses a clearance confirmation or motion command from the old one.
 
+**Generate new scene** stops the rover and creates a fresh seeded Martian
+terrain/rock layout using the existing asset library and the current scene's
+environment settings. It starts a new session with an empty map. Generation
+outputs are isolated under `navigation_sessions/generated-scenes/`; the
+training bundle and earlier sessions are retained. It does not capture a new
+training dataset. After generation, inspect and confirm the new launch area
+before enabling manual drive. **Restart scene** then repeats that generated
+layout, again with fresh mapping state.
+
+Use **Expand camera** above the camera image for a larger view. **Restore
+layout** or Escape returns to the map layout. This resizes the viewing area;
+camera resolution and detector input remain unchanged. Changing the view
+releases held drive directions while keeping the selected manual session.
+
 An `unsafe_or_unobserved_ground` stop means the proposed motion's full rover
 footprint reaches an unsafe or unknown cell. The page now names that cause.
 Selecting manual mode cannot make that route safe; turn toward mapped ground
@@ -149,6 +175,21 @@ The **Manual drive enabled** button confirms that the page still owns its
 manual session. Stop ends that session. Leaving the page or losing its fresh
 connection releases control; a connection loss while moving still causes a
 latched `command_timeout`. Restoring the connection cannot restart movement.
+Old status responses from before Enable are discarded, as are responses older
+than the latest applied status. A current readiness failure still ends the
+selection. While the last accepted command is zero, browser ownership tolerates
+up to ten seconds between input packets. Once a nonzero command is accepted,
+the existing 0.25-second browser input timeout applies, including to a late
+zero packet; the independent guard's 0.35-second command timeout also remains.
+A browser scheduling pause over 0.25 seconds clears held directions before
+another packet is sent, so resuming the page cannot replay a held drive input.
+
+The [October 27 controls report](HALO_DASHBOARD_CONTROLS_20261027.md) records
+the restored dashboard and speed-control checks; the
+[dashboard follow-up](HALO_DASHBOARD_UPDATE_20261027.md) records the idle-selection,
+camera expansion and generated-layout checks. The 0.50 m/s forward cap is
+implemented at both the browser-input boundary and the independent guard;
+driving at that speed has not been qualified by these stationary UI checks.
 
 Startup can record `invalid_odometry` before RGB-D localization initializes.
 It can remain visible while the rover shows stopped/ready with fresh sensors.
@@ -199,8 +240,11 @@ placements; it does not make detector classifications infallible.
 Red terrain is separate from detector candidates: calibrated depth is
 back-projected into 3D, transformed at its observation time and classified on
 2.5 cm cells. A measured slope above 12 degrees or height span above 3 cm marks
-a hazard. Two depth-frame confirmations retain it for the session; later free
-readings cannot erase it. The page displays a conservative 5 cm projection.
+a hazard. Two depth-frame confirmations retain it. With adaptive terrain
+enabled, weak hazards can be reconsidered only after three closer, independent
+views establish dense safe ground; protected hazards remain blocked. Ordinary
+free readings alone cannot erase a hazard. See [the policy](ADAPTIVE_TERRAIN.md).
+The page displays a conservative 5 cm projection.
 Gray is unknown and pale ground is considered traversable. A red patch can be
 rough or steep ground rather than a rock, and depth/localization errors can
 also create conservative markings.
@@ -234,9 +278,21 @@ node scripts/navigation_browser_check.cjs navigation_sessions/SESSION/checks/bro
 The optional `--drive` starts with a 750 ms forward hold; `--turn-right` starts
 with a three-second turn. Both then check two short turns separated by idle
 intervals, explicit Stop, and a bounded connection-loss stop during a short
-forward command. These options select manual mode and require an already
+forward command. The helper explicitly selects 0.05 m/s forward and 0.30 rad/s
+turn speeds so its bounded checks do not inherit the new operator defaults.
+These options select manual mode and require an already
 inspected, confirmed launch area. They use a separate Chrome test profile and
 save a screenshot and UI-state report. They do not use a simulator truth feed.
+
+To check only the speed widgets while leaving the rover stopped and disarmed,
+use the separate Windows checker with the dashboard forwarded to port 8774:
+
+```powershell
+node scripts/navigation_speed_browser_check.cjs navigation_sessions/SESSION/checks/speeds-001
+```
+
+It checks the defaults, adjustments, caps and Reset, then records a screenshot
+and JSON report. It sends no motion, clearance or mode-selection requests.
 
 Stop the rover before ending the launch terminal. Stop the dedicated host
 detector with Ctrl+C in its own terminal when finished. Leave other Halo/NPU

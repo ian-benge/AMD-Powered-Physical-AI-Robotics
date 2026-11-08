@@ -1,0 +1,10 @@
+{
+  "result": "OFF_HOST_FULL_ARCHIVE_VERIFIED",
+  "archive": "C:\\Projects\\Capstone\\AMD-Powered-Physical-AI-Robotics\\navigation_sessions\\terrain-phase2-20261104\\terrain-phase2-20261105T031610Z-final-evidence.tar.gz",
+  "bytes": 3143990370,
+  "sha256": "1a4d34029e6f43a674fd821c5f7a87d773221bde33bdfd83ab55228d1d87982b",
+  "content_files": 10318,
+  "manifest_verified": true,
+  "symlinks": 8,
+  "method": "Streaming SHA-256 of every physical file; hardlinks resolve to already verified identical content. No extraction."
+}

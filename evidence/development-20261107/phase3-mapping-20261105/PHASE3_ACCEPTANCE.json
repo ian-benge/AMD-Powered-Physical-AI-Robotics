@@ -1,0 +1,51 @@
+{
+  "status": "ACCEPTED",
+  "phase": 3,
+  "utc": "2026-11-05T22:25:30.231163+00:00",
+  "scope": "Bounded sensor-derived mapping and adaptive-clearing validation",
+  "candidate": "application-v5",
+  "candidate_pinned_files": 1860,
+  "accepted_renderer_image": "sha256:0b607598f65a9355057a28a8e36dedcab72baf33ee8955882fd43460314477fa",
+  "source_sha256": "2be9f57854cae6660846a6b561fb7ad1c5ef4402006ef76cf68ffb537a777da8",
+  "checks": {
+    "controlled_cases": 10,
+    "cpu_ros_cases": 10,
+    "rocm_ros_cases": 10,
+    "exact_published_cost_array_matches": 408,
+    "rendered_captures": 107,
+    "image_time_truth_pairs": 107,
+    "depth_publication_and_causes": "PASS",
+    "guard_review": "PASS",
+    "visual_sample_review": "PASS",
+    "protected_manual_teardown": "PASS",
+    "kernel_incident_matches": 0
+  },
+  "clearing_case": "Declared 6% short-return artifact creates 24 weak hazards on flat ground; all clear from both maps after three qualified translated views, never rearming the guard.",
+  "live_clearing_observed": false,
+  "maximum_sampled_ground_p95_m": 0.0042411779377608955,
+  "monitoring_gap": "Capture stopped at 17:22:07 UTC and temperatures ended at 17:22:31 UTC before the 17:27:04 UTC final teardown/journal record. No continuous final cooldown or end-to-end monitoring claim. All attended rendering and offline-review workload containers had stopped before capture ended.",
+  "limitations": [
+    "Controlled false hazard is injected, not a reproduced natural sensor defect.",
+    "Real recorded ground statistics exclude object envelopes and the rover footprint.",
+    "No field traversability, endurance, continuous final-cooldown monitoring or autonomous navigation claim.",
+    "Windows dataset-review concurrent file replacement still has its unrelated WinError 5; Linux suite passes."
+  ],
+  "next_planned_phase": "Phase 4 reviewed 200-image training pilot before expansion to 10,000; not started or authorized in Phase 3.",
+  "evidence_sha256": {
+    "ORIGIN.json": "595e4063fa00cda06bc9e83156a451a9a238614bc6c77fdafc6b05215d4ed9bd",
+    "CPU_ROCM_REPLAY_REVIEW.json": "90ee5f53f72f48f4161db16b1173baf902de9dbaf0021cd617d05621ec326ee7",
+    "CPU_ROCM_REPLAY_SCOPE_NOTE.json": "5583260045511d4e0807e7c945ed0766e099bdff9626e84b3092060527b1f5f4",
+    "RENDERED_CAPTURE_REVIEW.json": "1df9c863407b37f7d86787c904cac2ec0a23d44cf42d23b173cbc514c4cf751f",
+    "ATTENDED_GUARD_REVIEW_v2.json": "bfd6f4964967a5e016df3832e25b148f5cb628fa3048d996026e7c2ff21b5bae",
+    "ATTENDED_VISUAL_REVIEW.json": "2e450ba9d3c3d8c4d5ef1bbdfeb77ed0c2430d079f8816189dcce14dad68ce72",
+    "PROTECTED_CLOSURE_REVIEW.json": "a8bbe632c832eb2f6c2bb44687e941a33b09e331600c887a333f2b0c0d35f864",
+    "application-v5/CANDIDATE_CONFIGURATION.json": "f5520b7880ba402b6bd6e606b65214463eac258245df4f8c48437e945a8e49e2",
+    "source-v5.tar.gz": "2be9f57854cae6660846a6b561fb7ad1c5ef4402006ef76cf68ffb537a777da8",
+    "controlled-inputs-v3.tar.gz": "fe55e100112d62217710705e412e4a1c254a76e27d47f927ee183f0090055a6a",
+    "protected-session-case/MANUAL_SESSION_FINAL.json": "d7cfd1ddb570ab472f74e199eb0e4c7c8c80455ad7a0031c21ee909d3c9e2049",
+    "protected-session-case/POST_TEARDOWN.json": "eed4792c12cc090d8ae0cbe39d62cd22f2f6aa8af3ab48f89e8b2e903fe984f9",
+    "final-reports/PHASE3_MAPPING_ACCEPTANCE_20261105.md": "032ad4973b1f6f1cd6579c64a9cb7dea5efb101c71a9e31dbcb0115dbfb2ac46",
+    "final-reports/PHASE3_MAPPING_GUIDE.md": "01a43a3a2fbe7df6059f6b175547e21b2838aba99cefe1f8b93893bbb247fdef"
+  },
+  "archive_verification": "Off-host streaming manifest/archive verification is a required separate final handoff receipt."
+}

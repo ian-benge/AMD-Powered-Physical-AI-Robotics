@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-05T15:10:57.916381+00:00",
+  "archive": "/home/ian/capstone-training/rover-navigation/navigation_sessions/terrain-phase2-20261105T031610Z-final-evidence.tar.gz",
+  "bytes": 3143990370,
+  "sha256": "1a4d34029e6f43a674fd821c5f7a87d773221bde33bdfd83ab55228d1d87982b",
+  "manifest_sha256": "8052d3a9fac978278902c9fdfe9e7f8928e9e3ca0764d76f06066aa44d556f45",
+  "files": 10318,
+  "symlinks": 8,
+  "root": "terrain-phase2-20261105T031610Z"
+}

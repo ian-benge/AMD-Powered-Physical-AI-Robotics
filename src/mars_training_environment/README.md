@@ -11,7 +11,34 @@ The default world is 20 m by 20 m. Size, relief, rock counts, lighting, and
 camera settings come from `config/sample.json`. Earth gravity (`0 0 -9.81`)
 stays on, because the physical rover is tested on Earth.
 
-## Latest verified capture: October 12, 2026
+## November 2026 profiles and capture
+
+`config/sample.json` retains the legacy 20 m configuration described below.
+`mixed_reachable.json` adds a 20 m shared visual/collision surface and certified
+reachable staging areas. `mixed_reachable_v2.json` adds a 40 x 40 m operating
+area, 20 m terrain apron, 257 ? 257 shared grid, 8192-pixel ground composite,
+three density presets and independently seeded appearance streams.
+
+The qualified Halo camera candidate uses Ogre, 960 ? 540 RGB, 0.40 rad downward
+tilt, 20 m RGB visibility and 8 m usable depth. Geometry-derived labels cover
+eligible RGB-visible targets beyond depth range. Source annotations retain
+three class IDs; mudstone becomes the fourth export class through appearance
+metadata. Collection never globally reinterprets legacy IDs.
+
+The 200-image pilot passed automated capture and process-cleanup validation.
+A separate 10,000-image campaign is in progress, with verified resume, bounded
+camera-view recovery and automatic monitoring renewal. Its data has not yet
+been approved for training. The 40 m navigation candidate remains experimental
+because latency and remaining density checks are incomplete.
+
+See the [40 m closeout](../../docs/SIMULATION_ENVIRONMENT_V2_CLOSEOUT.md),
+[pilot report](../../docs/PILOT200_PROCESS_CLEANUP_FIX_20261106.md) and
+[continuous collection guide](../../docs/BULK_CONTINUOUS_COLLECTION_GUIDE.md).
+These Halo wrappers require separately prepared, pinned deployment artifacts;
+they are not an installation procedure for a fresh checkout. The descriptions
+below retain the earlier profile and capture history.
+
+## Historical capture: October 12, 2026
 
 The Halo v2 pilot completed all 50 images across ten scenes with `errors: []`,
 split 30 train / 10 val / 10 test. All 324 exported mesh labels matched a

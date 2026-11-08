@@ -1,0 +1,59 @@
+{
+  "status": "OBSERVED_RESOURCE_ACCOUNTING_NOT_ENDURANCE_QUALIFICATION",
+  "utc": "2026-11-06T04:40:09.053568+00:00",
+  "source_sha256": {
+    "LIVE_RESOURCE_OBSERVATIONS.jsonl": "5da9558a3051b64cd1919bc71d508d27826d07f1a4b753af7512c987149e8a93",
+    "LIVE_RESOURCE_OBSERVATIONS_2.jsonl": "2507e82d6b22aa1ecad341b677174dee863976a09a37a6272cf63f35de72b37a"
+  },
+  "samples": 554,
+  "first_utc": "2026-11-06T03:50:56.032467+00:00",
+  "last_utc": "2026-11-06T04:39:11.945251+00:00",
+  "peak_tctl_c": 75.5,
+  "minimum_host_memavailable_bytes": 51526057984,
+  "peak_driver_accounting_bytes": {
+    "/sys/class/drm/card1/device/mem_info_preempt_used": 111366144,
+    "/sys/class/drm/card1/device/mem_info_vram_used": 4446638080,
+    "/sys/class/drm/card1/device/mem_info_vis_vram_used": 4446638080,
+    "/sys/class/drm/card1/device/mem_info_gtt_used": 188264448
+  },
+  "containers": {
+    "323fe1cb5acf8034c2b94e01e00addf8e3767e49b7b5b623c0d6029ee1fa7632": {
+      "samples": 41,
+      "first_utc": "2026-11-06T03:50:56.032467+00:00",
+      "last_utc": "2026-11-06T03:54:24.085998+00:00",
+      "peak_memory_current_bytes": 5852721152,
+      "image": "sha256:0b607598f65a9355057a28a8e36dedcab72baf33ee8955882fd43460314477fa"
+    },
+    "ddb7ce8d058b2aaefbc4859984c081e37f34fa6e0ef7b1b15fe9daef8972df44": {
+      "samples": 65,
+      "first_utc": "2026-11-06T04:17:19.925395+00:00",
+      "last_utc": "2026-11-06T04:22:51.607446+00:00",
+      "peak_memory_current_bytes": 6037069824,
+      "image": "sha256:0b607598f65a9355057a28a8e36dedcab72baf33ee8955882fd43460314477fa"
+    },
+    "9cbc5db5a66d63a4eab57a5bc8fb8d7c2408322410c9f1c6bafe3aad49477777": {
+      "samples": 12,
+      "first_utc": "2026-11-06T04:34:33.703527+00:00",
+      "last_utc": "2026-11-06T04:35:30.838022+00:00",
+      "peak_memory_current_bytes": 4001161216,
+      "image": "sha256:0b607598f65a9355057a28a8e36dedcab72baf33ee8955882fd43460314477fa"
+    }
+  },
+  "sampler_termination": {
+    "LIVE_RESOURCE_OBSERVATIONS.jsonl": [
+      {
+        "utc": "2026-11-06T04:20:58.052591+00:00",
+        "kind": "ended",
+        "reason": "bounded duration or requested end"
+      }
+    ],
+    "LIVE_RESOURCE_OBSERVATIONS_2.jsonl": [
+      {
+        "utc": "2026-11-06T04:39:17.198380+00:00",
+        "kind": "ended",
+        "reason": "[Errno 2] No such file or directory: '/proc/1117205/stat'"
+      }
+    ]
+  },
+  "scope": "Host/GPU accounting includes other desktop/services; container memory includes cache. Samples are observations, not isolated allocations or full-session peaks."
+}

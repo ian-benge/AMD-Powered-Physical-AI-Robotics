@@ -1,0 +1,83 @@
+{
+  "checked_utc": "2026-11-08T00:09:26.269739+00:00",
+  "platform": "Windows, Python 3.12 (isolated virtual environment)",
+  "dependency_spec": "requirements-test.txt",
+  "scope": "CPU source checks and browser control harnesses; no new ROS build, GPU, rendered or motion acceptance is implied.",
+  "suites": {
+    "navigation": {
+      "tests": 208,
+      "skipped": 4,
+      "seconds": 13.685,
+      "log": "navigation.txt",
+      "result": "PASS"
+    },
+    "perception": {
+      "tests": 157,
+      "skipped": 0,
+      "seconds": 30.881,
+      "log": "perception.txt",
+      "result": "PASS"
+    },
+    "environment": {
+      "tests": 236,
+      "skipped": 5,
+      "seconds": 372.644,
+      "log": "environment.txt",
+      "result": "PASS"
+    },
+    "training": {
+      "tests": 24,
+      "skipped": 0,
+      "seconds": 0.556,
+      "log": "training.txt",
+      "result": "PASS"
+    },
+    "collection": {
+      "tests": 75,
+      "skipped": 3,
+      "seconds": 0.969,
+      "log": "collection.txt",
+      "result": "PASS"
+    },
+    "webcam": {
+      "tests": 4,
+      "skipped": 0,
+      "seconds": 0.001,
+      "log": "webcam.txt",
+      "result": "PASS"
+    }
+  },
+  "total_tests": 704,
+  "total_skipped": 12,
+  "browser_harnesses": [
+    {
+      "test": "src/rover_perception/test/test_live_controls.cjs",
+      "result": "PASS",
+      "output": "PASS: held WASD/arrows, live speed sliders, release before ACK, Space/blur/hidden stops, pointer cancellation, stale views, reconnect and bounded frame delivery"
+    },
+    {
+      "test": "src/rover_navigation/test/test_manual_speed_controls.cjs",
+      "result": "PASS",
+      "output": "Manual speed controls passed: defaults, limits, held-input release, fresh press, focus, Stop, restart."
+    },
+    {
+      "test": "src/rover_navigation/test/test_camera_recovery.cjs",
+      "result": "PASS",
+      "output": "Camera recovery passed: retain last frame, label stale, decode failure, retry, restart fence, no motion."
+    },
+    {
+      "test": "src/rover_navigation/test/test_control_lifecycle.cjs",
+      "result": "PASS",
+      "output": "Control lifecycle passed: delayed status/error, response order, current fault, late Enable, camera expansion."
+    }
+  ],
+  "hardware_or_os_skips": "Four actual ROCm cases; five Linux process-cleanup cases; three collection native/Linux cases.",
+  "publication_fixes": [
+    "Capture ordering fixture uses middleware import doubles when ROS/Gazebo are absent and deterministic wall timing.",
+    "Native Halo executable test skips on generic CI without the pinned operator kit.",
+    "Atomic review-page replacement retries transient Windows sharing errors at most ten times; persistent failures retain the previous page and remove temporary files."
+  ],
+  "initial_failures": "The initial environment run exposed zero elapsed fixture time and concurrent Windows sharing errors. Those failures were retained locally, corrected and the environment suite rerun; the other five suites were unchanged and retained their passing runs.",
+  "result": "PASS",
+  "log_normalization": "LF line endings; trailing whitespace removed from portable test logs."
+}
