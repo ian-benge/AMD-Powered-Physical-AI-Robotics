@@ -64,11 +64,33 @@ class LaunchTests(unittest.TestCase):
                            detector_model='', detector_backend='remote_http', detector_url='http://127.0.0.1:8775',
                            mapping_on_confirm='false', controls_port='8774', terrain_backend='cpu',
                            terrain_url='http://127.0.0.1:8782')
+            context.update(adaptive_terrain='true', sensor_headless='true', sensor_render_engine='ogre2', camera_rgb_far='8')
+            context.update(manual_max_linear_speed='0.50',manual_max_angular_speed='0.60')
+            context.update(map_size_m='auto',manual_initial_linear_speed='-1')
             spec = importlib.util.spec_from_file_location('tested_navigation', ROOT/'src/rover_navigation/launch/navigation.launch.py')
             launch = importlib.util.module_from_spec(spec)
             with patch.dict(sys.modules, self.stubs(folder)):
                 spec.loader.exec_module(launch)
                 nodes = launch.setup(context)
+                for invalid in ('other', 'ogre'):
+                    with self.assertRaises(ValueError):
+                        launch.setup(dict(context, sensor_render_engine=invalid, session=str(folder/'invalid-renderer')))
+                    self.assertFalse((folder/'invalid-renderer').exists())
+                alternate = launch.setup(dict(context, gui='true', sensor_render_engine='ogre', sensor_headless='false',
+                                              session=str(folder/'renderer-check')))
+                alternate_world = next(n for n in alternate if n.get('kind') == 'world')
+                alternate_args = dict(alternate_world['launch_arguments'])['gz_args']
+                self.assertIn('--render-engine-server ogre ', alternate_args)
+                self.assertNotIn('--headless-rendering', alternate_args)
+                extended = launch.setup(dict(context, sensor_render_engine='ogre', sensor_headless='false',
+                                              camera_rgb_far='20', session=str(folder/'extended-rgb')))
+                extended_camera=ET.parse(folder/'extended-rgb/robot.urdf').find('.//sensor/camera')
+                self.assertEqual(float(extended_camera.findtext('clip/far')),20)
+                self.assertEqual(float(extended_camera.findtext('depth_camera/clip/far')),8)
+                self.assertEqual(json.loads((folder/'extended-rgb/session.json').read_text())['camera']['far_clip_mode'],'axial')
+                for invalid in ('nan','inf','7','21'):
+                    with self.assertRaises(ValueError):
+                        launch.setup(dict(context,camera_rgb_far=invalid,session=str(folder/'invalid-rgb')))
                 for invalid in ('nan', 'inf', '-0.1', str(math.pi/2)):
                     bad = dict(context, camera_pitch=invalid, session=str(folder/'invalid-pitch'))
                     with self.assertRaises(ValueError):
@@ -77,7 +99,7 @@ class LaunchTests(unittest.TestCase):
                 database = folder/'saved.db'
                 database.write_bytes(b'source-database')
                 localization = dict(context, session=str(folder/'localized'), database=str(database), preview='true',
-                                    rviz='true', mission_controls='true', terrain_collision='scene', detector_model='/trained.pt',
+                                    gui='true', rviz='true', mission_controls='true', terrain_collision='scene', detector_model='/trained.pt',
                                     mapping_on_confirm='true')
                 localized_nodes = launch.setup(localization)
                 with self.assertRaises(ValueError):
@@ -92,6 +114,12 @@ class LaunchTests(unittest.TestCase):
             self.assertEqual(viewer['parameters'][0]['control_mode'], 'gazebo')
             self.assertIn('rviz2', [n.get('executable') for n in localized_nodes])
             self.assertIn('mission_controls', [n.get('executable') for n in localized_nodes])
+            world_launch = next(n for n in localized_nodes if n.get('kind') == 'world')
+            self.assertIn('--headless-rendering', dict(world_launch['launch_arguments'])['gz_args'])
+            self.assertNotIn('-s ', dict(world_launch['launch_arguments'])['gz_args'])
+            terrain_node = next(n for n in localized_nodes if n.get('executable') == 'terrain')
+            self.assertTrue(terrain_node['parameters'][1]['adaptive_terrain'])
+            self.assertTrue(terrain_node['parameters'][1]['evidence_output'].endswith('terrain-evidence-events.jsonl'))
             controls = next(n for n in localized_nodes if n.get('executable') == 'mission_controls')
             self.assertEqual(controls['parameters'][0]['session'], str(folder/'localized'))
             terrain = next(n for n in localized_nodes if n.get('executable') == 'terrain')

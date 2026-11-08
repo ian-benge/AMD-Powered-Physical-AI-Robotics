@@ -9,6 +9,8 @@ import numpy as np
 
 from .core import Grid, TerrainMemory, depth_points, rotation, transform, traversability
 
+MAX_GRID_SIDE = 1600
+
 
 def depth_array(data, encoding, width, height, step, bigendian, k, stride=3):
     kinds = {'32FC1': ('f4', 1.), '16UC1': ('u2', .001)}
@@ -28,8 +30,8 @@ def dimensions(resolution, size, center, max_slope, max_step):
             or len(center) != 2 or not np.isfinite(center).all()):
         raise ValueError('Invalid terrain dimensions, center or thresholds')
     n = int(round(size/resolution))
-    if not 1 <= n <= 1200:
-        raise ValueError('Terrain grid must have 1..1200 cells per dimension')
+    if not 1 <= n <= MAX_GRID_SIDE:
+        raise ValueError('Terrain grid must have 1..1600 cells per dimension')
     return n, np.floor((np.asarray(center)-size/2)/resolution)*resolution
 
 

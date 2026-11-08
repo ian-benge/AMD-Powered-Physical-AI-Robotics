@@ -90,6 +90,14 @@ class GuardAdapterTests(unittest.TestCase):
             self.node.gate.mode = 'autonomous'
             self.node.odometry(msg)
             self.assertEqual(self.node.gate.reason, 'invalid_odometry')
+            self.assertIn('odometry', self.node.gate.fault['detail'])
+
+    def test_nonfinite_covariance_diagnostic_stays_valid_json(self):
+        msg = self.message()
+        msg.pose.covariance[0] = math.nan
+        self.node.odometry(msg)
+        self.assertIsNone(self.node.gate.fault['detail']['odometry']['covariance_diagonal'][0])
+        json.dumps(self.node.gate.fault, allow_nan=False)
 
     def test_lost_odometry_is_reset_only_before_any_motion(self):
         lost = self.message()

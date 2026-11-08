@@ -12,6 +12,7 @@ from rover_training.geometry import CLASS_NAMES, camera_rigid_from_base, class_i
 from .candidates import drape_mesh, world_to_pixels, _inside
 from .common import require_label_schema, rotation
 from .terrain import Terrain
+from .environment_v2 import is_v2
 
 
 def clip_polygon(poly, z, keep_above):
@@ -63,8 +64,10 @@ def _rasterize_small(tri, output, fx, fy, cx, cy):
     np.minimum.at(output.reshape(-1),flat,depth)
 
 
-def rasterize(vertices, faces, intrinsics, near, far, batch_small=True):
-    """Optical-axis depth with Ogre2 RGB-D near-Z and radial-far clipping."""
+def rasterize(vertices, faces, intrinsics, near, far, batch_small=True, far_clip_mode='radial'):
+    """Optical-axis depth; retain historical radial far unless qualified axial."""
+    if far_clip_mode not in ('radial', 'axial'):
+        raise ValueError('far_clip_mode must be radial or axial')
     h,w = int(intrinsics['height']),int(intrinsics['width'])
     output = np.full((h,w), np.inf, dtype=np.float32)
     vertices = np.asarray(vertices)
@@ -125,7 +128,8 @@ def rasterize(vertices, faces, intrinsics, near, far, batch_small=True):
     # that the sensor replaces with background RGB and infinite depth.
     yy, xx = np.nonzero(np.isfinite(output))
     z = output[yy,xx]
-    distance = z*np.sqrt(1+((xx+.5-cx)/fx)**2+((yy+.5-cy)/fy)**2)
+    distance = (z*np.sqrt(1+((xx+.5-cx)/fx)**2+((yy+.5-cy)/fy)**2)
+                if far_clip_mode == 'radial' else z)
     clipped = (distance>far-1e-6)|(z<near+1e-6)
     output[yy[clipped],xx[clipped]] = np.inf
     return output
@@ -174,6 +178,11 @@ class Annotator:
         by_id = {a['id']:a for a in assets}
         t = scene['terrain']
         self.terrain = Terrain(t['heights'],t['size_m']).mesh()
+        if t.get('context_geometry'):
+            from .environment_v2 import apron_mesh
+            v,f=self.terrain
+            av,af=apron_mesh(Terrain(t['heights'],t['size_m']),t['context_geometry']['width_m'])
+            self.terrain=np.concatenate([v,av]),np.concatenate([f,af+len(v)])
         self.meshes = []
         cache = {}
         for obj in scene['objects']:
@@ -201,19 +210,31 @@ class Annotator:
         cam_r,cam_t = camera_rigid_from_base(base_xyz,base_quat,extrinsics)
         r,t = np.asarray(cam_r),np.asarray(cam_t)
         camera = self.scene['config']['camera']
-        near,far = camera['near_m'],camera['far_m']
+        near,depth_far = camera['near_m'],camera['far_m']
+        far = camera.get('rgb_far_m', depth_far)
+        clip_mode = camera.get('far_clip_mode', 'radial')
+        near_mode = camera.get('near_clip_mode', 'clip')
+        # Ogre 8.2.3 renders at 1e-4 m, then replaces the nearest below-near
+        # RGB-D surface with invalid depth / background RGB. Such a surface
+        # occludes farther geometry; clipping each mesh first invents labels.
+        render_near = 1e-4 if near_mode == 'occlude' else near
         v,f = self.terrain
-        zbuffer = rasterize(v @ r.T+t, f, intrinsics, near, far)
+        zbuffer = rasterize(v @ r.T+t, f, intrinsics, render_near, far, far_clip_mode=clip_mode)
         terrain_depth = zbuffer.copy() if self.regions else None
         instances = np.zeros(zbuffer.shape,dtype=np.int32)
         projected = []
         for ident,(obj,v,f) in enumerate(self.meshes,1):
-            depth = rasterize(v @ r.T+t,f,intrinsics,near,far)
+            depth = rasterize(v @ r.T+t,f,intrinsics,render_near,far,far_clip_mode=clip_mode)
             count = int(np.isfinite(depth).sum())
             closer = depth < zbuffer - 1e-6
             instances[closer] = ident
             zbuffer[closer] = depth[closer]
             projected.append(count)
+        near_occluded = np.isfinite(zbuffer)&(zbuffer<=near) if near_mode == 'occlude' else np.zeros(zbuffer.shape,bool)
+        instances[near_occluded] = 0
+        zbuffer[near_occluded] = np.inf
+        if terrain_depth is not None:
+            terrain_depth[near_occluded] = np.inf
         labels,objects = labels_from_instances(instances,projected,[m[0] for m in self.meshes],
                                                 self.scene['config']['labels'])
         all_instances = instances.copy()
@@ -226,12 +247,14 @@ class Annotator:
             objects.extend(region_records)
             ground = region_instances > 0
             all_instances[ground] = region_instances[ground] + len(self.meshes)
-        quality = {'camera_range_model':'ogre2_rgbd_radial_far'}
+        quality = {'camera_range_model': ('ogre_rgbd_axial_far' if clip_mode == 'axial' else 'ogre2_rgbd_radial_far'),
+                   'rgb_far_m': far, 'usable_depth_far_m': depth_far,
+                   'near_clip_mode': near_mode, 'near_occluded_pixels': int(near_occluded.sum())}
         if self.regions:
             quality['ground_region_projection'] = 'visible_terrain_surface'
         if observed_depth is not None:
             observed = np.asarray(observed_depth).reshape(zbuffer.shape)
-            valid = np.isfinite(observed)&(observed>near)&(observed<far)&np.isfinite(zbuffer)
+            valid = np.isfinite(observed)&(observed>near)&(observed<depth_far)&np.isfinite(zbuffer)
             for name,mask in [('all',valid),('rock',valid&(instances>0))]:
                 errors = np.abs(observed[mask]-zbuffer[mask])
                 if len(errors):
@@ -239,7 +262,8 @@ class Annotator:
                     quality[name+'_depth_p95_error_m'] = float(np.percentile(errors,95))
                     quality[name+'_compared_pixels'] = len(errors)
         checks = instance_depth_support(all_instances, zbuffer, observed_depth, objects, labels,
-                                        self.scene['config']['labels'], near, far)
+                                        self.scene['config']['labels'], near, depth_far,
+                                        rgb_only_geometry=is_v2(self.scene['config']))
         if self.paint_mask is not None and self.regions:
             for ident, region in enumerate(self.regions, len(self.meshes)+1):
                 mask = all_instances == ident
@@ -266,13 +290,14 @@ class Annotator:
         for record in labels + objects:
             if record['name'] in by_name:
                 record['visibility_check'] = by_name[record['name']]
+        quality['preserve_geometry_labels'] = is_v2(self.scene['config'])
         quality['visibility_check'] = {'checked': observed_depth is not None, 'objects': checks,
                                        'failures': [c['name'] for c in checks if not c['passed']]}
         self.last_instances, self.last_expected_depth = all_instances, zbuffer
         return labels,objects,quality,instances
 
 
-def instance_depth_support(instances, expected, observed, objects, labels, policy, near, far):
+def instance_depth_support(instances, expected, observed, objects, labels, policy, near, far, rgb_only_geometry=False):
     """Check every exported object mask, including invalid/missing sensor pixels.
 
     Checking the full rectangle would count unrelated ground as evidence.
@@ -288,19 +313,28 @@ def instance_depth_support(instances, expected, observed, objects, labels, polic
             continue
         mask = instances == ident
         count = int(mask.sum())
+        expected_surface = expected[mask]
+        eligible = np.isfinite(expected_surface) & (expected_surface>near) & (expected_surface<far)
+        required_count = int(eligible.sum()) if rgb_only_geometry else count
         sensor_valid = np.zeros(count, bool) if observed is None else (
             np.isfinite(observed[mask]) & (observed[mask]>near) & (observed[mask]<far))
         valid = sensor_valid & np.isfinite(expected[mask])
+        if rgb_only_geometry:
+            valid &= eligible
         errors = np.abs(observed[mask][valid]-expected[mask][valid]) if observed is not None else np.array([])
         supported = int((errors<=tolerance).sum())
-        fraction = supported/max(count, 1)
+        fraction = supported/max(required_count, 1)
         reasons = []
-        if observed is None:
+        geometry_only = rgb_only_geometry and count>0 and required_count==0 and np.isfinite(expected_surface).all()
+        if observed is None and not geometry_only:
             reasons.append('sensor_depth_missing')
-        elif fraction < required:
+        elif not geometry_only and fraction < required:
             reasons.append('insufficient_sensor_depth_support')
         checks.append({'name':obj['name'], 'source':obj.get('source', 'mesh'),
                        'visible_pixels':count, 'valid_depth_pixels':int(valid.sum()),
+                       'usable_depth_expected_pixels':required_count,
+                       'rgb_only_pixels':int((np.isfinite(expected_surface)&(expected_surface>=far)).sum()),
+                       'depth_check_scope':'geometry_only_beyond_usable_depth' if geometry_only else 'usable_depth',
                        'sensor_valid_depth_pixels':int(sensor_valid.sum()),
                        'supported_pixels':supported, 'support_fraction':fraction,
                        'median_error_m':float(np.median(errors)) if len(errors) else None,
@@ -337,6 +371,10 @@ def discard_confirmed_sky_labels(labels, objects, quality):
     depth at the wrong distance cannot silently remove a real visible target.
     The capture framing check still rejects a discarded primary target.
     """
+    if quality.get('preserve_geometry_labels'):
+        # Version 2 retains every geometry-eligible visible label. A failed
+        # cross-check rejects the attempt instead of inventing background.
+        return labels
     visibility = quality['visibility_check']
     rejected = [check for check in visibility['objects']
                 if visibility['checked'] and not check['passed']

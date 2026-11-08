@@ -1,0 +1,22 @@
+{
+  "result": "OFF_HOST_FINAL_CLOSEOUT_BASE_AND_DELTA_VERIFIED",
+  "utc": "2026-11-06T04:58:51.545686+00:00",
+  "status": "CLOSED_EXPERIMENTAL_DEFAULT_QUALIFICATION_DEFERRED",
+  "files": 19834,
+  "symlinks": 19,
+  "base_referenced_files": 18235,
+  "delta_files": 1599,
+  "checkpoint_archive": "C:\\Projects\\Capstone\\AMD-Powered-Physical-AI-Robotics\\navigation_sessions\\environment-v2-20261105\\environment-v2-20261105T225758Z-checkpoint-1.tar.gz",
+  "checkpoint_sha256": "383586c7a8894096463e49fd789a47278edf04f3f6d026fab2feee4e2dd324c0",
+  "delta_archive": "C:\\Projects\\Capstone\\AMD-Powered-Physical-AI-Robotics\\navigation_sessions\\environment-v2-20261105\\environment-v2-20261105T225758Z-final-closeout-delta.tar.gz",
+  "delta_bytes": 1448340996,
+  "delta_sha256": "a9daaa6edb0f2de688a604575c002672b2e872cf0934a2e0ce05bd1bf9db3012",
+  "final_manifest_sha256": "34ca1d8667878aadcfa1a339d0ce806b43c6ad7d7cf919b87d89869ddfce1cdf",
+  "full_remote_archive_sha256": "78c5d59de0eb2fa8201b9e157f4d9f14badcae0f05ae8daf7f836d5ea562b651",
+  "full_remote_archive_downloaded": false,
+  "protected_session_closed": true,
+  "continuous_cooldown_monitoring": false,
+  "qualification_complete": false,
+  "experimental_default_map_size_m": 40,
+  "restoration": "Use delta base_references to reconstruct final paths from checkpoint members; delta alone is insufficient."
+}

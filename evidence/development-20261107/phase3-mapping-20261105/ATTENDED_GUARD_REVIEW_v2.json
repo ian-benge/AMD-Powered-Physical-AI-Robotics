@@ -1,0 +1,45 @@
+{
+  "result": "ATTENDED_GUARD_REVIEW_PASS",
+  "checks": {
+    "linear_cap": true,
+    "angular_cap": true,
+    "all_latched_stops_zero": true,
+    "final_operator_stop": true,
+    "no_autonomous_mode": true,
+    "no_fault_after_manual_enable": true,
+    "startup_faults_remained_stopped": true
+  },
+  "status_samples": 700,
+  "max_linear_mps": 0.05,
+  "max_angular_rps": 0.3,
+  "truth_distance_m": 2.6291136949559166,
+  "mode_counts": {
+    "stopped": 382,
+    "manual": 318
+  },
+  "reason_counts": {
+    "startup": 22,
+    "invalid_odometry": 85,
+    "": 318,
+    "operator_stop": 275
+  },
+  "operator_report": "done to the bounded manual ground/turn/rock-passage check; no defect or rejection reported",
+  "startup_fault_review": {
+    "samples": 85,
+    "first_manual_sim_time": 16.786,
+    "last_startup_fault_sim_time": 16.688,
+    "fault_reasons": {
+      "invalid_odometry": 85
+    },
+    "initial_covariance": [
+      19998.0,
+      19998.0,
+      19998.0,
+      19998.0,
+      19998.0,
+      19998.0
+    ],
+    "interpretation": "Startup invalid covariance correctly latches zero output. Operator explicitly enabled manual mode after readiness; no subsequent fault. Initial all-session no-fault summary was overbroad and remains preserved."
+  },
+  "source_events": "application-v5/navigation_sessions/restart-20261105T171347Z-09ba6d/mission-events.jsonl"
+}

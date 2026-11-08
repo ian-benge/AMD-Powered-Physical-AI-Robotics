@@ -109,7 +109,10 @@ def composite_ground(bundle, catalog, terrain_config, seed, folder, regions=()):
         from .candidates import MASK_IDS, paint_ground_regions
         from .common import png
         albedo, normal, rough, mask = paint_ground_regions(
-            albedo, normal, rough, regions, span, np.random.RandomState(7000 + int(seed)))
+            albedo, normal, rough, regions, span, np.random.RandomState(7000 + int(seed)),
+            region_windows=terrain_config.get('profile_version')==2)
+        if terrain_config.get('profile_version')==2:
+            recipe['region_painter']='physical_scale_padded_windows_v2'
         png(Path(folder) / 'candidate_mask.png', mask)
         recipe['candidate_mask'] = 'candidate_mask.png'
         recipe['mask_ids'] = {'background': 0, **MASK_IDS}

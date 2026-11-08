@@ -1,6 +1,9 @@
 """Check time-aligned depth processing and persistent operator clearance."""
 from collections import deque
 import importlib
+import hashlib
+import io
+import json
 import sys
 import types
 import unittest
@@ -148,16 +151,101 @@ class TerrainAdapterTests(unittest.TestCase):
         self.assertEqual(len(node.pending), 20)
         self.assertIs(node.pending[-1], node.latest)
 
+    def test_adaptive_updates_pause_without_localization_but_keep_fresh_hazards(self):
+        node = self.node()
+        node.adaptive_enabled = True
+        node.localization = MagicMock()
+        node.localization.check.return_value = 'localization invalid, uncertain or stale'
+        node.latest = self.sample(2.)
+        node.pending.append(node.latest)
+        node.local_pub, node.map_pub = MagicMock(), MagicMock()
+        node.get_clock = MagicMock()
+        node.get_clock.return_value.now.return_value.nanoseconds = 2_000_000_000
+        transform = tf()
+        transform.header = types.SimpleNamespace(stamp=types.SimpleNamespace(sec=2, nanosec=0))
+        node.tf.lookup_transform.return_value = transform
+        node.tf.can_transform.return_value = True
+        with patch.object(self.module.time, 'monotonic', return_value=10.):
+            node.update()
+        self.assertEqual(node.evidence.status['suspended'], 'localization invalid, uncertain or stale')
+        self.assertEqual(node.last_stamp, 2.)
+        node.local_pub.publish.assert_called_once()
+        # A map correction must itself be fresh before any cells can be cleared.
+        node.localization.check.return_value = ''
+        transform.header.stamp.sec = 0
+        node.latest = self.sample(2.2)
+        node.pending.append(node.latest)
+        node.get_clock.return_value.now.return_value.nanoseconds = 2_200_000_000
+        with patch.object(self.module.time, 'monotonic', return_value=10.):
+            node.update()
+        self.assertEqual(node.evidence.status['suspended'], 'map localization unavailable or stale')
+
+    def test_adaptive_checks_current_map_correction_despite_future_dated_latest_tf(self):
+        node = self.node()
+        node.adaptive_enabled = True
+        node.localization = MagicMock()
+        node.localization.check.return_value = ''
+        node.latest = self.sample(2.)
+        node.pending.append(node.latest)
+        node.local_pub, node.map_pub = MagicMock(), MagicMock()
+        node.get_clock = MagicMock()
+        current_time = node.get_clock.return_value.now.return_value
+        current_time.nanoseconds = 2_000_000_000
+
+        def lookup(target, source, when):
+            transform = tf()
+            transform.header = types.SimpleNamespace(stamp=types.SimpleNamespace(
+                sec=2, nanosec=0 if when is current_time else 100_000_000))
+            if source == 'odom' and when is current_time and unavailable[0]:
+                raise RuntimeError('Current transform is not bracketed')
+            return transform
+
+        unavailable = [False]
+        node.tf.lookup_transform.side_effect = lookup
+        node.tf.can_transform.return_value = True
+        with patch.object(self.module.time, 'monotonic', return_value=10.):
+            node.update()
+        self.assertEqual(node.evidence.status['suspended'], '')
+        node.tf.lookup_transform.assert_any_call('map', 'odom', current_time)
+        # A failed current-time lookup must suspend clearing but retain fresh
+        # local safety input, rather than trusting the latest future stamp.
+        unavailable[0] = True
+        node.latest = self.sample(2.2)
+        node.pending.append(node.latest)
+        current_time.nanoseconds = 2_200_000_000
+        with patch.object(self.module.time, 'monotonic', return_value=10.):
+            node.update()
+        self.assertEqual(node.evidence.status['suspended'], 'map localization unavailable or stale')
+        self.assertEqual(node.local_pub.publish.call_count, 2)
+
     def test_gpu_transport_failure_does_not_publish_fresh_safety_grid(self):
         node=self.node()
         node.pending.append(self.sample(2.));node.latest=node.pending[-1]
         node.tf.lookup_transform.return_value=tf()
         node.local_pub=MagicMock();node.compute=MagicMock()
+        node.event_stream=io.StringIO()
         node.compute.depth.side_effect=OSError('GPU service unavailable')
         node.get_clock=MagicMock();node.get_clock.return_value.now.return_value.nanoseconds=2_000_000_000
         with patch.object(self.module.time,'monotonic',return_value=10.):node.update()
         node.local_pub.publish.assert_not_called()
         self.assertIn('GPU service unavailable',node.compute_error)
+        self.assertEqual(node.event_stream.getvalue(), '')
+
+    def test_frame_record_pins_encoded_input_transform_and_both_published_maps(self):
+        node=self.node()
+        node.event_stream=io.StringIO()
+        node.evidence=None
+        depth,info,_=self.sample(2.)
+        grid=self.module.Grid(np.array([[0,100],[-1,20]],np.int8),.025,1.,2.)
+        global_grid=self.module.Grid(np.array([[100]],np.int8),.05,-1.,-1.)
+        node.record_frame(depth,info,tf(z=.762),tf(x=.3),grid,
+                          {'observation_count':np.ones((2,2))},grid,global_grid)
+        row=json.loads(node.event_stream.getvalue())
+        self.assertEqual(row['input_sha256'],hashlib.sha256(depth.data).hexdigest())
+        self.assertEqual(row['local']['sha256'],hashlib.sha256(grid.data.tobytes()).hexdigest())
+        self.assertEqual(row['global_map']['sha256'],hashlib.sha256(global_grid.data.tobytes()).hexdigest())
+        self.assertEqual(row['projection_to_odom']['translation'],[.3,0.,0.])
+        self.assertEqual(row['thresholds'],{'slope_deg':12.,'height_change_m':.03})
 
     def test_fresh_restart_does_not_accumulate_terrain_before_confirmation(self):
         node = self.node()

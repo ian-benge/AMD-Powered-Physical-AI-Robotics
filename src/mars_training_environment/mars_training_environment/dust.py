@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 
 
-def dust_images(albedo, roughness, vertices, uvs, faces, dust_bgr):
+def dust_images(albedo, roughness, vertices, uvs, faces, dust_bgr, strength=1.):
     """Return albedo and roughness arrays. `dust_bgr` is 0..255."""
     import cv2
     albedo = np.asarray(albedo, dtype=np.float32)
@@ -27,7 +27,7 @@ def dust_images(albedo, roughness, vertices, uvs, faces, dust_bgr):
     # Tops take a heavy coat. Sides keep most of the scanned colour, so a
     # textured rock does not become a flat red shape. The blur removes the
     # hard edge between neighbouring faces.
-    cover = 0.12+0.78*np.clip(up, 0, 1)
+    cover = np.clip((0.12+0.78*np.clip(up, 0, 1))*strength,0,1)
     painted = np.zeros((height, width), dtype=np.uint8)
     for index in np.argsort(cover):
         points = np.column_stack([uvs[faces[index], 0]*width, (1-uvs[faces[index], 1])*height])
@@ -41,7 +41,7 @@ def dust_images(albedo, roughness, vertices, uvs, faces, dust_bgr):
     return np.clip(coated, 0, 255).astype(np.uint8), np.clip(coated_rough, 0, 255).astype(np.uint8)
 
 
-def bake_scene_dust(bundle, scene_folder, assets, objects, dust_bgr):
+def bake_scene_dust(bundle, scene_folder, assets, objects, dust_bgr, seed=None):
     """Write one dusty texture set per scanned asset used in the scene.
 
     Paths are relative to the bundle. Rocks without UVs keep their own maps.
@@ -61,8 +61,12 @@ def bake_scene_dust(bundle, scene_folder, assets, objects, dust_bgr):
         roughness = cv2.imread(str(bundle/asset['textures']['roughness']), cv2.IMREAD_GRAYSCALE)
         if albedo is None or roughness is None:
             raise FileNotFoundError(f'Missing texture for {asset["id"]}')
+        strength=1.
+        if seed is not None:
+            from .environment_v2 import stream
+            strength=float(stream(seed,'dust-'+asset['id']).uniform(.75,1.1))
         coated, coated_rough = dust_images(albedo, roughness, geometry['vertices'], geometry['uv'],
-                                            geometry['faces'], dust_bgr)
+                                            geometry['faces'], dust_bgr,strength)
         dest = Path(scene_folder)/'dust'/asset['id']
         dest.mkdir(parents=True, exist_ok=True)
         cv2.imwrite(str(dest/'albedo.jpg'), coated, quality)

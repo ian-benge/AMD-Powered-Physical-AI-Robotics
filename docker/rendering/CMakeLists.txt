@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.16)
+project(phase1_rendering_probe)
+find_package(gz-rendering8 REQUIRED COMPONENTS ogre)
+add_executable(material_probe material_probe.cc)
+target_link_libraries(material_probe PRIVATE gz-rendering8::gz-rendering8)

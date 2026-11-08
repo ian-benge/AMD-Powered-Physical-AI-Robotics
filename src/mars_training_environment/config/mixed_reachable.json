@@ -1,0 +1,17 @@
+{
+  "terrain": {
+    "profile": "mixed_reachable", "profile_version": 1, "layout_attempts": 24,
+    "size_m": 20.0, "grid_size": 129, "visual_grid_size": 129,
+    "relief_m": 0.8, "max_slope_deg": 22.0, "spawn_clearance_m": 1.3
+  },
+  "candidates": {
+    "enabled": true,
+    "categories": ["silica_soil", "pale_lookalike", "sulfur_rock", "pale_stone", "cheyava_rock", "veined_lookalike"],
+    "silica_count": [2, 3], "sulfur_count": [2, 3]
+  },
+  "camera": {
+    "rgb_far_m": 20.0, "far_m": 8.0, "near_m": 0.3,
+    "render_engine": "ogre", "far_clip_mode": "axial", "near_clip_mode": "occlude",
+    "width": 960, "height": 540, "tilt_rad": 0.4
+  }
+}

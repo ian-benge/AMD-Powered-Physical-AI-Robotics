@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "archive": "rendering-phase1-resume-20261104-completion-evidence.tar.gz",
+  "bytes": 132490444,
+  "sha256": "accb9c59ae65246db2c36b1a7dcd9744b2eab84de10c82472e34632f05ebbd7a",
+  "files_verified": 78,
+  "symlinks_verified": 0,
+  "base_archive_sha256": "d8c5786b7cf65da4dd862893c5abb06971aed83c00645e1c6c0f607d322c5cf3"
+}

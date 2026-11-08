@@ -4,6 +4,7 @@ import tempfile
 import threading
 from concurrent.futures import ThreadPoolExecutor
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -16,6 +17,7 @@ from mars_training_environment.dataset import capture_failure_hint
 from mars_training_environment.framing import configured_extrinsics, planning_size_guard, target_framing
 from mars_training_environment.quality import frame_checks
 from mars_training_environment.review import ReviewStore, make_server, review_index, write_review_page
+from mars_training_environment.review import _atomic_text
 from rover_training.geometry import CLASS_NAMES, parse_camera_extrinsics
 from rover_training.randomize import default_xacro
 from rover_training.yolo_export import read_label_file, write_dataset_index, write_label_file
@@ -43,6 +45,36 @@ class VisibilityTests(unittest.TestCase):
         self.assertFalse(checks[1]['passed'])
         self.assertEqual(checks[1]['valid_depth_pixels'],0)
         self.assertEqual(checks[1]['support_fraction'],0)
+
+    def test_v2_distant_rgb_targets_keep_geometry_labels_without_usable_depth(self):
+        expected=np.full(self.expected.shape,12.,np.float32)
+        measured=np.full(self.expected.shape,np.inf,np.float32)
+        checks=instance_depth_support(self.instances,expected,measured,self.objects,labels(),self.policy,.3,8,
+                                      rgb_only_geometry=True)
+        self.assertTrue(all(c['passed'] and c['rgb_only_pixels']==225 for c in checks))
+        self.assertTrue(all(c['depth_check_scope']=='geometry_only_beyond_usable_depth' for c in checks))
+        # Legacy source/depth policy stays strict.
+        legacy=instance_depth_support(self.instances,expected,measured,self.objects,labels(),self.policy,.3,8)
+        self.assertTrue(all(not c['passed'] for c in legacy))
+
+    def test_v2_mixed_range_mask_checks_every_eligible_near_pixel(self):
+        expected=self.expected.copy();expected[10:18,10:25]=12.
+        measured=expected.copy();measured[expected>8]=np.inf
+        checks=instance_depth_support(self.instances,expected,measured,self.objects,labels(),self.policy,.3,8,
+                                      rgb_only_geometry=True)
+        self.assertTrue(all(c['passed'] for c in checks))
+        measured[18:25,10:25]=np.inf
+        checks=instance_depth_support(self.instances,expected,measured,self.objects,labels(),self.policy,.3,8,
+                                      rgb_only_geometry=True)
+        self.assertFalse(checks[0]['passed'])
+
+    def test_v2_failed_visibility_preserves_labels_for_attempt_rejection(self):
+        original=labels()
+        checks=instance_depth_support(self.instances,self.expected,None,self.objects,original,self.policy,.3,8)
+        for c in checks:c['reasons'].append('label_covers_only_sky_rgb')
+        quality={'preserve_geometry_labels':True,'visibility_check':{'checked':True,'objects':checks}}
+        self.assertEqual(discard_confirmed_sky_labels(original,self.objects,quality),original)
+        self.assertTrue(all(not c['passed'] for c in checks))
 
     def test_unrelated_ground_in_box_cannot_support_a_wrong_object_surface(self):
         measured = self.expected.copy()
@@ -312,6 +344,33 @@ class ReviewTests(unittest.TestCase):
             list(pool.map(lambda _index:write_review_page(self.root),range(12)))
         self.assertEqual(json.loads((self.root/'review/index.json').read_text())['accepted_frames'],3)
         self.assertFalse(list((self.root/'review').glob('*.tmp')))
+
+    def test_transient_windows_sharing_error_retries_the_same_atomic_replace(self):
+        target=self.root/'review/status.txt'
+        original=Path.replace
+        error=PermissionError('File temporarily shared');error.winerror=32
+        calls=[]
+        def replace(source,destination):
+            calls.append((source,destination))
+            if len(calls)==1:raise error
+            return original(source,destination)
+        with patch.object(Path,'replace',replace),patch('mars_training_environment.review.time.sleep') as sleep:
+            _atomic_text(target,'complete')
+        self.assertEqual(target.read_text(),'complete')
+        self.assertEqual(calls[0],calls[1])
+        sleep.assert_called_once_with(.01)
+        self.assertFalse(list(target.parent.glob('*.tmp')))
+
+    def test_persistent_sharing_error_is_bounded_and_preserves_previous_page(self):
+        target=self.root/'review/status.txt'
+        target.parent.mkdir(parents=True,exist_ok=True);target.write_text('previous')
+        error=PermissionError('File remains shared');error.winerror=5
+        with patch.object(Path,'replace',side_effect=error) as replace,patch('mars_training_environment.review.time.sleep') as sleep:
+            with self.assertRaises(PermissionError):_atomic_text(target,'new')
+        self.assertEqual(replace.call_count,10)
+        self.assertEqual(sleep.call_count,9)
+        self.assertEqual(target.read_text(),'previous')
+        self.assertFalse(list(target.parent.glob('*.tmp')))
 
     def test_edit_export_preserves_raw_capture_and_keeps_original_split(self):
         source = self.root/self.frame['image']

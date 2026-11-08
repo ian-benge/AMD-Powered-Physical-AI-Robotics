@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-07T22:57:28.719531+00:00",
+  "status": "VERIFIED_OFFHOST",
+  "archive": "C:\\Projects\\Capstone\\AMD-Powered-Physical-AI-Robotics\\navigation_sessions\\bulk10000-continuous-20261107\\bulk10000-continuous-qualification-evidence.tar.gz",
+  "archive_sha256": "ecc5b3f21461b5491531b75956c9391e1af564770e7b6403a67c1def308ea62e",
+  "bytes": 968558,
+  "verified_member_hashes": 119,
+  "pinned_release_inputs_verified": 18,
+  "linux_tests": 61,
+  "qualified_windows": 2,
+  "prior_images_verified": 1800,
+  "live_collection_running_at_review": true,
+  "active_session_finished": false
+}

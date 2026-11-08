@@ -148,12 +148,24 @@ def aligned_copy(source, like):
     return out
 
 
+def mask_outside_memory(grid, memory_grid):
+    """Keep the local safety map unknown outside the bounded operating memory."""
+    x = grid.x+(np.arange(grid.data.shape[1])+.5)*grid.resolution
+    y = grid.y+(np.arange(grid.data.shape[0])+.5)*grid.resolution
+    right = memory_grid.x+memory_grid.data.shape[1]*memory_grid.resolution
+    top = memory_grid.y+memory_grid.data.shape[0]*memory_grid.resolution
+    inside = ((y >= memory_grid.y) & (y < top))[:, None] & ((x >= memory_grid.x) & (x < right))[None, :]
+    grid.data[~inside] = -1
+    return grid
+
+
 class TerrainMemory:
     """Per-frame terrain classifications fused in one fixed frame.
 
     Height span and slope are judged within a single depth frame, so pose
     inconsistency between frames cannot create steps. A hazard is retained
-    once distinct frames confirm it, and free readings never clear it.
+    once distinct frames confirm it. Free readings alone never clear it;
+    TerrainEvidence can explicitly reconsider weak hazards with qualified views.
     """
 
     def __init__(self, size=20., resolution=.025, confirmations=2):

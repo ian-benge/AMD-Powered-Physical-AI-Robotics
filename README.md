@@ -8,11 +8,20 @@
 
 **A simulated Mars rover with AMD NPU object detection, GPU terrain processing, RGB-D mapping, and guarded navigation.**
 
-Developed for a Texas A&M engineering capstone. This repository brings together the rover simulation, synthetic-data pipeline, detector deployment, operator dashboard, terrain mapper, and object tracking. It publishes the integrated work through Phase Three; autonomous sample-site approach is the next milestone.
+Developed for a Texas A&M engineering capstone. This repository brings together the rover simulation, synthetic-data pipeline, detector deployment, operator dashboard, terrain mapper, and object tracking. November updates add rendering corrections, reachable terrain, adaptive mapping and a resumable 10,000-image collection pipeline. Autonomous sample-site approach remains future work.
 
 ![Recorded Halo run: camera detections, terrain map, confirmed rocks, and manual controls](docs/media/rover-dashboard.png)
 
 *Actual scene-50000 simulation on the Halo development machine. Camera boxes are immediate predictions; yellow map markers require independent, depth-supported observations.*
+
+## November 2026 development update
+
+- **Rendering and terrain:** corrected opaque-material depth behavior, shared visual/collision surfaces, reproducible reachable layouts and matched RGB/depth calibration. See the [rendering](docs/PHASE1_RENDERING_ACCEPTANCE_20261104.md) and [terrain](docs/PHASE2_TERRAIN_ACCEPTANCE_20261104.md) acceptance records.
+- **Mapping:** CPU/ROCm replay and bounded rendered checks validate measured-ground adaptive clearing while keeping established hazards and latched stops protected. [Mapping acceptance](docs/PHASE3_MAPPING_ACCEPTANCE_20261105.md).
+- **Larger environments:** a versioned 40 x 40 m profile adds a continuous terrain apron, density presets, seeded appearance and larger maps. Its Halo default is **experimental**: live latency and remaining density acceptance checks are still open. [40 m closeout](docs/SIMULATION_ENVIRONMENT_V2_CLOSEOUT.md).
+- **Image collection:** the 200-image pilot passed automated label/cleanup checks. The separate 10,000-image campaign supports immutable attempts, verified resume and automatic monitoring renewal. At the November 7 continuous-run handoff, **1,800 images in nine batches** were accepted and batch 10 was running. This is a dated snapshot; image review, four-class export and training approval remain separate. [Collection guide](docs/BULK_CONTINUOUS_COLLECTION_GUIDE.md).
+
+The [development evidence summary](evidence/development-20261107/README.md) separates reproducible source checks from recorded hardware results and incomplete acceptance gates.
 
 ## What the system does
 
@@ -27,7 +36,8 @@ Developed for a Texas A&M engineering capstone. This repository brings together 
 
 | Measurement | Recorded result | Scope |
 | --- | --- | --- |
-| Publication source checks | **480 tests; 4 ROCm-only skips** | Fresh Windows run across navigation, perception, environment, geometry/export and webcam suites; browser-control harness also passed |
+| November 7 source checks | **704 tests; 12 environment/hardware skips** | Fresh Windows CPU checks across six suites; four browser harnesses pass. [Exact results](evidence/development-20261107/source-checks/checks.json) |
+| October 25 source checks | **480 tests; 4 ROCm-only skips** | Historical publication check; [November checks](evidence/development-20261107/source-checks/checks.json) cover the expanded source and collection suites |
 | NPU detector throughput | **38.46 FPS**, mean of three 60 s replays | Batch 1, 576×960 YOLOv8s A16W8; drawing/JPEG included; camera, network and Gazebo excluded |
 | NPU held-out accuracy | **0.76665 mAP50–95** | Four-class synthetic test set, shared evaluator |
 | GPU terrain subsystem | **27.75 → 17.75 ms mean** | Paired CPU vs deployed ROCm/RPC depth/classification + projection; 36% reduction for this subsystem |
@@ -98,14 +108,14 @@ The repository's original laptop-webcam application remains available, with its 
 
 ## Current milestone and next work
 
-**Verified:** browser manual driving, depth terrain mapping, actual NPU execution, GPU terrain parity, and bounded confirmed-rock/revisit trials.
+**Verified in bounded simulation:** browser manual driving, corrected RGB-D rendering, reachable terrain, adaptive-clearing replay/publication, actual NPU execution, GPU terrain parity, confirmed-rock/revisit trials and the 200-image capture/cleanup pilot.
 
-**Implemented, still requiring broader acceptance:** autonomous waypoint/return missions, obstacle detours, contact coverage, and additional terrain conditions. Recorded flat/edge drift and ramp-startup failures remain visible in the reports.
+**Delivered with acceptance still open:** the 40 m environment, additional density/speed conditions, autonomous waypoint/return missions and complete obstacle/contact coverage. The 10,000-image campaign is in progress. Recorded latency, localization and startup limitations remain visible in the reports.
 
-**Planned:** revisable terrain-hazard evidence and travel to an operator-approved soil site, stopping beside it until Return home is requested. Arms, sample collection and physical-rover qualification are later milestones. [Roadmap →](docs/ROADMAP.md)
+**Next:** complete image collection and review, prepare the metadata-based four-class export, then evaluate detector updates and travel to an operator-approved soil site with an explicit return. Arms, sample collection and physical-rover qualification are later milestones. [Roadmap →](docs/ROADMAP.md)
 
 ## Background and attribution
 
-Maintained by [Ian Benge](https://github.com/ian-benge) as a portfolio publication of an ongoing team capstone. The integrated source derives from [agfoti04/AMD-Capstone](https://github.com/agfoti04/AMD-Capstone), base commit `14d616ea1f27f6442223cab8d2b20446e41da3ec`, plus the navigation worktree through October 25, 2026. The original repository and worktrees are preserved.
+Maintained by [Ian Benge](https://github.com/ian-benge) as a portfolio publication of an ongoing team capstone. The integrated source derives from [agfoti04/AMD-Capstone](https://github.com/agfoti04/AMD-Capstone), base commit `14d616ea1f27f6442223cab8d2b20446e41da3ec`, plus the navigation worktree through October 25, 2026 and subsequent development through November 7, 2026. The original repository and worktrees are preserved.
 
 Existing authorship, ROS package license declarations, and asset attribution are retained. See [third-party notices](THIRD_PARTY_NOTICES.md), [contributing](CONTRIBUTING.md), and the [documentation index](docs/README.md).

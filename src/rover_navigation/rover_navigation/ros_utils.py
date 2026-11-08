@@ -1,4 +1,5 @@
 """Conversions used by ROS adapters."""
+from array import array
 import numpy as np
 import math
 from nav_msgs.msg import OccupancyGrid
@@ -32,5 +33,13 @@ def grid_message(grid, frame, stamp):
     msg.info.height, msg.info.width = grid.data.shape
     msg.info.origin.position.x, msg.info.origin.position.y = float(grid.x), float(grid.y)
     msg.info.origin.orientation.w = 1.
-    msg.data = grid.data.ravel().tolist()
+    if grid.data.dtype == np.int8:
+        # The generated ROS setter accepts its native signed-byte array directly.
+        # Avoid two Python validation passes over every published global cell.
+        data = array('b')
+        data.frombytes(grid.data.tobytes(order='C'))
+        msg.data = data
+    else:
+        # Retain the generated setter's validation for other input dtypes.
+        msg.data = grid.data.ravel().tolist()
     return msg

@@ -14,6 +14,7 @@ from launch_ros.actions import Node
 
 from mars_training_environment.generate import write_world
 from mars_training_environment.robot import BOXES_GZ_TOPIC, live_camera_config, robot_description
+from mars_training_environment.box_verification import box_check_backend, capture_box_contract, GAZEBO_BOXES
 
 
 def bridge_config(camera, live=False):
@@ -30,6 +31,8 @@ def bridge_config(camera, live=False):
                       'gz.msgs.AnnotatedAxisAligned2DBox_V')]
     if live:
         result = result[:3]  # clock, odometry and RGB only
+    if box_check_backend(camera) != GAZEBO_BOXES and not live:
+        result = result[:-1]
     return result
 
 
@@ -40,8 +43,15 @@ def setup(context):
     capture_enabled = LaunchConfiguration('capture').perform(context).lower() == 'true'
     if live and capture_enabled:
         raise ValueError('Live camera overrides cannot be used for dataset capture')
+    if capture_enabled:
+        capture_box_contract(scene['config'])
     if live:
         scene['config'] = live_camera_config(scene['config'], int(LaunchConfiguration('live_width').perform(context)))
+    engine = scene['config']['camera'].get('render_engine', 'ogre2')
+    if engine not in ('ogre', 'ogre2'):
+        raise ValueError('render_engine must be ogre or ogre2')
+    if engine == 'ogre' and not os.environ.get('DISPLAY'):
+        raise ValueError('Ogre capture requires the attended desktop display')
     bundle = path.parents[2]
     assets = json.loads((bundle/'assets/catalog.json').read_text())
     # Re-resolve absolute file paths when a generated bundle moves between hosts.
@@ -54,7 +64,9 @@ def setup(context):
     gui = LaunchConfiguration('gui').perform(context).lower() in ('1','true','yes')
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(get_package_share_directory('ros_gz_sim'),'launch','gz_sim.launch.py')),
-        launch_arguments={'gz_args': f'-r {world}' if gui else f'-r -s --headless-rendering {world}',
+        launch_arguments={'gz_args': '-r '+('' if gui else '-s ')+
+                          ('--headless-rendering ' if engine == 'ogre2' and not gui else '')+
+                          f'--render-engine-server {engine} {world}',
                           'on_exit_shutdown':'true'}.items())
     bridge = Node(package='ros_gz_bridge',executable='parameter_bridge',output='screen',
                   parameters=[{'config_file':str(bridge_file),'use_sim_time':True}])

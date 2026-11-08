@@ -1,0 +1,221 @@
+{
+  "terrain": {
+    "size_m": 40.0,
+    "grid_size": 257,
+    "visual_grid_size": 257,
+    "relief_m": 0.8,
+    "max_slope_deg": 22.0,
+    "spawn_clearance_m": 1.3,
+    "texture_size": 512,
+    "ground_textures": [
+      "red_sand",
+      "sand_03"
+    ],
+    "ground_layers": 2,
+    "texture_tile_m": 8.0,
+    "composite_px": 8192,
+    "tint_strength": [
+      0.35,
+      0.7
+    ],
+    "ripples": {
+      "waves": 4,
+      "wavelength_m": [
+        0.35,
+        0.9
+      ],
+      "height_m": [
+        0.012,
+        0.028
+      ],
+      "ridges": 2,
+      "ridge_wavelength_m": [
+        1.6,
+        4.0
+      ],
+      "ridge_height_m": [
+        0.02,
+        0.05
+      ]
+    },
+    "profile": "mixed_reachable",
+    "profile_version": 2,
+    "layout_attempts": 32,
+    "apron_m": 20.0,
+    "density": "standard",
+    "sunlight": "medium"
+  },
+  "rocks": {
+    "procedural_count": 0,
+    "include_existing": false,
+    "scanned_ids": [
+      "moon_rock_01",
+      "moon_rock_02",
+      "moon_rock_03",
+      "moon_rock_04",
+      "moon_rock_05",
+      "moon_rock_06",
+      "moon_rock_07",
+      "rock_07",
+      "rock_09",
+      "boulder_01"
+    ],
+    "held_out_ids": [
+      "moon_rock_06",
+      "rock_09"
+    ],
+    "count_range": [
+      152,
+      220
+    ],
+    "sampling_size_m": [
+      0.02,
+      0.12
+    ],
+    "obstacle_size_m": [
+      0.15,
+      0.45
+    ],
+    "sampling_probability": 0.55,
+    "burial_fraction": [
+      0.22,
+      0.44
+    ],
+    "clearance_m": 0.07,
+    "cluster_probability": 0.65,
+    "max_tilt_deg": 22.0
+  },
+  "candidates": {
+    "enabled": true,
+    "categories": [
+      "silica_soil",
+      "pale_lookalike",
+      "sulfur_rock",
+      "pale_stone",
+      "cheyava_rock",
+      "veined_lookalike"
+    ],
+    "silica_count": [
+      8,
+      12
+    ],
+    "pale_lookalike_count": [
+      4,
+      8
+    ],
+    "silica_size_m": [
+      0.4,
+      1.2
+    ],
+    "sulfur_count": [
+      8,
+      12
+    ],
+    "pale_stone_count": [
+      8,
+      16
+    ],
+    "sulfur_size_m": [
+      0.08,
+      0.16
+    ],
+    "cheyava_count": [
+      4,
+      4
+    ],
+    "veined_lookalike_count": [
+      4,
+      4
+    ],
+    "cheyava_size_m": [
+      0.75,
+      1.05
+    ],
+    "exaggerated_spots": false,
+    "spot_scale": 1.0,
+    "slab_surface_height_m": 0.008,
+    "slab_embed_m": 0.02,
+    "slab_edge_blend_m": 0.03
+  },
+  "camera": {
+    "mount_xyz": [
+      0.2,
+      0.0,
+      0.682
+    ],
+    "tilt_rad": 0.4,
+    "width": 960,
+    "height": 540,
+    "horizontal_fov_rad": 1.22,
+    "horizontal_fov_status": "provisional",
+    "optical_center_height_m": 0.762,
+    "rate_hz": 30.0,
+    "near_m": 0.3,
+    "far_m": 8.0,
+    "image_topic": "/oak/image_raw",
+    "depth_topic": "/oak/depth/image_raw",
+    "camera_info_topic": "/oak/camera_info",
+    "boxes_topic": "/oak/boxes",
+    "rgb_far_m": 20.0,
+    "render_engine": "ogre",
+    "far_clip_mode": "axial",
+    "near_clip_mode": "occlude"
+  },
+  "capture": {
+    "views_per_scene": 20,
+    "distance_m": [
+      1.8,
+      3.2
+    ],
+    "training_imgsz": 960,
+    "target_margin_fraction": 0.1,
+    "target_min_visible_fraction": 0.7,
+    "target_min_side_px": 24,
+    "difficult_view_every": 5,
+    "planning_width": 384,
+    "target_class_views": {
+      "rock": 5,
+      "pale_soil_patch": 5,
+      "yellow_crystal_rock": 5,
+      "mudstone_slab": 5
+    },
+    "class_quota_scene_attempts": 12,
+    "settle_sim_sec": 0.7,
+    "timeout_wall_sec": 180.0,
+    "max_pose_gap_sec": 0.06,
+    "save_depth": false,
+    "previews": true,
+    "require_depth_check": true,
+    "require_bbox_check": true,
+    "require_visibility_check": true,
+    "target_schema": "four_class_export"
+  },
+  "labels": {
+    "min_visible_pixels": 24,
+    "min_box_side_px": 5,
+    "min_visible_fraction": 0.3,
+    "bbox_min_iou": 0.5,
+    "depth_support_fraction": 0.9,
+    "depth_support_tolerance_m": 0.03,
+    "patch_support_fraction": 0.85
+  },
+  "dataset": {
+    "seeds": [
+      4312000,
+      4312001,
+      4312003,
+      4312005,
+      4312006,
+      4312009,
+      4312010,
+      4312012,
+      4312013,
+      4312016
+    ],
+    "empty_seeds": [
+      4312013,
+      4312016
+    ],
+    "rocks_only_seeds": []
+  }
+}

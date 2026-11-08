@@ -1,0 +1,4 @@
+{
+  "note": "NPZ records contain local and global cost arrays only. Cause consistency is checked separately in synchronized rendered capture; CPU/ROCm reason-grid parity was not claimed by these NPZ comparisons.",
+  "review": "CPU_ROCM_REPLAY_REVIEW.json"
+}

@@ -1,0 +1,198 @@
+{
+  "result": "CPU_ROCM_ACTUAL_ROS_MAP_PARITY_PASS",
+  "utc": "2026-11-05T17:10:07.079575+00:00",
+  "comparisons": [
+    {
+      "case": "flat",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "zero_guard_outputs": [
+        237,
+        254
+      ]
+    },
+    {
+      "case": "gentle",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "clearing_suspended": 1,
+        "terrain_frame": 21
+      },
+      "zero_guard_outputs": [
+        235,
+        248
+      ]
+    },
+    {
+      "case": "ridge",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "zero_guard_outputs": [
+        235,
+        251
+      ]
+    },
+    {
+      "case": "rock",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "zero_guard_outputs": [
+        235,
+        261
+      ]
+    },
+    {
+      "case": "step",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 21
+      },
+      "zero_guard_outputs": [
+        239,
+        247
+      ]
+    },
+    {
+      "case": "weak-localization",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21,
+        "clearing_view": 4,
+        "clearing_suspended": 1
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 21,
+        "clearing_view": 4,
+        "clearing_suspended": 1
+      },
+      "zero_guard_outputs": [
+        228,
+        240
+      ]
+    },
+    {
+      "case": "weak-map_correction",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21,
+        "clearing_view": 4,
+        "clearing_suspended": 1
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 21,
+        "clearing_view": 4,
+        "clearing_suspended": 1
+      },
+      "zero_guard_outputs": [
+        234,
+        240
+      ]
+    },
+    {
+      "case": "weak-missing_depth",
+      "frames": 21,
+      "equal_array_payloads": 30,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 15,
+        "clearing_view": 4,
+        "clearing_suspended": 1
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 15,
+        "clearing_view": 4,
+        "clearing_suspended": 1
+      },
+      "zero_guard_outputs": [
+        230,
+        238
+      ]
+    },
+    {
+      "case": "weak-none",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21,
+        "clearing_view": 6,
+        "hazards_cleared": 2
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 21,
+        "clearing_view": 6,
+        "hazards_cleared": 2
+      },
+      "zero_guard_outputs": [
+        238,
+        244
+      ]
+    },
+    {
+      "case": "weak-stationary",
+      "frames": 21,
+      "equal_array_payloads": 42,
+      "cpu_events": {
+        "configuration": 1,
+        "terrain_frame": 21,
+        "clearing_view": 3
+      },
+      "rocm_events": {
+        "configuration": 1,
+        "terrain_frame": 21,
+        "clearing_view": 3
+      },
+      "zero_guard_outputs": [
+        238,
+        241
+      ]
+    }
+  ],
+  "mismatches": [],
+  "method": "Compare uncompressed NPY array payloads for every actual published local/global grid and reasons at every replay frame; no tolerance or fitting",
+  "limitation": "Controlled sensor replay; live rendered-depth review remains separate"
+}

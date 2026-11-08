@@ -1,0 +1,9 @@
+{
+  "archive": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk-framing-reliability-fix-20261107/bulk-capture-reliability-v9-evidence.tar.gz",
+  "bytes": 671430055,
+  "sha256": "89f8fd0ea2efb28e854f7888cdec2949a774de40c7e24f6a002404817afd22e3",
+  "member_hashes": 4583,
+  "canonical_batch_images": 400,
+  "controller_release_matches_deployed_files": true,
+  "protected_finish": "Not performed for current case; monitoring retained for continuation"
+}

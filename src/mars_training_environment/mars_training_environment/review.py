@@ -12,6 +12,7 @@ import secrets
 import shutil
 import tempfile
 import threading
+import time
 from collections import Counter
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -32,7 +33,17 @@ def _atomic_text(path, text):
         temporary = Path(stream.name)
         stream.write(text)
     try:
-        temporary.replace(path)
+        for attempt in range(10):
+            try:
+                temporary.replace(path)
+                break
+            except PermissionError as error:
+                # Windows can briefly deny replacement while another refresh
+                # or reader holds the destination. Retain atomic replacement
+                # and bound retries; persistent or unrelated errors still fail.
+                if getattr(error,'winerror',None) not in (5,32,33) or attempt==9:
+                    raise
+                time.sleep(.01)
     finally:
         temporary.unlink(missing_ok=True)
 
@@ -147,6 +158,8 @@ def review_index(root):
                 flags.append('capture_check_failed')
             if record.get('framing_adjustments'):
                 flags.append('target_reframed: '+str(len(record['framing_adjustments'])))
+            if record.get('view_recoveries'):
+                flags.append('capture_view_recovered: '+str(len(record['view_recoveries'])))
             if (any(label.get('source') == 'ground_region' for label in record['labels'])
                     and record.get('depth_quality',{}).get('ground_region_projection') != 'visible_terrain_surface'):
                 flags.append('legacy_ground_region_projection')

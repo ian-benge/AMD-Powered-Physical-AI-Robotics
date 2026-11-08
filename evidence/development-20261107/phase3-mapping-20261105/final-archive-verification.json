@@ -1,0 +1,10 @@
+{
+  "result": "OFF_HOST_FULL_ARCHIVE_VERIFIED",
+  "archive": "C:\\Projects\\Capstone\\AMD-Powered-Physical-AI-Robotics\\navigation_sessions\\phase3-mapping-20261105\\mapping-phase3-20261105T162405Z-final-evidence.tar.gz",
+  "bytes": 679025605,
+  "sha256": "6df78b140fba54b3a106113097d1ff63a6bc41a7748336dc53a4cf9af35b59ce",
+  "content_files": 11907,
+  "manifest_verified": true,
+  "symlinks": 3,
+  "method": "Streaming SHA-256 of every physical file; hardlinks resolve to already verified identical content. No extraction."
+}

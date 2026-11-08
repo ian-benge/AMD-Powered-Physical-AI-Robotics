@@ -1,0 +1,42 @@
+{
+  "status": "CLOSED_EXPERIMENTAL_DEFAULT_QUALIFICATION_DEFERRED",
+  "utc": "2026-11-06T04:49:20.882862+00:00",
+  "implementation_delivered": true,
+  "qualification_complete": false,
+  "experimental_default_map_size_m": 40,
+  "default_density": "sparse",
+  "candidate": "application-v9",
+  "verified_candidate_pins": 1508,
+  "manual_session_final": {
+    "utc": "2026-11-06T04:40:39.159307+00:00",
+    "case": "/home/ian/capstone-training/rover-navigation/navigation_sessions/oem617-7141-rocm-manual-20261106t032820z-1d6d-20261106T032821Z-vod34yha",
+    "condition": "interactive manual use",
+    "post_teardown_clean": true,
+    "timed_hour_completed": false,
+    "result": "MANUAL_SESSION_CLOSED_CLEANLY",
+    "limitation": "No endurance/stability or autonomous navigation claim"
+  },
+  "protected_post_teardown_clean": true,
+  "protected_kernel_incident_matches": [],
+  "post_report_result": "INCOMPLETE_OR_FAILED_REVIEW_REQUIRED",
+  "capture_ended_utc": "2026-11-06T04:39:26.749048+00:00",
+  "temperature_ended_utc": "2026-11-06T04:39:20.061099+00:00",
+  "protected_final_capture_utc": "2026-11-06T04:40:38.670113+00:00",
+  "peak_session_tctl_c": 79.125,
+  "temperature_stop_required_count": 0,
+  "continuous_cooldown_monitoring": false,
+  "limitations": [
+    "Capture and temperatures ended before the protected cooldown/final capture completed.",
+    "Original case has a capture-expiry-to-delayed-finish monitoring gap.",
+    "V8 p95 latency 267.73 ms exceeds 200 ms; v9 40 m live fix unverified.",
+    "Standard/cluttered attended traversals and recorded final progressive speed stages deferred at user request.",
+    "No training pilot, bulk capture, retraining, autonomy or endurance qualification."
+  ],
+  "default_receipt_sha256": "a206beb416d1d7623dfd4517b3551cf59ce6c0a054b41e8fce2d7b67850a8c74",
+  "closure_source_sha256": {
+    "MANUAL_SESSION_FINAL.json": "063758080f4475a9b9f72c98a232423a172902e85f50f053ccf9dede2e5b4ca9",
+    "POST_TEARDOWN.json": "efb0faf02a1cf42b8c7e696ea85b0f97363457ab3bbfd714eb29e0ff407eb592",
+    "capture-events.jsonl": "ddd6a88fb31dd3511931cbb828e324f51ab970974b0f0d4d3b9b13af53bbb58c",
+    "temperature-live.jsonl": "ff0ffbb021d300df48c26d251f83c2cb9ef97ba9d370ca290b3c39f342184641"
+  }
+}

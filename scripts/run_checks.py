@@ -12,6 +12,7 @@ SUITES = {
     'perception': ('src/rover_perception/test', ROOT),
     'environment': ('src/mars_training_environment/test', ROOT),
     'training': ('src/rover_training/test', ROOT),
+    'collection': ('scripts', ROOT),
     'webcam': ('tests', ROOT / 'examples/webcam'),
 }
 

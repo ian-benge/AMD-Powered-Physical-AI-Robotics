@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-07T22:49:37.459841+00:00",
+  "status": "READY_FOR_PROTECTED_ROTATION_CHECK",
+  "controller_tests": 61,
+  "source_archive_sha256": "93e412b2712820f0b3ea1c00538ed97b4a4523e081b74b98f88341ce685dcfc6",
+  "supervisor_sha256": "81398bf87b716ff5c43a97aa8021a7f5b9bbd36ac9b2dc4bbb03585ae478b573",
+  "manifest_sha256": "24edbb1eb8840917d15dfd880f1121b208c2748b99617c7818e9b1bac5f3118e",
+  "retained_inputs": 15,
+  "retained_controller_unchanged": true,
+  "rendered_images_generated": 0,
+  "accepted_campaign_images": 1800,
+  "native_window_seconds": 7200,
+  "root_scope": "native capture, reviewed modules, protected final journal",
+  "workload_user": "ian",
+  "sanitized_path_includes_native_system_tools": true
+}

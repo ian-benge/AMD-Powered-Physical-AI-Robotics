@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-06T16:01:23.885450+00:00",
+  "change": "Bounded wait for ownership environment during launch exec; same identity required",
+  "rendered_module_sha256": "888d8903a1460c7c761480f02f4b2dcb6f74f42aa926f549752f2ded16523f22",
+  "final_module_sha256": "87336db7c1cf20df04a1d0d4360e6e327ab82592c381dfeee88e50536b071d6c",
+  "linux_focused_tests": 15,
+  "rerendered_after_readiness_update": false
+}

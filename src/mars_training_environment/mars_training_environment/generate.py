@@ -17,42 +17,61 @@ from .dust import bake_scene_dust
 from .ground import composite_ground
 from .framing import configured_extrinsics, planning_size_guard, projected_target_fits, target_framing
 from .planning import ViewPlanningError, class_coverage, class_view_schedule, targets_for_class
-from .meshes import build_ground, build_library, write_dae
+from .meshes import build_ground, build_library, read_collada, write_dae
 from .terrain import Terrain, generate_terrain
+from .reachability import LayoutError, PROFILE, validate_layout
+from .environment_v2 import is_v2, stream, target_names, export_class_id, SUNLIGHT
 
 WORLD_NAME = 'mars_training'
 ROCK_LABEL = 1
 
 
-def make_scene(root, config, seed, assets, ground=()):
+def make_scene(root, config, seed, assets, ground=(), validation_only=False):
     quotas = config['capture'].get('target_class_views', {})
     mixed = (seed not in config['dataset']['empty_seeds']
              and seed not in config['dataset'].get('rocks_only_seeds', []))
     attempts = config['capture'].get('class_quota_scene_attempts',8) if quotas and mixed else 1
+    reachable=config['terrain'].get('profile')==PROFILE
+    if reachable:attempts=config['terrain']['layout_attempts']
+    failures=[]
     for attempt in range(attempts):
         layout_seed = seed if attempt == 0 else int(digest({'scene_seed':seed,'layout_attempt':attempt})[:8],16)
         try:
-            return _make_scene(root,config,seed,assets,ground,layout_seed,attempt+1)
-        except ViewPlanningError as error:
+            options={'validation_only':True} if validation_only else {}
+            result=_make_scene(root,config,seed,assets,ground,layout_seed,attempt+1,**options)
+            if reachable:
+                result['layout_failures']=failures
+                if not validation_only:
+                    result.pop('content_sha256',None);result['content_sha256']=digest(result)
+                    write_json(Path(root)/'scenes'/result['id']/'scene.json',result)
+            return result
+        except (ViewPlanningError,LayoutError) as error:
             if attempt+1 == attempts:
-                raise ViewPlanningError(f'scene_{seed:06d}: unable to satisfy target framing after {attempts} '
+                kind=LayoutError if reachable else ViewPlanningError
+                raise kind(f'scene_{seed:06d}: unable to satisfy layout constraints after {attempts} '
                                         f'layouts; {error}') from error
+            failures.append(dict(attempt=attempt+1,layout_seed=layout_seed,reason=str(error)))
             print(f'Retrying scene_{seed:06d} layout {attempt+2}/{attempts}: {error}',flush=True)
 
 
-def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt):
+def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt, validation_only=False):
     root = Path(root).resolve()
     ident = f'scene_{seed:06d}'
     folder = root/'scenes'/ident
     manifest_path = folder/'scene.json'
     config_hash = digest(config)
+    reachable=config['terrain'].get('profile')==PROFILE
     if manifest_path.exists():
         existing = json.loads(manifest_path.read_text())
         require_label_schema(existing)
         if existing['config_sha256'] != config_hash:
             raise ValueError(f'{ident} already exists with another config; use a new output directory')
+        if reachable:
+            raise ValueError(f'{ident} already exists; preserve it and use a fresh output directory')
     rng = np.random.RandomState(layout_seed)
-    field, driveable, terrain = generate_terrain(seed, config['terrain'], folder)
+    v2=is_v2(config)
+    if v2:rng=stream(layout_seed,'placement')
+    field, driveable, terrain = generate_terrain(layout_seed if reachable else seed, config['terrain'], folder)
     split = split_for_seed(seed)
     # Candidate meshes are placed explicitly below with their appearance name.
     # Do not randomly instantiate a slab or crystal mesh as an ordinary rock.
@@ -67,12 +86,19 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt)
     size = field.size
     clusters = rng.uniform(-size*.32, size*.32, (5,2))
     geometry = {a['id']: np.asarray(json.loads((root/a['geometry']).read_text())['vertices']) for a in pool}
+    if reachable:
+        # Simplified scanned collision hulls can extend slightly beyond the
+        # visual vertices. Placement/route clearance must enclose both.
+        geometry = {a['id']:np.vstack([geometry[a['id']],
+                     read_collada(root/a['collision'],normalize=False)[0]]) for a in pool}
     for index in range(count):
-        asset = pool[int(rng.randint(len(pool)))]
-        sampling = rng.random_sample() < rc['sampling_probability']
-        diameter = float(rng.uniform(*(rc['sampling_size_m'] if sampling else rc['obstacle_size_m'])))
+        shape_rng=stream(layout_seed,'shape-'+str(index)) if v2 else rng
+        pose_rng=stream(layout_seed,'orientation-'+str(index)) if v2 else rng
+        asset = pool[int(shape_rng.randint(len(pool)))]
+        sampling = shape_rng.random_sample() < rc['sampling_probability']
+        diameter = float(shape_rng.uniform(*(rc['sampling_size_m'] if sampling else rc['obstacle_size_m'])))
         tilt = math.radians(rc['max_tilt_deg'])
-        rpy = [float(rng.uniform(-tilt,tilt)), float(rng.uniform(-tilt,tilt)), float(rng.uniform(-math.pi,math.pi))]
+        rpy = [float(pose_rng.uniform(-tilt,tilt)), float(pose_rng.uniform(-tilt,tilt)), float(pose_rng.uniform(-math.pi,math.pi))]
         points = geometry[asset['id']] @ rotation(rpy).T * diameter
         radius = float(np.linalg.norm(points[:, :2], axis=1).max())
         xy = None
@@ -90,7 +116,7 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt)
             xy = candidate
             break
         if xy is None:
-            raise ValueError('Placement constraints could not be met; reduce rock count or sizes')
+            raise LayoutError('Placement constraints could not be met; reduce rock count or sizes')
         # Lowest support contact against the full sampled footprint. Burial is
         # the only intentional rock/terrain intersection; pairwise rocks stay apart.
         surface = field.height(points[:,0]+xy[0], points[:,1]+xy[1])
@@ -104,9 +130,21 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt)
                         'radius_m': radius, 'burial_fraction': burial, 'burial_m': support-z, 'color': color})
     regions = []
     if not empty and config.get('candidates', {}).get('enabled'):
-        add_candidates(rng, config, field, driveable, assets, root, objects, regions, folder,
+        add_candidates(stream(layout_seed,'candidates') if v2 else rng, config, field, driveable, assets, root, objects, regions, folder,
                        allowed_categories={'pale_stone'} if rocks_only else None)
+    if v2:
+        write_json(folder/'layout-attempts'/f'attempt-{layout_attempt:02d}.json',dict(layout_seed=layout_seed,
+            terrain=terrain,objects=objects,regions=regions))
+    reachability=validate_layout(field,objects,regions,version=2 if v2 else 1,background=empty) if reachable else None
+    geometry=dict(seed=seed,layout_seed=layout_seed,layout_attempt=layout_attempt,
+                  config_sha256=config_hash,terrain=terrain,objects=objects,regions=regions)
+    geometry_sha256=digest(geometry)
+    if validation_only:
+        return dict(id=ident,purpose='geometry_validation_only',launchable=False,
+                    geometry_sha256=geometry_sha256,geometry=geometry,reachability=reachability)
     views = [None]*config['capture']['views_per_scene']
+    names=target_names(config['capture'])
+    if v2:rng=stream(seed,'views')
     targets = list(objects) + list(regions)
     priority = [item for item in targets if class_id_for(item.get('class_name', 'rock')) not in (None, 0)]
     schedule_rng = np.random.RandomState(int(digest({'scene_seed':seed,'purpose':'class_view_schedule'})[:8],16))
@@ -118,25 +156,25 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt)
     ratio = pw/config['camera']['width']
     planner_config['labels']['min_box_side_px'] = max(1, config['labels']['min_box_side_px']*ratio)
     planner_config['labels']['min_visible_pixels'] = max(1, config['labels']['min_visible_pixels']*ratio*ratio)
-    planner = Annotator(root, {'id':ident, 'class_names':list(CLASS_NAMES), 'config':planner_config,
-                              'terrain':terrain, 'objects':objects, 'regions':regions})
+    planner = (Annotator(root, {'id':ident, 'class_names':list(CLASS_NAMES), 'config':planner_config,
+                              'terrain':terrain, 'objects':objects, 'regions':regions}) if views else None)
     full_k = nominal_intrinsics(config['camera']['width'], config['camera']['height'],
                                 config['camera']['horizontal_fov_rad'])
-    full_planner = Annotator(root, {'id':ident, 'class_names':list(CLASS_NAMES), 'config':config,
-                                   'terrain':terrain, 'objects':objects, 'regions':regions})
-    target_vertices = {o['name']:v for o,v,_f in planner.meshes}
-    target_vertices.update({region['name']:mesh[0] for region,mesh in zip(regions,planner.region_meshes)})
+    full_planner = (Annotator(root, {'id':ident, 'class_names':list(CLASS_NAMES), 'config':config,
+                                   'terrain':terrain, 'objects':objects, 'regions':regions}) if views else None)
+    target_vertices = {o['name']:v for o,v,_f in planner.meshes} if views else {}
+    if views:target_vertices.update({region['name']:mesh[0] for region,mesh in zip(regions,planner.region_meshes)})
     # Plan the most constrained class first, so an infeasible crystal layout
     # does not waste time planning the other views before a bounded retry.
     order = list(range(config['capture']['views_per_scene']))
     if config['capture'].get('target_class_views') and not empty and not rocks_only:
-        order.sort(key=lambda index:({2:0,1:1,0:2}[schedule[index]],index))
+        order.sort(key=lambda index:({2:0,1:1,3:2,0:3}[schedule[index]],index))
     for index in order:
         found = None
         requested = schedule[index]
-        pool = targets if requested is None else targets_for_class(targets,requested)
+        pool = targets if requested is None else targets_for_class(targets,requested,config['capture'])
         if targets and requested is not None and not pool:
-            raise ViewPlanningError(f'{ident}/view_{index:03d}: no {CLASS_NAMES[requested]} target in this layout')
+            raise ViewPlanningError(f'{ident}/view_{index:03d}: no {names[requested]} target in this layout')
         class_offset = schedule[:index].count(requested)
         difficult = bool(targets) and (index+1) % config['capture']['difficult_view_every'] == 0
         for attempt in range(1000):
@@ -207,15 +245,17 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt)
                                       planned_framing=full_framing, coarse_planned_framing=framing,
                                       planning_resolution=[full_k['width'], full_k['height']])
                 if requested is not None:
-                    candidate_view['requested_target_class_id'] = requested
+                    candidate_view['requested_target_class_id'] = class_id_for(target.get('class_name','rock')) if len(names)==4 else requested
+                    if len(names)==4:candidate_view.update(target_export_class_id=export_class_id(target),requested_export_class_id=requested)
             found = candidate_view
             break
         if found is None:
-            target_class = 'target' if requested is None else CLASS_NAMES[requested]
+            target_class = 'target' if requested is None else names[requested]
             raise ViewPlanningError(f'{ident}/view_{index:03d}: no collision-free pose satisfies {target_class} framing; '
                                     'inspect target sizes, camera pose, distances or framing thresholds')
         views[index] = found
-    ground_recipe = (composite_ground(root, list(ground), config['terrain'], seed, folder, regions) if ground
+    material_seed=int(stream(seed,'materials').randint(0,2**30)) if v2 else seed
+    ground_recipe = (composite_ground(root, list(ground), config['terrain'], material_seed, folder, regions) if ground
                      else {'layers': [], 'procedural': 'ground.png'})
     if regions and not ground:
         paint_procedural_ground(folder, regions, config['terrain']['size_m'], seed)
@@ -228,13 +268,14 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt)
         ground_recipe['mask_ids'] = {'background': 0, 'silica_soil': 1, 'pale_lookalike': 2}
     dust_bgr = ground_recipe.get('dust_bgr') or [96.0, 128.0, 168.0]
     if any(obj.get('material_maps') is None and obj.get('class_name') in ('sulfur_rock', 'pale_stone', 'cheyava_rock', 'veined_lookalike') for obj in objects):
-        write_candidate_materials(root, folder, objects, dust_bgr, seed, config)
-    dust_textures = (bake_scene_dust(root, folder, assets, objects, dust_bgr)
+        write_candidate_materials(root, folder, objects, dust_bgr, material_seed, config)
+    dust_textures = (bake_scene_dust(root, folder, assets, objects, dust_bgr,**({'seed':seed} if v2 else {}))
                      if ground_recipe.get('dust_bgr') else {})
     # Mars sky: dusty butterscotch by day, varied per scene.
+    if v2:rng=stream(seed,'lighting')
     sky = np.array([.80, .62, .46])*rng.uniform(.85, 1.08)
     kind = 'empty' if empty else ('mixed' if priority else 'rocks_only')
-    scene = {'schema_version':5, 'simulator':'gazebo-harmonic', 'id':ident, 'seed':seed,
+    scene = {'schema_version':6 if v2 else 5, 'simulator':'gazebo-harmonic', 'id':ident, 'seed':seed,
              'class_names':list(CLASS_NAMES), 'kind':kind,
              'scene_group':f'seed_{seed}', 'split':split,
              'config_sha256':config_hash, 'config':config, 'empty':empty, 'terrain':terrain,
@@ -242,10 +283,16 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt)
              'appearance_notes': NOTES if config.get('candidates', {}).get('enabled') else [],
              'views':views,
              'gravity':[0,0,-9.81],
-             'lighting':{'azimuth':float(rng.uniform(0,math.tau)), 'elevation':float(rng.uniform(.35,1.2)),
+             'lighting':{'azimuth':float(rng.uniform(0,math.tau)), 'elevation':float(rng.uniform(*(SUNLIGHT[config['terrain']['sunlight']] if v2 else (.35,1.2)))),
                          'intensity':float(rng.uniform(.75,1.15)), 'ambient':float(rng.uniform(.32,.50)),
                          'sky_rgb':np.clip(sky,0,1).tolist()},
              'assets_sha256':digest(assets), 'ground_sha256':digest(list(ground))}
+    if reachable:scene.update(geometry_sha256=geometry_sha256,reachability=reachability,
+                              layout_seed=layout_seed,layout_attempt=layout_attempt)
+    if v2:scene.update(export_class_names=list(target_names(config['capture'])),
+        environment_recipe=dict(version=2,density=config['terrain']['density'],sunlight=config['terrain']['sunlight'],
+            streams=['placement','shape','orientation','candidates','views','materials','dust','lighting'],material_seed=material_seed,
+            reserved_family=split+':seed_'+str(seed),scene_group='seed_'+str(seed)))
     if config['capture'].get('target_class_views'):
         scene['view_planning'] = {'policy':'class_quotas_v1','layout_seed':layout_seed,'layout_attempt':layout_attempt}
         coverage = class_coverage([scene])
@@ -267,11 +314,15 @@ def _material(maps, color, roughness=1.0):
 
 def write_world(root, scene, assets, output_path=None):
     """Write host-specific absolute paths only here; manifests and hashes stay portable."""
+    engine = scene['config']['camera'].get('render_engine', 'ogre2')
+    if engine not in ('ogre', 'ogre2'):
+        raise ValueError('render_engine must be ogre or ogre2')
     root = Path(root).resolve()
     folder = root/'scenes'/scene['id']
     by_id = {a['id']:a for a in assets}
     visual_mesh = f'<mesh><uri>{escape(str(folder/"terrain.dae"))}</uri></mesh>'
     collision_mesh = f'<mesh><uri>{escape(str(folder/"terrain_collision.dae"))}</uri></mesh>'
+    if scene.get('terrain',{}).get('shared_surface'):collision_mesh=visual_mesh
     if scene['ground']['layers']:
         terrain_maps = {'albedo_map': folder/'ground_albedo.jpg', 'normal_map': folder/'ground_normal.jpg',
                         'roughness_map': folder/'ground_roughness.jpg'}
@@ -305,13 +356,20 @@ def write_world(root, scene, assets, output_path=None):
     a,e,b = light['azimuth'],light['elevation'],light['intensity']
     ambient = light['ambient']
     sky = ' '.join(f'{c:.4f}' for c in light['sky_rgb'])
+    context=''
+    if scene.get('terrain',{}).get('context_geometry'):
+        uri=escape(str(folder/'terrain_apron.dae'))
+        context=f'''<model name="mars_terrain_context"><static>true</static><link name="ground">
+<collision name="context_collision"><geometry><mesh><uri>{uri}</uri></mesh></geometry><surface><friction><ode><mu>0.9</mu><mu2>0.8</mu2></ode></friction></surface></collision>
+<visual name="context_visual"><geometry><mesh><uri>{uri}</uri></mesh></geometry>{_material({'albedo_map':folder/'context_ground.png'},'1 1 1 1')}<cast_shadows>true</cast_shadows></visual>
+</link></model>'''
     text = f'''<?xml version="1.0"?>
 <sdf version="1.9"><world name="{WORLD_NAME}">
 <physics name="default" type="dart"><max_step_size>0.002</max_step_size><real_time_factor>1.0</real_time_factor></physics>
 <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
 <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
 <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
-<plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
+<plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>{engine}</render_engine></plugin>
 <gravity>0 0 -9.81</gravity>
 <scene><ambient>{ambient} {ambient*.9:.4f} {ambient*.8:.4f} 1</ambient><background>{sky} 1</background>
 <shadows>true</shadows><grid>false</grid></scene>
@@ -321,7 +379,7 @@ def write_world(root, scene, assets, output_path=None):
 <model name="mars_terrain"><static>true</static><link name="ground">
 <collision name="terrain_collision"><geometry>{collision_mesh}</geometry><surface><friction><ode><mu>0.9</mu><mu2>0.8</mu2></ode></friction></surface></collision>
 <visual name="terrain_visual"><geometry>{visual_mesh}</geometry>{_material(terrain_maps, '1 1 1 1')}<cast_shadows>true</cast_shadows></visual>
-</link></model>{''.join(rocks)}
+</link></model>{context}{''.join(rocks)}
 </world></sdf>'''
     destination = Path(output_path) if output_path is not None else folder/'world.sdf'
     destination.write_text(text, encoding='utf-8')
@@ -348,7 +406,7 @@ def generate_bundle(output, config, seeds=None, cache=None):
         counts = scene.get('view_planning',{}).get('primary_target_counts',{})
         print(f'Finished planning {scene["id"]}: {len(scene["views"])} views'+
               (f', targets {counts}' if counts else ''),flush=True)
-    plan = {'schema_version':3, 'class_names':list(CLASS_NAMES), 'config_sha256':config_hash, 'config':config,
+    plan = {'schema_version':4 if is_v2(config) else 3, 'class_names':list(CLASS_NAMES), 'config_sha256':config_hash, 'config':config,
             'scenes':[{'id':s['id'],'seed':s['seed'],'split':s['split'], 'content_sha256':s['content_sha256'],
                        'views':len(s['views']), 'kind':s['kind']} for s in scenes],
             'reserved_meshes':[a['id'] for a in assets if a['held_out']]}

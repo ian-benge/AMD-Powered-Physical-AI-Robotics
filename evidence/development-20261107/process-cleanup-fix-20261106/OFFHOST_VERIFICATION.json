@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-06T16:09:18.603983+00:00",
+  "archive": "process-cleanup-fix-20261106-evidence.tar.gz",
+  "bytes": 479485757,
+  "sha256": "ea1bc64dad8c1a00f2186a8d156af4526811f699fc7ce6e0ac7251872e5e5a31",
+  "archive_hash_verified": true,
+  "member_hashes_verified": 3823,
+  "final_installed_release_matches_local_source": true,
+  "scope": "Complete fix, captures, attempts, proofs, closeout and bundle JSON; bulky scene/assets retained on Halo and verified by BUNDLE_PINS.json"
+}

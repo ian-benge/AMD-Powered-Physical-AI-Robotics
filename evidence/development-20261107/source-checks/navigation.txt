@@ -1,0 +1,7 @@
+........................................................................................C:\Projects\Capstone\AMD-Powered-Physical-AI-Robotics\src\rover_navigation\rover_navigation\site_geometry.py:67: RuntimeWarning: invalid value encountered in multiply
+  xyz = np.stack(((u-k[2])*z/k[0], (v-k[5])*z/k[4], z), axis=-1)
+..........................................................................................ssss..........................
+----------------------------------------------------------------------
+Ran 208 tests in 13.685s
+
+OK (skipped=4)
