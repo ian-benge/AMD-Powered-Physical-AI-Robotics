@@ -19,6 +19,7 @@ Start with [Getting started](GETTING_STARTED.md), [Architecture](ARCHITECTURE.md
 | Experimental 40 m environment | [Operator guide](SIMULATION_ENVIRONMENT_V2_GUIDE.md), [open gates and closeout](SIMULATION_ENVIRONMENT_V2_CLOSEOUT.md) |
 | New 200-image pilot | [Pilot guide](PILOT200_COLLECTION_GUIDE.md), [cleanup acceptance](PILOT200_PROCESS_CLEANUP_FIX_20261106.md) |
 | Full image collection and automatic renewal | [Campaign guide](FULL10000_COLLECTION_GUIDE.md), [continuous starter](BULK_CONTINUOUS_COLLECTION_GUIDE.md), [acceptance](BULK_CONTINUOUS_ACCEPTANCE_20261107.md) |
+| Capture recovery at the depth cutoff | [November 8 repair and regression](BULK_DEPTH_BOUNDARY_FIX_20261108.md) |
 | November source and deployment evidence | [Development evidence](../evidence/development-20261107/README.md) |
 | Original laptop webcam prototype | [Webcam example](../examples/webcam/README.md) |
 

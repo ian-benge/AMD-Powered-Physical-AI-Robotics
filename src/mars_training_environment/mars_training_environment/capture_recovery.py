@@ -13,8 +13,48 @@ YAW_OFFSETS = (.035, -.035, .070, -.070)
 EDGE_YAW_OFFSETS = (.035, .070, .105, .140)
 LOCALIZED_OFFSETS = (.035,-.035,.18,-.18,.35,-.35,.60,-.60)
 SUPPORT_REASONS = {'insufficient_sensor_depth_support', 'insufficient_sensor_depth_box_support'}
+BOUNDARY_REASONS = SUPPORT_REASONS | {'sensor_depth_box_extent_mismatch'}
 CONTINUATION_FRAMING = {'target_too_occluded','target_too_small_at_training_resolution',
                         'target_outside_frame_margin','target_clipped'}
+
+
+def _depth_boundary_evidence(expected, observed, visible, eligible, valid, camera, policy):
+    """Prove a clipped incidental sliver, solely to propose a fresh viewpoint."""
+    far = camera['far_m']
+    band = min(.03, policy['depth_support_tolerance_m'])
+    surface = expected[visible]
+    missing = eligible & ~valid
+    present = eligible & valid
+    if (camera.get('far_clip_mode') != 'axial' or not missing.any() or not present.any() or
+            not len(surface) or not np.isfinite(surface).all() or not (surface >= far).any() or
+            not (expected[eligible] >= far-band).all() or
+            not (observed[missing] >= far).all()):
+        return None
+    errors = np.abs(observed[present]-expected[present])
+    # Missing values must be far-clipped, with independently matching in-range
+    # samples. NaNs, near/zero dropouts and genuine surface disagreement fail.
+    if not np.isfinite(errors).all() or not (errors <= min(.002,band)).all():
+        return None
+    return dict(usable_pixels=int(eligible.sum()), valid_pixels=int(present.sum()),
+        clipped_pixels=int(missing.sum()), geometry_pixels_beyond_depth=int((surface >= far).sum()),
+        expected_usable_min_m=float(expected[eligible].min()), far_m=float(far),
+        band_m=float(band), max_measured_error_m=float(errors.max()),
+        limited_to_far_clip=True)
+
+
+def _verified_boundary(row, evidence, camera, policy):
+    """Require the measured cutoff proof before permitting low-depth coverage."""
+    if not isinstance(evidence,dict) or row.get('source') != 'mesh':return False
+    usable=row.get('usable_depth_expected_pixels',0)
+    valid=row.get('sensor_valid_depth_pixels',0)
+    return (evidence.get('limited_to_far_clip') is True and camera.get('far_clip_mode')=='axial' and
+        evidence.get('far_m')==camera['far_m'] and
+        0<evidence.get('band_m',0)<=min(.03,policy['depth_support_tolerance_m']) and
+        camera['far_m']-evidence['band_m']<=evidence.get('expected_usable_min_m',float('-inf'))<camera['far_m'] and
+        evidence.get('usable_pixels')==usable and evidence.get('valid_pixels')==valid and
+        0<valid<usable and evidence.get('clipped_pixels')==usable-valid and
+        evidence.get('geometry_pixels_beyond_depth',0)>0 and
+        0<=evidence.get('max_measured_error_m',float('inf'))<=min(.002,evidence['band_m']))
 
 
 def localized_depth_context(scene, view, checks, rendered):
@@ -30,12 +70,13 @@ def localized_depth_context(scene, view, checks, rendered):
             config['terrain'].get('profile_version')!=2 or
             (not (checks.get('target_framing') or {}).get('passed') and not continuing)):
         return None
-    failures=set()
+    failures=set();failure_reasons={}
     for error in checks.get('errors',[]):
         if continuing and error in CONTINUATION_FRAMING:continue
         name,separator,reason=error.partition(': ')
-        if not separator or reason not in SUPPORT_REASONS:return None
+        if not separator or reason not in BOUNDARY_REASONS:return None
         failures.add(name)
+        failure_reasons.setdefault(name,set()).add(reason)
     visibility=rendered['quality'].get('visibility_check',{})
     rows={row['name']:row for row in visibility.get('objects',[])}
     if (not visibility.get('checked') or not failures or view.get('target_name') in failures or
@@ -64,14 +105,22 @@ def localized_depth_context(scene, view, checks, rendered):
         fraction,object_median=row.get('support_fraction'),row.get('median_error_m')
         mask=eligible&(instances==identities.get(name,-1))
         pixels=int(mask.sum())
+        boundary=None
+        if row.get('source')=='mesh':
+            boundary=_depth_boundary_evidence(expected,observed,instances==identities.get(name,-1),
+                                               mask,valid,camera,policy)
         if (not pixels or not isinstance(fraction,(int,float)) or not math.isfinite(fraction) or
                 not 0.<=fraction<policy['depth_support_fraction'] or
                 not isinstance(object_median,(int,float)) or not math.isfinite(object_median) or
-                object_median<0 or int((mask&valid).sum())/pixels<.9):
+                object_median<0 or (int((mask&valid).sum())/pixels<.9 and
+                                   not _verified_boundary(row,boundary,camera,policy)) or
+                ('sensor_depth_box_extent_mismatch' in failure_reasons[name] and
+                 not _verified_boundary(row,boundary,camera,policy))):
             return None
         affected+=pixels
         objects[name]=dict(usable_pixels=pixels,rejected_support_fraction=fraction,
                            median_error_m=object_median)
+        if boundary is not None:objects[name]['depth_boundary']=boundary
     if affected/count>.02:return None
     return dict(version=2,kind='localized_incidental_depth',objects=objects,
         expected_usable_pixels=count,valid_fraction=float(valid.sum()/count),
@@ -196,13 +245,14 @@ def incidental_depth_view(scene, view, checks, quality, measured_xyz, diagnostic
                 (recovery_context or {}).get('primary_sensor_passed') is True)
     if not view.get('target_name') or (not (checks.get('target_framing') or {}).get('passed') and not continuing):
         return None
-    failures = set()
+    failures = set();failure_reasons={}
     for error in checks.get('errors', []):
         if continuing and error in CONTINUATION_FRAMING:continue
         name, separator, reason = error.partition(': ')
-        if not separator or reason not in SUPPORT_REASONS:
+        if not separator or reason not in BOUNDARY_REASONS:
             return None
         failures.add(name)
+        failure_reasons.setdefault(name,set()).add(reason)
     visibility = quality.get('visibility_check', {})
     rows = visibility.get('objects', [])
     weighted=((recovery_context or {}).get('version')==2 and
@@ -238,9 +288,12 @@ def incidental_depth_view(scene, view, checks, quality, measured_xyz, diagnostic
         usable = row.get('usable_depth_expected_pixels', 0)
         fraction = row.get('support_fraction')
         median = row.get('median_error_m')
+        boundary = weighted and _verified_boundary(row,edge_rows.get(name,{}).get('depth_boundary'),
+                                                   config['camera'],policy)
         if (not usable or not isinstance(fraction, (int, float)) or
                 not math.isfinite(fraction) or not (0. if weighted else .5 if edge else .75) <= fraction < policy['depth_support_fraction'] or
-                row.get('sensor_valid_depth_pixels', 0)/usable < .9 or
+                (row.get('sensor_valid_depth_pixels', 0)/usable < .9 and not boundary) or
+                ('sensor_depth_box_extent_mismatch' in failure_reasons[name] and not boundary) or
                 not isinstance(median, (int, float)) or not math.isfinite(median) or
                 median < 0 or median > (float('inf') if weighted else policy['depth_support_tolerance_m'] if edge else
                           min(.01, policy['depth_support_tolerance_m']/3))):

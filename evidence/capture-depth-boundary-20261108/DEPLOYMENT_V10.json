@@ -1,0 +1,24 @@
+{
+  "utc": "2026-11-08T01:22:22.678155+00:00",
+  "application": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-capture-recovery-20261106/application-v10",
+  "preserved_images": 2000,
+  "preserved_batches": 10,
+  "preserved_files": 35342,
+  "failed_attempts_preserved": true,
+  "reservations_and_splits_unchanged": true,
+  "changed_controller_files": [
+    "CAPTURE_RUNTIME.json",
+    "STARTER_SHA256.json"
+  ],
+  "changed_supervisor_files": [
+    "CONTINUOUS_PINS.json",
+    "RETAINED_INPUTS.json"
+  ],
+  "capture_runtime_sha256": "6f856f0220c7f1cf1056eaaf1e9c139e0324d1a5c43bfb4aabd57a789ffd573f",
+  "controller_pins_sha256": "518134f5973a921551e2d03a6637107d76618025ea70fb018395917de01e6c28",
+  "continuous_pins_sha256": "058580651a79a3f5871410f20ddc9b70b49f47f7db41b40ad4b2ad84d5c537b6",
+  "supervisor_source_sha256": "81398bf87b716ff5c43a97aa8021a7f5b9bbd36ac9b2dc4bbb03585ae478b573",
+  "rendered_diagnostic_frames": 20,
+  "rendered_recovery_exercised": true,
+  "training_approved": false
+}

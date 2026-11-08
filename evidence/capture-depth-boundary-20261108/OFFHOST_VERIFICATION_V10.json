@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-08T01:29:28.448272+00:00",
+  "status": "VERIFIED_OFFHOST",
+  "archive": "depth-boundary-v10-evidence.tar.gz",
+  "archive_sha256": "8c1ed4592447760ab6c8f1169be95a8469ff45598e54e5007df25864a5e74b5e",
+  "bytes": 43762522,
+  "verified_member_hashes": 305,
+  "protected_diagnostic_session_closed_cleanly": true,
+  "live_collection_left_running": true,
+  "training_approved": false
+}

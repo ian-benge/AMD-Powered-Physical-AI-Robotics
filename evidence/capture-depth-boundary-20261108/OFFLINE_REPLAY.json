@@ -1,0 +1,163 @@
+{
+  "status": "CPU_REPLAY_PROPOSAL_PASS_REQUIRES_RENDERED_ACCEPTANCE",
+  "old_candidate_context": null,
+  "new_context": {
+    "version": 2,
+    "kind": "localized_incidental_depth",
+    "objects": {
+      "rock_009": {
+        "usable_pixels": 9,
+        "rejected_support_fraction": 0.3333333333,
+        "median_error_m": 1.62125e-05,
+        "depth_boundary": {
+          "usable_pixels": 9,
+          "valid_pixels": 3,
+          "clipped_pixels": 6,
+          "geometry_pixels_beyond_depth": 39,
+          "expected_usable_min_m": 7.986785411834717,
+          "far_m": 8.0,
+          "band_m": 0.03,
+          "max_measured_error_m": 1.8596649169921875e-05,
+          "limited_to_far_clip": true
+        }
+      }
+    },
+    "expected_usable_pixels": 449461,
+    "valid_fraction": 0.9999799760157166,
+    "global_support_fraction": 0.9999866504098324,
+    "global_median_error_m": 1.2755393981933594e-05,
+    "global_p95_error_m": 0.00013113021850585938,
+    "affected_pixel_fraction": 2.0023984283397224e-05,
+    "full_frame_acceptance_required": true,
+    "primary_sensor_passed": true,
+    "continuing_after_framing_rejection": false
+  },
+  "proposed_view": {
+    "capture_timing": {
+      "capture_after_sim_sec": 28.18,
+      "feedback_barrier_sim_sec": 27.44,
+      "pose_arrival_sim_sec": 27.48
+    },
+    "coarse_planned_framing": {
+      "bbox_xyxy": [
+        164,
+        64,
+        232,
+        81
+      ],
+      "difficult": false,
+      "minimum_side_at_training_px": 29.0,
+      "passed": true,
+      "reasons": [],
+      "side_at_training_px": 42.5,
+      "target_name": "veined_lookalike_000",
+      "visible_fraction": 0.8608094768
+    },
+    "difficult": false,
+    "id": "view_015",
+    "planned_framing": {
+      "bbox_xyxy": [
+        411,
+        161,
+        581,
+        204
+      ],
+      "difficult": false,
+      "minimum_side_at_training_px": 26.0,
+      "passed": true,
+      "reasons": [],
+      "side_at_training_px": 43.0,
+      "target_name": "veined_lookalike_000",
+      "visible_fraction": 0.8604357436
+    },
+    "planning_resolution": [
+      960,
+      540
+    ],
+    "requested_export_class_id": 3,
+    "requested_target_class_id": 0,
+    "rpy": [
+      -0.008779511099660822,
+      -0.01778052310083003,
+      2.8148150590000003
+    ],
+    "target_class_id": 0,
+    "target_export_class_id": 3,
+    "target_name": "veined_lookalike_000",
+    "xyz": [
+      -1.1720413145,
+      -5.5432489126,
+      0.2478136061
+    ],
+    "view_recoveries": [
+      {
+        "reason": "localized_incidental_depth_support",
+        "original_yaw": 2.779815059,
+        "original_xyz": [
+          -1.1720413145,
+          -5.5432489126,
+          0.2478136061
+        ],
+        "yaw_offset": 0.035,
+        "candidate_index": 0,
+        "orbit_about_target": false,
+        "candidate_limit": 8,
+        "from_measured_xyz": [
+          -1.1716886206687205,
+          -5.543905346419694,
+          0.23837316521071436
+        ],
+        "rejected_errors": [
+          "rock_009: insufficient_sensor_depth_support",
+          "rock_009: insufficient_sensor_depth_box_support",
+          "rock_009: sensor_depth_box_extent_mismatch"
+        ],
+        "rejected_diagnostics": "preserved-attempt-0003/view_015",
+        "acceptance_policy_unchanged": true,
+        "localized_depth_context": {
+          "version": 2,
+          "kind": "localized_incidental_depth",
+          "objects": {
+            "rock_009": {
+              "usable_pixels": 9,
+              "rejected_support_fraction": 0.3333333333,
+              "median_error_m": 1.62125e-05,
+              "depth_boundary": {
+                "usable_pixels": 9,
+                "valid_pixels": 3,
+                "clipped_pixels": 6,
+                "geometry_pixels_beyond_depth": 39,
+                "expected_usable_min_m": 7.986785411834717,
+                "far_m": 8.0,
+                "band_m": 0.03,
+                "max_measured_error_m": 1.8596649169921875e-05,
+                "limited_to_far_clip": true
+              }
+            }
+          },
+          "expected_usable_pixels": 449461,
+          "valid_fraction": 0.9999799760157166,
+          "global_support_fraction": 0.9999866504098324,
+          "global_median_error_m": 1.2755393981933594e-05,
+          "global_p95_error_m": 0.00013113021850585938,
+          "affected_pixel_fraction": 2.0023984283397224e-05,
+          "full_frame_acceptance_required": true,
+          "primary_sensor_passed": true,
+          "continuing_after_framing_rejection": false
+        }
+      }
+    ]
+  },
+  "original_frame_remains_rejected": true,
+  "original_errors": [
+    "rock_009: insufficient_sensor_depth_support",
+    "rock_009: insufficient_sensor_depth_box_support",
+    "rock_009: sensor_depth_box_extent_mismatch"
+  ],
+  "saved_evidence_sha256": {
+    "camera.json": "1676832c46e597fea501b4bc6bb0d471d270ac5a365f4ed07975d49ad8a30b04",
+    "geometry.npz": "318f6ba3e95e41ebdd0d3cdfc9c41c0c48e7c94f561036f1f0da3d275363b19f",
+    "rgb.png": "e30cf8f24bd02aff5a062fe0e70c7172159b21b09e64cc5f6f858edad67c653e"
+  },
+  "config_sha256": "39e28f22c9333c10f755bb6786d3121e6477636ac9592ae547f0a2a55fac7d40"
+}

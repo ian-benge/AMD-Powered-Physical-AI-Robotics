@@ -286,5 +286,84 @@ class LocalizedPixelEvidenceTests(unittest.TestCase):
             self.assertIsNone(localized_depth_context(scene,first,bad,rendered))
 
 
+class DepthBoundaryRecoveryTests(unittest.TestCase):
+    setUp=CaptureRecoveryTests.setUp
+    propose=CaptureRecoveryTests.propose
+
+    def fixture(self):
+        scene=copy.deepcopy(self.scene)
+        scene['config']['camera'].update(width=128,height=128,near_m=.3,far_m=8.,
+                                         rgb_far_m=20.,far_clip_mode='axial')
+        expected=np.full((128,128),5.)
+        instances=np.zeros((128,128),int);instances[50:60,50:60]=1;instances[0,:48]=2
+        expected[0,:9]=np.linspace(7.987,7.996,9);expected[0,9:48]=8.05
+        observed=expected.copy();observed[0,3:48]=np.inf
+        rows=[dict(name='target',passed=True),dict(name='incidental',source='mesh',passed=False,
+            usable_depth_expected_pixels=9,sensor_valid_depth_pixels=3,support_fraction=1/3,
+            median_error_m=0.,visible_pixels=48,rgb_only_pixels=39)]
+        checks=dict(errors=['incidental: '+reason for reason in [
+            'insufficient_sensor_depth_support','insufficient_sensor_depth_box_support',
+            'sensor_depth_box_extent_mismatch']],target_framing=dict(passed=True))
+        rendered=dict(expected=expected,observed=observed,instances=instances,
+            objects=[dict(name='target'),dict(name='incidental')],
+            quality=dict(visibility_check=dict(checked=True,objects=rows)))
+        return scene,checks,rendered
+
+    def test_measured_cutoff_sliver_permits_a_fresh_view_but_never_accepts_the_frame(self):
+        scene,checks,rendered=self.fixture();original=copy.deepcopy(scene)
+        self.assertIsNone(self.propose(scene=scene,checks=checks,quality=rendered['quality']))
+        context=localized_depth_context(scene,self.view,checks,rendered)
+        self.assertIsNotNone(context)
+        evidence=context['objects']['incidental']['depth_boundary']
+        self.assertEqual((evidence['usable_pixels'],evidence['valid_pixels'],evidence['clipped_pixels']),(9,3,6))
+        self.assertEqual(evidence['geometry_pixels_beyond_depth'],39)
+        result=self.propose(scene=scene,checks=checks,quality=rendered['quality'],recovery_context=context)
+        self.assertIsNotNone(result)
+        self.assertEqual(result['target_name'],self.view['target_name'])
+        self.assertEqual(result['requested_export_class_id'],self.view['requested_export_class_id'])
+        self.assertFalse(rendered['quality']['visibility_check']['objects'][1]['passed'])
+        self.assertEqual(scene,original)
+        self.assertEqual(scene['config']['labels']['depth_support_fraction'],.9)
+
+    def test_bad_sensor_data_non_boundary_disagreement_and_primary_failure_still_stop(self):
+        for change in ['missing','nan','zero','near','negative_inf','too_close','no_far_geometry',
+                       'no_supported_pixel','supported_error','global_error','primary','class','radial','ground']:
+            scene,checks,rendered=self.fixture()
+            if change=='missing':rendered['observed']=None
+            elif change=='nan':rendered['observed'][0,3]=np.nan
+            elif change=='zero':rendered['observed'][0,3]=0.
+            elif change=='near':rendered['observed'][0,3]=1.
+            elif change=='negative_inf':rendered['observed'][0,3]=-np.inf
+            elif change=='too_close':rendered['expected'][0,3]=7.9
+            elif change=='no_far_geometry':rendered['expected'][0,9:48]=7.999
+            elif change=='no_supported_pixel':rendered['observed'][0,:9]=np.inf
+            elif change=='supported_error':rendered['observed'][0,0]-=.01
+            elif change=='global_error':rendered['observed'][10:]+= .005
+            elif change=='primary':checks['errors'].append('target: insufficient_sensor_depth_support')
+            elif change=='class':checks['errors'].append('target_class_does_not_match_requested_quota')
+            elif change=='radial':scene['config']['camera']['far_clip_mode']='radial'
+            else:rendered['quality']['visibility_check']['objects'][1]['source']='ground_region'
+            with self.subTest(change=change):
+                self.assertIsNone(localized_depth_context(scene,self.view,checks,rendered))
+
+    def test_low_coverage_and_box_extent_mismatch_require_the_complete_boundary_proof(self):
+        scene,checks,rendered=self.fixture()
+        context=localized_depth_context(scene,self.view,checks,rendered)
+        for field,value in [('limited_to_far_clip',False),('clipped_pixels',5),('far_m',20.),
+                            ('expected_usable_min_m',7.9),('band_m',.2),('valid_pixels',0)]:
+            invalid=copy.deepcopy(context);invalid['objects']['incidental']['depth_boundary'][field]=value
+            with self.subTest(field=field):
+                self.assertIsNone(self.propose(scene=scene,checks=checks,quality=rendered['quality'],recovery_context=invalid))
+
+    def test_boundary_recovery_uses_the_existing_finite_pose_search(self):
+        scene,checks,rendered=self.fixture()
+        context=localized_depth_context(scene,self.view,checks,rendered);view=self.view
+        for index in range(8):
+            view=self.propose(scene=scene,view=view,checks=checks,quality=rendered['quality'],recovery_context=context)
+            self.assertEqual(view['view_recoveries'][-1]['candidate_index'],index)
+        self.assertIsNone(self.propose(scene=scene,view=view,checks=checks,
+                                      quality=rendered['quality'],recovery_context=context))
+
+
 if __name__=='__main__':
     unittest.main()

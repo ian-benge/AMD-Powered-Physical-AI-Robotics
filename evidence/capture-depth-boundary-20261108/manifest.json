@@ -1,0 +1,89 @@
+{
+  "scope": "Selected v10 repair evidence; raw diagnostic captures and archives remain external",
+  "files": [
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/FINAL_REVIEW_V10.json",
+      "published": "evidence/capture-depth-boundary-20261108/FINAL_REVIEW_V10.json",
+      "source_sha256": "33a0ebae0fb188a324f7b3f33ab003eee450ac73bdf72a3cfb134c4a71af36bd",
+      "published_sha256": "33a0ebae0fb188a324f7b3f33ab003eee450ac73bdf72a3cfb134c4a71af36bd",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/DEPLOYMENT_V10.json",
+      "published": "evidence/capture-depth-boundary-20261108/DEPLOYMENT_V10.json",
+      "source_sha256": "e9c9277ef9386ef6343b58f8688f4b502acb77c59ff535ee61771b6346165c13",
+      "published_sha256": "e9c9277ef9386ef6343b58f8688f4b502acb77c59ff535ee61771b6346165c13",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/SOURCE_RELEASE_V10.json",
+      "published": "evidence/capture-depth-boundary-20261108/SOURCE_RELEASE_V10.json",
+      "source_sha256": "a7e22b99dc8ea28ff4f033fc667a713007f489bcc28be1228371e2cf05ca63f3",
+      "published_sha256": "a52c7bf8be3a3f3f5c279e7e8ff0d1c81e835879e9a3f3a2b8dff927595920fc",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/OFFLINE_REPLAY.json",
+      "published": "evidence/capture-depth-boundary-20261108/OFFLINE_REPLAY.json",
+      "source_sha256": "971d22145e9c98527dd8f1cd45e42a73dfee71647a4f4a1901ce275c9791e13d",
+      "published_sha256": "55400a46159f768b658ab7f17d167f04a699ee881c0e058767ee1d983bc1aabc",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/PROTECTED_CLOSURE_REVIEW.json",
+      "published": "evidence/capture-depth-boundary-20261108/PROTECTED_CLOSURE_REVIEW.json",
+      "source_sha256": "713800ad9417ea27389b7a22db3f77b6421ed36b123bfb1ae09ca4ce856e0760",
+      "published_sha256": "713800ad9417ea27389b7a22db3f77b6421ed36b123bfb1ae09ca4ce856e0760",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/LIVE_BLOCKER_PASSED.json",
+      "published": "evidence/capture-depth-boundary-20261108/LIVE_BLOCKER_PASSED.json",
+      "source_sha256": "e5ca652edf29a07a58535769433bdc84c4cd959378d332746ebefdf4962a6543",
+      "published_sha256": "e5ca652edf29a07a58535769433bdc84c4cd959378d332746ebefdf4962a6543",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/ARCHIVE_RECEIPT_V10.json",
+      "published": "evidence/capture-depth-boundary-20261108/ARCHIVE_RECEIPT_V10.json",
+      "source_sha256": "05d97b4ce774eece676542a5d00998b4cc0ba277d03f39a5784f3fcde00df95f",
+      "published_sha256": "05d97b4ce774eece676542a5d00998b4cc0ba277d03f39a5784f3fcde00df95f",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/OFFHOST_VERIFICATION_V10.json",
+      "published": "evidence/capture-depth-boundary-20261108/OFFHOST_VERIFICATION_V10.json",
+      "source_sha256": "65ad5e373bbed575491ae869fc9f259ce485f36c032621ea6a06669d39808930",
+      "published_sha256": "600c2c1835b499353ae9d165b41810569c20654e686773963325d77915e6106f",
+      "transformation": "CRLF to LF only"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/LINUX_ENVIRONMENT_TESTS-v10.txt",
+      "published": "evidence/capture-depth-boundary-20261108/LINUX_ENVIRONMENT_TESTS-v10.txt",
+      "source_sha256": "5a353da8d9fe1e0dd539597619b8da0c96c1888ca8e9b8c5f29eb7e31942298d",
+      "published_sha256": "5a353da8d9fe1e0dd539597619b8da0c96c1888ca8e9b8c5f29eb7e31942298d",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/LINUX_CONTROLLER_TESTS-v10.txt",
+      "published": "evidence/capture-depth-boundary-20261108/LINUX_CONTROLLER_TESTS-v10.txt",
+      "source_sha256": "4f79199c0fd0a6e8ecec316931d9c41c31f9f118afcd42f1420db02ccb4dd84c",
+      "published_sha256": "4f79199c0fd0a6e8ecec316931d9c41c31f9f118afcd42f1420db02ccb4dd84c",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/LINUX_CONTINUOUS_TESTS-v10.txt",
+      "published": "evidence/capture-depth-boundary-20261108/LINUX_CONTINUOUS_TESTS-v10.txt",
+      "source_sha256": "f5055e0fca94600d745d5ab74a9246d4902581dd12073335681cb87913716f76",
+      "published_sha256": "f5055e0fca94600d745d5ab74a9246d4902581dd12073335681cb87913716f76",
+      "transformation": "none"
+    },
+    {
+      "source": "navigation_sessions/bulk-depth-boundary-fix-20261108/windows-checks/environment.txt",
+      "published": "evidence/capture-depth-boundary-20261108/WINDOWS_ENVIRONMENT_TESTS-v10.txt",
+      "source_sha256": "bb9f515dce654f60968f4c75acc35037167f39919db580d4b43f60590b7233c1",
+      "published_sha256": "3e6241b81e57c82682a8bb7cfebeb17f44c7c07a971de343f7ded82a08ddb740",
+      "transformation": "CRLF to LF only"
+    }
+  ]
+}

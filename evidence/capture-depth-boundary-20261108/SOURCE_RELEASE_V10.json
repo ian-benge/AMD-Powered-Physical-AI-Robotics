@@ -1,0 +1,11 @@
+{
+  "archive_sha256": "d15006a7b79b310336d2acc3cfcc1ab435fffc0dc8be3bec68c217a8b68fd46a",
+  "bytes": 15196,
+  "files": {
+    "src/mars_training_environment/mars_training_environment/capture_recovery.py": "8292325c02a1fd624b65095dbe6bd837d2db8e1f2e0ce0fe66b10d40560eb3fe",
+    "src/mars_training_environment/test/test_capture_recovery.py": "edecaeee77b12428e6ff0c03c0e91a792cb9f351eb898037243b46efb8d1c157",
+    "build_v10.py": "8063407d9e2f61e28bef95e47463481b7d6f77191ef4275fd039003683d886a0",
+    "run_diagnostic_v10.py": "b96376d357fe4a026a7f26273f2c2c691c564de6b864cc47f6c1e1cf9425b801",
+    "diagnostic_worker_v10.py": "6e33c536d8c271a60e90e2fcf8b25677e5567fb112331a8039cd6084b591715c"
+  }
+}

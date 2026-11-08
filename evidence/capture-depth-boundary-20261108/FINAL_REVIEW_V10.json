@@ -1,0 +1,148 @@
+{
+  "utc": "2026-11-08T01:24:07.749411+00:00",
+  "status": "RENDERED_CUTOFF_RECOVERY_PASS_AND_DEPLOYED",
+  "scene": "scene_4320160",
+  "view": "view_015",
+  "diagnostic_only": true,
+  "included_in_bulk_collection": false,
+  "frames": 20,
+  "validation_errors": [],
+  "box_verification": {
+    "backend": "sensor_depth_v1",
+    "frames_agreeing": 20,
+    "frames_checked": 20,
+    "geometry_only_objects": 76,
+    "objects_checked": 231
+  },
+  "recovered_object": {
+    "depth_check_scope": "usable_depth",
+    "median_error_m": 2.67029e-05,
+    "name": "rock_009",
+    "passed": true,
+    "reasons": [],
+    "rgb_only_pixels": 10,
+    "sensor_valid_depth_pixels": 40,
+    "sky_rgb_fraction": 0.0,
+    "source": "mesh",
+    "support_fraction": 0.9047619048,
+    "supported_pixels": 38,
+    "usable_depth_expected_pixels": 42,
+    "valid_depth_pixels": 40,
+    "visible_pixels": 52
+  },
+  "rejected_original_preserved": true,
+  "full_rgb_label_retained": true,
+  "primary_framing": {
+    "bbox_xyxy": [
+      438,
+      167,
+      608,
+      211
+    ],
+    "difficult": false,
+    "minimum_side_at_training_px": 24.0,
+    "passed": true,
+    "reasons": [],
+    "side_at_training_px": 44.0,
+    "target_name": "veined_lookalike_000",
+    "visible_fraction": 0.8599493029
+  },
+  "recoveries": [
+    {
+      "acceptance_policy_unchanged": true,
+      "candidate_index": 0,
+      "candidate_limit": 8,
+      "from_measured_xyz": [
+        -1.1716884123,
+        -5.543905482,
+        0.2383736546
+      ],
+      "localized_depth_context": {
+        "affected_pixel_fraction": 2.00241e-05,
+        "continuing_after_framing_rejection": false,
+        "expected_usable_pixels": 449458,
+        "full_frame_acceptance_required": true,
+        "global_median_error_m": 3.0994e-06,
+        "global_p95_error_m": 3.57628e-05,
+        "global_support_fraction": 0.9999888753,
+        "kind": "localized_incidental_depth",
+        "objects": {
+          "rock_009": {
+            "depth_boundary": {
+              "band_m": 0.03,
+              "clipped_pixels": 6,
+              "expected_usable_min_m": 7.9868068695,
+              "far_m": 8.0,
+              "geometry_pixels_beyond_depth": 39,
+              "limited_to_far_clip": true,
+              "max_measured_error_m": 1.19209e-05,
+              "usable_pixels": 9,
+              "valid_pixels": 3
+            },
+            "median_error_m": 5.722e-06,
+            "rejected_support_fraction": 0.3333333333,
+            "usable_pixels": 9
+          }
+        },
+        "primary_sensor_passed": true,
+        "valid_fraction": 0.9999866506,
+        "version": 2
+      },
+      "orbit_about_target": false,
+      "original_xyz": [
+        -1.1720413145,
+        -5.5432489126,
+        0.2478136061
+      ],
+      "original_yaw": 2.779815059,
+      "reason": "localized_incidental_depth_support",
+      "rejected_diagnostics": "diagnostics/scene_4320160/view_015",
+      "rejected_errors": [
+        "rock_009: insufficient_sensor_depth_support",
+        "rock_009: insufficient_sensor_depth_box_support",
+        "rock_009: sensor_depth_box_extent_mismatch"
+      ],
+      "yaw_offset": 0.035
+    }
+  ],
+  "fresh_feedback_timing_all_pass": true,
+  "renderer_cleanup_records": 1,
+  "renderer_cleanup_remaining": [],
+  "peak_guarded_tctl_c": 74.125,
+  "deployment": {
+    "utc": "2026-11-08T01:22:22.678155+00:00",
+    "application": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-capture-recovery-20261106/application-v10",
+    "preserved_images": 2000,
+    "preserved_batches": 10,
+    "preserved_files": 35342,
+    "failed_attempts_preserved": true,
+    "reservations_and_splits_unchanged": true,
+    "changed_controller_files": [
+      "CAPTURE_RUNTIME.json",
+      "STARTER_SHA256.json"
+    ],
+    "changed_supervisor_files": [
+      "CONTINUOUS_PINS.json",
+      "RETAINED_INPUTS.json"
+    ],
+    "capture_runtime_sha256": "6f856f0220c7f1cf1056eaaf1e9c139e0324d1a5c43bfb4aabd57a789ffd573f",
+    "controller_pins_sha256": "518134f5973a921551e2d03a6637107d76618025ea70fb018395917de01e6c28",
+    "continuous_pins_sha256": "058580651a79a3f5871410f20ddc9b70b49f47f7db41b40ad4b2ad84d5c537b6",
+    "supervisor_source_sha256": "81398bf87b716ff5c43a97aa8021a7f5b9bbd36ac9b2dc4bbb03585ae478b573",
+    "rendered_diagnostic_frames": 20,
+    "rendered_recovery_exercised": true,
+    "training_approved": false
+  },
+  "source_release": {
+    "archive_sha256": "d15006a7b79b310336d2acc3cfcc1ab435fffc0dc8be3bec68c217a8b68fd46a",
+    "bytes": 15196,
+    "files": {
+      "src/mars_training_environment/mars_training_environment/capture_recovery.py": "8292325c02a1fd624b65095dbe6bd837d2db8e1f2e0ce0fe66b10d40560eb3fe",
+      "src/mars_training_environment/test/test_capture_recovery.py": "edecaeee77b12428e6ff0c03c0e91a792cb9f351eb898037243b46efb8d1c157",
+      "build_v10.py": "8063407d9e2f61e28bef95e47463481b7d6f77191ef4275fd039003683d886a0",
+      "run_diagnostic_v10.py": "b96376d357fe4a026a7f26273f2c2c691c564de6b864cc47f6c1e1cf9425b801",
+      "diagnostic_worker_v10.py": "6e33c536d8c271a60e90e2fcf8b25677e5567fb112331a8039cd6084b591715c"
+    }
+  },
+  "training_approved": false
+}
