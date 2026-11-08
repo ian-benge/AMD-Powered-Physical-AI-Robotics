@@ -277,13 +277,13 @@
   "publication_checks": [
     {
       "published": "evidence/development-20261107/source-checks/checks.json",
-      "published_bytes": 3154,
-      "published_sha256": "7947f5f956641e46c75f36b597cc2f388540ef89aead3264948c44ff00c35c63"
+      "published_bytes": 3478,
+      "published_sha256": "ec276258c20b21a8b03f093ede28c4e551e3d77385fa310f22c615fd720d8c86"
     },
     {
       "published": "evidence/development-20261107/source-checks/collection.txt",
       "published_bytes": 667,
-      "published_sha256": "00c12f738d61843cad010b0d2972fec5837a426dfd9613b03655836a6805ef77"
+      "published_sha256": "46853868d284d93a6665de29c496e0d4747dd77537a5971cabb3b403cc534b59"
     },
     {
       "published": "evidence/development-20261107/source-checks/environment.txt",

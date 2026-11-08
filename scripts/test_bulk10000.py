@@ -146,7 +146,9 @@ class SessionImports(unittest.TestCase):
 class CaptureRuntime(unittest.TestCase):
     def test_capture_extension_cannot_change_geometry_or_acceptance_code(self):
         with tempfile.TemporaryDirectory() as name:
-            root=Path(name);control=root/'control';control.mkdir()
+            # Windows CI may return an 8.3 TEMP alias. Production resolves the
+            # candidate path; the fixture base must use the same canonical form.
+            root=Path(name).resolve();control=root/'control';control.mkdir()
             app=root/'bulk10000-capture-recovery-20261106/application-v1';app.mkdir(parents=True)
             protected='source/src/mars_training_environment/mars_training_environment/annotation.py'
             file=app/protected;file.parent.mkdir(parents=True);file.write_text('unchanged')

@@ -1,9 +1,9 @@
 .CAPTURE_RECOVERY_RUNTIME_CHECK_PASS: unchanged renderer, geometry and acceptance policy
-...{"utc": "utc", "failure": "Wrong boot", "cleanup_error": null, "exit_code": null, "case": "C:\\Users\\ianbe\\AppData\\Local\\Temp\\tmpvltc0ndg\\case", "command": ["workload"], "session_scan_retries": 0, "native_guard_and_kit_unchanged": true}
+...{"utc": "utc", "failure": "Wrong boot", "cleanup_error": null, "exit_code": null, "case": "C:\\Users\\ianbe\\AppData\\Local\\Temp\\tmpi3mlp6he\\case", "command": ["workload"], "session_scan_retries": 0, "native_guard_and_kit_unchanged": true}
 ...........................................s...........s.s...Stopping collection; waiting for container cleanup. Keep monitors running.
 ..Stopping collection; waiting for container cleanup. Keep monitors running.
 ........
 ----------------------------------------------------------------------
-Ran 75 tests in 0.969s
+Ran 75 tests in 0.764s
 
 OK (skipped=3)

@@ -1,5 +1,5 @@
 {
-  "checked_utc": "2026-11-08T00:09:26.269739+00:00",
+  "checked_utc": "2026-11-08T00:16:27.085847+00:00",
   "platform": "Windows, Python 3.12 (isolated virtual environment)",
   "dependency_spec": "requirements-test.txt",
   "scope": "CPU source checks and browser control harnesses; no new ROS build, GPU, rendered or motion acceptance is implied.",
@@ -35,7 +35,7 @@
     "collection": {
       "tests": 75,
       "skipped": 3,
-      "seconds": 0.969,
+      "seconds": 0.764,
       "log": "collection.txt",
       "result": "PASS"
     },
@@ -75,9 +75,10 @@
   "publication_fixes": [
     "Capture ordering fixture uses middleware import doubles when ROS/Gazebo are absent and deterministic wall timing.",
     "Native Halo executable test skips on generic CI without the pinned operator kit.",
-    "Atomic review-page replacement retries transient Windows sharing errors at most ten times; persistent failures retain the previous page and remove temporary files."
+    "Atomic review-page replacement retries transient Windows sharing errors at most ten times; persistent failures retain the previous page and remove temporary files.",
+    "Canonicalize the runtime identity fixture base when Windows TEMP uses an 8.3 path alias; production identity checks are unchanged."
   ],
-  "initial_failures": "The initial environment run exposed zero elapsed fixture time and concurrent Windows sharing errors. Those failures were retained locally, corrected and the environment suite rerun; the other five suites were unchanged and retained their passing runs.",
+  "initial_failures": "The initial environment run exposed zero elapsed fixture time and concurrent Windows sharing errors. Those failures were retained locally, corrected and the environment suite rerun; the other five suites were unchanged and retained their passing runs. GitHub Windows CI then exposed an 8.3 TEMP alias in the capture runtime identity fixture. Canonicalizing that fixture base fixed the mismatch; the collection suite passed locally again.",
   "result": "PASS",
   "log_normalization": "LF line endings; trailing whitespace removed from portable test logs."
 }
