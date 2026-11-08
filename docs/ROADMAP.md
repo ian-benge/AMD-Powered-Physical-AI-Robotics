@@ -12,7 +12,7 @@ The November rendering/terrain/mapping phases are a separate sequence from the o
 
 ## Current work: collection, review and export
 
-At the November 7 continuous-run handoff, nine batches and **1,800 accepted images** were verified; batch 10 was running. This dated count is not a completion claim. The campaign targets 8,000 training, 1,000 validation and 1,000 test images, including 20% backgrounds with reserved scene/asset splits.
+At the November 8 [depth-cutoff repair](BULK_DEPTH_BOUNDARY_FIX_20261108.md), ten batches and **2,000 accepted images** were verified; batch 11 resumed with v10 and passed its formerly blocking scene. This dated count is not a completion claim. The campaign targets 8,000 training, 1,000 validation and 1,000 test images, including 20% backgrounds with reserved scene/asset splits.
 
 1. Complete the remaining batches with the existing renderer, geometry labels and quality checks. Investigate genuine faults rather than bypassing them.
 2. Review images and labels, class/view coverage, backgrounds and rejected attempts. Preserve raw captures and audit reversible edits.

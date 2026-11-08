@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-08T01:28:53.561962+00:00",
+  "archive": "depth-boundary-v10-evidence.tar.gz",
+  "bytes": 43762522,
+  "sha256": "8c1ed4592447760ab6c8f1169be95a8469ff45598e54e5007df25864a5e74b5e",
+  "content_files": 305,
+  "manifest_sha256": "c7a69673fc660b96539bc093d9f7e1c856f27ecb3665edd730bb6787d029455d",
+  "active_session_finished": false,
+  "training_approved": false
+}

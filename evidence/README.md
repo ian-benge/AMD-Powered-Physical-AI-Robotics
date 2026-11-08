@@ -4,6 +4,7 @@ These are selected historical outputs from the Halo development runs. Measuremen
 
 | Folder | Contents |
 | --- | --- |
+| [capture-depth-boundary-20261108](capture-depth-boundary-20261108/README.md) | V10 cutoff recovery: preserved-frame replay, 20-view rendered regression, deployment/preservation checks and clean protected closeout |
 | [development-20261107](development-20261107/README.md) | November rendering, terrain, mapping, pilot/collection and monitoring-controller summaries; separate provenance manifest and fresh source checks |
 | `phase3-validation-20261021` | Three-trial summary, timing, source-test logs and browser regression evidence |
 | `restart-20261021T212626Z-06f471` | Accepted tracking trial 003 and fresh-revisit/replay reports |

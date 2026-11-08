@@ -5,6 +5,11 @@ checkout does not include its operator kit, runtime bundles, model artifacts or
 saved campaign. Use [Getting started](GETTING_STARTED.md) for portable source
 checks and the CPU simulation; deployment paths below are machine-specific.
 
+The [November 8 depth-boundary repair](BULK_DEPTH_BOUNDARY_FIX_20261108.md)
+updates the checked capture runtime to v10. The supervisor program and commands
+below are unchanged; all 2,000 accepted images and prior failed attempts were
+verified before the update.
+
 The separate supervisor resumes the existing 10,000-image campaign and renews
 monitoring automatically between batches. One initial local sudo launch allows
 the native protected capture and final journal commands to run for each window.

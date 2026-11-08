@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-08T01:26:34.105016+00:00",
+  "status": "PROTECTED_MANUAL_CLOSEOUT_PASS",
+  "case": "/home/ian/capstone-training/rover-navigation/navigation_sessions/oem617-7141-rocm-manual-20261108t010539z-d317-20261108T010544Z-u3q3t8b8",
+  "final": {
+    "utc": "2026-11-08T01:24:30.743769+00:00",
+    "case": "/home/ian/capstone-training/rover-navigation/navigation_sessions/oem617-7141-rocm-manual-20261108t010539z-d317-20261108T010544Z-u3q3t8b8",
+    "condition": "interactive manual use",
+    "post_teardown_clean": true,
+    "timed_hour_completed": false,
+    "result": "MANUAL_SESSION_CLOSED_CLEANLY",
+    "limitation": "No endurance/stability or autonomous navigation claim"
+  },
+  "temperature_last_utc": "2026-11-08T01:24:49.809702+00:00",
+  "capture_stopped_utc": "2026-11-08T01:24:53.723357+00:00",
+  "cooldown_temperature_samples": 30,
+  "maximum_cooldown_temperature_gap_s": 2.021048,
+  "capture_and_temperatures_extended_past_final_journal": true,
+  "monitoring_gap": false,
+  "scope": "Bounded diagnostic session closure; not endurance qualification"
+}

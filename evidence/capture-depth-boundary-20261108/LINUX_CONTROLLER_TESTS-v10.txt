@@ -1,0 +1,42 @@
+test_verified_partial_batch_uses_remaining_work_and_changed_cache_stops (test_bulk10000.CachedSessionBudget.test_verified_partial_batch_uses_remaining_work_and_changed_cache_stops) ... ok
+test_capture_extension_cannot_change_geometry_or_acceptance_code (test_bulk10000.CaptureRuntime.test_capture_extension_cannot_change_geometry_or_acceptance_code) ... CAPTURE_RECOVERY_RUNTIME_CHECK_PASS: unchanged renderer, geometry and acceptance policy
+ok
+test_disappeared_session_repeats_the_complete_guard_and_records_retry (test_bulk10000.InventoryRace.test_disappeared_session_repeats_the_complete_guard_and_records_retry) ... ok
+test_driver_cleanup_refuses_foreign_image_or_mount (test_bulk10000.InventoryRace.test_driver_cleanup_refuses_foreign_image_or_mount) ... ok
+test_driver_startup_failure_keeps_a_result_and_starts_no_workload (test_bulk10000.InventoryRace.test_driver_startup_failure_keeps_a_result_and_starts_no_workload) ... {"utc": "utc", "failure": "Wrong boot", "cleanup_error": null, "exit_code": null, "case": "/tmp/tmp9y4d8efy/case", "command": ["workload"], "session_scan_retries": 0, "native_guard_and_kit_unchanged": true}
+ok
+test_graphical_session_loss_after_rescan_still_stops (test_bulk10000.InventoryRace.test_graphical_session_loss_after_rescan_still_stops) ... ok
+test_other_failures_and_nonmatching_session_ids_are_never_retried (test_bulk10000.InventoryRace.test_other_failures_and_nonmatching_session_ids_are_never_retried) ... ok
+test_repeated_inventory_race_has_a_finite_limit (test_bulk10000.InventoryRace.test_repeated_inventory_race_has_a_finite_limit) ... ok
+test_changed_or_escaped_evidence_cannot_resume (test_bulk10000.Reservations.test_changed_or_escaped_evidence_cannot_resume) ... ok
+test_changed_scene_identity_is_rejected (test_bulk10000.Reservations.test_changed_scene_identity_is_rejected) ... ok
+test_configuration_retains_camera_and_annotation_policy (test_bulk10000.Reservations.test_configuration_retains_camera_and_annotation_policy) ... ok
+test_existing_split_hash_contract (test_bulk10000.Reservations.test_existing_split_hash_contract) ... ok
+test_fixed_split_counts_backgrounds_and_unique_scenes (test_bulk10000.Reservations.test_fixed_split_counts_backgrounds_and_unique_scenes) ... ok
+test_guard_failure_cannot_be_promoted_as_completed (test_bulk10000.Reservations.test_guard_failure_cannot_be_promoted_as_completed) ... ok
+test_manifests_cannot_replace_completeness_checks (test_bulk10000.Reservations.test_manifests_cannot_replace_completeness_checks) ... ok
+test_missing_receipt_does_not_count_a_batch (test_bulk10000.Reservations.test_missing_receipt_does_not_count_a_batch) ... ok
+test_kit_module_becomes_importable_only_after_verified_loader (test_bulk10000.SessionImports.test_kit_module_becomes_importable_only_after_verified_loader) ... ok
+test_rejected_kit_does_not_import_remote_session (test_bulk10000.SessionImports.test_rejected_kit_does_not_import_remote_session) ... ok
+test_invalid_duration_or_future_capture_cannot_authorize_another_batch (test_bulk10000.SessionRenewalAndProgress.test_invalid_duration_or_future_capture_cannot_authorize_another_batch) ... ok
+test_native_duration_and_elapsed_time_are_used_without_changing_evidence (test_bulk10000.SessionRenewalAndProgress.test_native_duration_and_elapsed_time_are_used_without_changing_evidence) ... ok
+test_recent_batch_duration_is_budgeted_with_headroom (test_bulk10000.SessionRenewalAndProgress.test_recent_batch_duration_is_budgeted_with_headroom) ... ok
+test_renewal_is_requested_before_new_batch_without_extending_monitoring (test_bulk10000.SessionRenewalAndProgress.test_renewal_is_requested_before_new_batch_without_extending_monitoring) ... ok
+test_status_reports_partial_batch_without_counting_it_as_completed (test_bulk10000.SessionRenewalAndProgress.test_status_reports_partial_batch_without_counting_it_as_completed) ... ok
+test_cancel_allows_guard_cleanup_before_return (test_pilot200_starter.CancellationTests.test_cancel_allows_guard_cleanup_before_return) ... Stopping collection; waiting for container cleanup. Keep monitors running.
+ok
+test_cleanup_refuses_different_image_or_mount (test_pilot200_starter.CancellationTests.test_cleanup_refuses_different_image_or_mount) ... ok
+test_guard_timeout_stops_owned_container_and_reaps_guard (test_pilot200_starter.CancellationTests.test_guard_timeout_stops_owned_container_and_reaps_guard) ... Stopping collection; waiting for container cleanup. Keep monitors running.
+ok
+test_success_still_checks_for_leftover_owned_container (test_pilot200_starter.CancellationTests.test_success_still_checks_for_leftover_owned_container) ... ok
+test_ambiguous_or_wrong_display_still_stops (test_pilot200_starter.DesktopAuthorityTests.test_ambiguous_or_wrong_display_still_stops) ... ok
+test_bounded_query_failure_is_not_a_software_fallback (test_pilot200_starter.DesktopAuthorityTests.test_bounded_query_failure_is_not_a_software_fallback) ... ok
+test_missing_cookie_still_stops (test_pilot200_starter.DesktopAuthorityTests.test_missing_cookie_still_stops) ... ok
+test_missing_display_stops_before_query (test_pilot200_starter.DesktopAuthorityTests.test_missing_display_stops_before_query) ... ok
+test_on_demand_display_is_queried_before_process_discovery (test_pilot200_starter.DesktopAuthorityTests.test_on_demand_display_is_queried_before_process_discovery) ... ok
+test_unreachable_display_stops_before_authority_discovery (test_pilot200_starter.DesktopAuthorityTests.test_unreachable_display_stops_before_authority_discovery) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.041s
+
+OK

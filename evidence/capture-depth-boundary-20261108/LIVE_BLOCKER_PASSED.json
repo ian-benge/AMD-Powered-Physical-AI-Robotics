@@ -1,0 +1,115 @@
+{
+  "utc": "2026-11-08T01:27:23.383809+00:00",
+  "status": "ORIGINAL_CAMPAIGN_BLOCKER_PASSED",
+  "scene": "scene_4320160",
+  "attempt": "attempts/scene_4320160/attempt-0004",
+  "frames": 20,
+  "view_015_checks": {
+    "errors": [],
+    "passed": true,
+    "target_framing": {
+      "bbox_xyxy": [
+        438,
+        167,
+        608,
+        211
+      ],
+      "difficult": false,
+      "minimum_side_at_training_px": 24.0,
+      "passed": true,
+      "reasons": [],
+      "side_at_training_px": 44.0,
+      "target_name": "veined_lookalike_000",
+      "visible_fraction": 0.8599493029
+    }
+  },
+  "view_015_recoveries": [
+    {
+      "acceptance_policy_unchanged": true,
+      "candidate_index": 0,
+      "candidate_limit": 8,
+      "from_measured_xyz": [
+        -1.1716885892,
+        -5.5439053669,
+        0.2383732391
+      ],
+      "localized_depth_context": {
+        "affected_pixel_fraction": 2.0024e-05,
+        "continuing_after_framing_rejection": false,
+        "expected_usable_pixels": 449460,
+        "full_frame_acceptance_required": true,
+        "global_median_error_m": 1.07288e-05,
+        "global_p95_error_m": 0.0001134872,
+        "global_support_fraction": 0.9999888753,
+        "kind": "localized_incidental_depth",
+        "objects": {
+          "rock_009": {
+            "depth_boundary": {
+              "band_m": 0.03,
+              "clipped_pixels": 6,
+              "expected_usable_min_m": 7.9867887497,
+              "far_m": 8.0,
+              "geometry_pixels_beyond_depth": 39,
+              "limited_to_far_clip": true,
+              "max_measured_error_m": 1.52588e-05,
+              "usable_pixels": 9,
+              "valid_pixels": 3
+            },
+            "median_error_m": 1.28746e-05,
+            "rejected_support_fraction": 0.3333333333,
+            "usable_pixels": 9
+          }
+        },
+        "primary_sensor_passed": true,
+        "valid_fraction": 0.9999822009,
+        "version": 2
+      },
+      "orbit_about_target": false,
+      "original_xyz": [
+        -1.1720413145,
+        -5.5432489126,
+        0.2478136061
+      ],
+      "original_yaw": 2.779815059,
+      "reason": "localized_incidental_depth_support",
+      "rejected_diagnostics": "diagnostics/scene_4320160/view_015",
+      "rejected_errors": [
+        "rock_009: insufficient_sensor_depth_support",
+        "rock_009: insufficient_sensor_depth_box_support",
+        "rock_009: sensor_depth_box_extent_mismatch"
+      ],
+      "yaw_offset": 0.035
+    }
+  ],
+  "prior_three_failed_attempts_retained": true,
+  "supervisor_stage": "COLLECTING",
+  "campaign_status": {
+    "collection": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-20261106T163426Z",
+    "recorded_images": 2000,
+    "planned_images": 10000,
+    "completed_batches": 10,
+    "planned_batches": 50,
+    "split_images": {
+      "train": 2000
+    },
+    "progress": {
+      "stage": "RUNNING",
+      "batch": "batch-011",
+      "split": "train",
+      "progress_log": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-20261106T163426Z/invocations/20261108T012537946945Z/guarded-step/log.txt",
+      "batch_directory": "/home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-20261106T163426Z/batches/batch-011"
+    },
+    "current_batch": {
+      "batch": "batch-011",
+      "planned_images": 200,
+      "committed_images": 20,
+      "committed_scenes": 1,
+      "scene": "scene_4320161",
+      "attempt": "attempt-0002",
+      "attempt_saved_views": 1
+    },
+    "training_approved": false,
+    "human_review_required": true
+  },
+  "active_session_finished": false
+}
