@@ -79,6 +79,10 @@ class Guard(Node):
                         for i in (0, 7, 14, 21, 28, 35))):
             self.gate.stop('invalid_odometry')
             self.gate.sensors.pop('pose', None)
+            self.annotate(time.monotonic(), odometry=dict(stamp=stamp,
+                frame=msg.header.frame_id, child_frame=msg.child_frame_id,
+                covariance_diagonal=[float(msg.pose.covariance[i]) if math.isfinite(msg.pose.covariance[i]) else None
+                                     for i in (0, 7, 14, 21, 28, 35)]))
             if not self.armed_once:
                 self.recover_startup_odometry(time.monotonic())
             return

@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import types
 import unittest
+import numpy as np
 from unittest.mock import MagicMock, patch
 
 
@@ -22,7 +23,7 @@ class AuditTests(unittest.TestCase):
 
     def node(self):
         node = self.module.Audit.__new__(self.module.Audit)
-        node.buffers = {name: {} for name in ('map', 'depth', 'rgb', 'info', 'local', 'reasons')}
+        node.buffers = {name: {} for name in ('map', 'depth', 'rgb', 'info', 'local', 'reasons', 'local_reasons')}
         node.arrivals = {name: deque(maxlen=5000) for name in node.buffers}
         node.last_captured = -float('inf')
         node.tf = MagicMock()
@@ -71,3 +72,20 @@ class AuditTests(unittest.TestCase):
                 else:
                     node.buffers['rgb'][1.].header.frame_id = 'unaligned_rgb'
                 self.assertIsNone(node.frame())
+
+    def test_saved_saddle_uses_the_physical_triangle_instead_of_bilinear_interpolation(self):
+        sample = self.module.heightfield([[0., 0.], [0., 1.]], 2.)
+        np.testing.assert_allclose(sample(np.array([-.5, .5]), np.array([-.5, .5])), [0., .5])
+        self.assertTrue(np.isnan(sample(np.array([2.]), np.array([0.])))[0])
+
+    def test_evaluator_truth_requires_two_fresh_matching_pose_observations(self):
+        a=dict(stamp=1.,frame='world',child='base_link',position=[0.,0.,.08],quaternion=[0.,0.,0.,1.])
+        b=dict(a,stamp=1.04,position=[.002,0.,.08])
+        self.assertFalse(self.module.truth_bracket([a],1.02)['available'])
+        result=self.module.truth_bracket([a,b],1.02)
+        self.assertTrue(result['available'])
+        self.assertFalse(result['truth_to_navigation'])
+        self.assertEqual(result['before'],a)
+        self.assertEqual(result['after'],b)
+        self.assertFalse(self.module.truth_bracket([a,dict(b,stamp=1.2)],1.02)['available'])
+        self.assertFalse(self.module.truth_bracket([a,dict(b,frame='odom')],1.02)['available'])

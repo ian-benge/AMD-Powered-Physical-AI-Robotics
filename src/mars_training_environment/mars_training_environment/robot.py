@@ -1,8 +1,24 @@
 """Build capture, RGB live or RGB-D navigation profiles of the existing rover."""
 import copy
+import math
 import xml.etree.ElementTree as ET
 
+from .box_verification import box_check_backend, SENSOR_DEPTH
+
 BOXES_GZ_TOPIC = 'oak_boxes'
+
+
+def camera_clips(camera):
+    """Explicit RGB render range with the historical usable-depth contract.
+
+    Separate SDF values require renderer qualification before deployment.
+    Omitting rgb_far_m retains every historical profile unchanged.
+    """
+    near, depth_far = float(camera['near_m']), float(camera['far_m'])
+    rgb_far = float(camera.get('rgb_far_m', depth_far))
+    if not all(math.isfinite(v) for v in (near, depth_far, rgb_far)) or not 0 < near < depth_far <= rgb_far:
+        raise ValueError('Camera clips require 0 < near < depth far <= RGB far, all finite')
+    return near, rgb_far, depth_far
 
 
 def live_camera_config(config, width=960):
@@ -45,6 +61,7 @@ def robot_description(config, live=False, navigation=False, drive_center_x=None)
     from rover_training.randomize import default_xacro
     root = ET.fromstring(xacro.process_file(str(default_xacro()), mappings={'sim': 'harmonic'}).toxml())
     camera = config['camera']
+    near, rgb_far, depth_far = camera_clips(camera)
     joint = root.find("joint[@name='camera_joint']/origin")
     joint.set('xyz',' '.join(map(str,camera['mount_xyz'])))
     joint.set('rpy',f"0 {camera['tilt_rad']} 0")
@@ -56,8 +73,8 @@ def robot_description(config, live=False, navigation=False, drive_center_x=None)
     # sensor, so it follows the same width, height, and rate.
     changes = {'update_rate':camera['rate_hz'],'camera/horizontal_fov':camera['horizontal_fov_rad'],
                'camera/image/width':camera['width'],'camera/image/height':camera['height'],
-               'camera/clip/near':camera['near_m'],'camera/clip/far':camera['far_m'],
-               'camera/depth_camera/clip/near':camera['near_m'],'camera/depth_camera/clip/far':camera['far_m']}
+               'camera/clip/near':near,'camera/clip/far':rgb_far,
+               'camera/depth_camera/clip/near':near,'camera/depth_camera/clip/far':depth_far}
     for path,value in changes.items():
         sensor.find(path).text = str(value)
     if live:
@@ -85,6 +102,10 @@ def robot_description(config, live=False, navigation=False, drive_center_x=None)
             ET.SubElement(joint, 'parent', {'link': 'base_link'})
             ET.SubElement(joint, 'child', {'link': 'drive_center'})
             ET.SubElement(joint, 'origin', {'xyz': f'{drive_center_x:.6g} 0 0', 'rpy': '0 0 0'})
+        return ET.tostring(root, encoding='unicode')
+    if box_check_backend(camera) == SENSOR_DEPTH:
+        # Ogre cannot create a BoundingBoxCamera. Capture verifies boxes against
+        # synchronized sensor depth instead; never instantiate the unsupported sensor.
         return ET.tostring(root, encoding='unicode')
     # Same mount, lens and rate as the RGB-D camera. Gazebo reports a visible 2D box
     # for every model tagged by the Label system; capture compares them with our labels.

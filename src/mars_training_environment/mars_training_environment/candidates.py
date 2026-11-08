@@ -87,6 +87,7 @@ def add_candidates(rng, config, field, driveable, assets, root, objects, regions
                    allowed_categories=None):
     """Append mesh candidates and ground regions. Empty scenes call this never."""
     selected = set(config['candidates']['categories'])
+    v2=config['terrain'].get('profile_version')==2
     if allowed_categories is not None:
         selected &= set(allowed_categories)
     by_id = {asset['id']: asset for asset in assets}
@@ -97,8 +98,11 @@ def add_candidates(rng, config, field, driveable, assets, root, objects, regions
         for index in range(_count(rng, config, key, category, selected)):
             longest = float(rng.uniform(*config['candidates'][size_key]))
             polygon = _blob(rng, longest)
+            if config['terrain'].get('profile') == 'mixed_reachable':
+                polygon -= polygon.mean(axis=0)
             radius = float(np.linalg.norm(polygon - polygon.mean(axis=0), axis=1).max())
-            xy = _place(rng, field, driveable, config, occupied, radius)
+            xy = _place(rng, field, driveable, config, occupied, radius,
+                        band=('near' if index%4<2 else 'outer') if v2 else None)
             polygon = polygon + xy
             z = float(field.height(xy[0], xy[1]))
             regions.append({
@@ -129,7 +133,8 @@ def add_candidates(rng, config, field, driveable, assets, root, objects, regions
             tilt = math.radians(12 if category in ('cheyava_rock', 'veined_lookalike') else 18)
             rpy = [float(rng.uniform(-tilt, tilt)), float(rng.uniform(-tilt, tilt)), float(rng.uniform(-math.pi, math.pi))]
             radius_guess = scale * 0.75
-            xy = _place(rng, field, driveable, config, occupied, radius_guess)
+            xy = _place(rng, field, driveable, config, occupied, radius_guess,
+                        band=('near' if index%4<2 else 'outer') if v2 else None)
             points = vertices @ rotation(rpy).T * scale
             radius = float(np.linalg.norm(points[:, :2], axis=1).max())
             surface = field.height(points[:, 0] + xy[0], points[:, 1] + xy[1])
@@ -308,8 +313,10 @@ def write_candidate_materials(bundle, scene_folder, objects, dust_bgr, seed, con
         }
 
 
-def paint_ground_regions(albedo, normal, rough, regions, size_m, rng):
+def paint_ground_regions(albedo, normal, rough, regions, size_m, rng, region_windows=False):
     """Blend pale exposures into the existing ground. Returns a hard category mask."""
+    if region_windows:
+        return _paint_ground_region_windows(albedo, normal, rough, regions, size_m, rng)
     import cv2
     albedo = np.asarray(albedo, dtype=np.float32)
     height, width = albedo.shape[:2]
@@ -349,6 +356,57 @@ def paint_ground_regions(albedo, normal, rough, regions, size_m, rng):
         rough = np.asarray(rough, dtype=np.float32)
         rough = np.where(mask > 0, np.maximum(rough, 210), rough)
     return albedo, normal, rough, mask
+
+
+def _paint_ground_region_windows(albedo, normal, rough, regions, size_m, rng):
+    """Version-2 recipe: bounded patch noise at the same physical pixel scale.
+
+    Every Gaussian's complete finite kernel fits inside the padded patch. This
+    avoids repeatedly blurring 67 million unrelated pixels in an 8192 composite.
+    Version 1 keeps its original random draw order and full-image painter.
+    """
+    import cv2
+    albedo=np.asarray(albedo,dtype=np.float32)
+    height,width=albedo.shape[:2]
+    normal=None if normal is None else np.asarray(normal,dtype=np.float32)
+    mask=np.zeros((height,width),np.uint8)
+    mean=albedo.mean(axis=(0,1),dtype=np.float64)
+    sigma=max(1.,.06/size_m*width)
+    pad=math.ceil(4*sigma*2.4)+2
+    for region in regions:
+        col,row=world_to_pixels(np.asarray(region['polygon_xy'],float),size_m,width)
+        pts=np.round(np.column_stack([col,row])).astype(np.int32)
+        x0,y0=np.maximum(pts.min(axis=0)-pad,0)
+        x1,y1=np.minimum(pts.max(axis=0)+pad+1,[width,height])
+        if x1<=x0 or y1<=y0:continue
+        hard=np.zeros((y1-y0,x1-x0),np.uint8)
+        cv2.fillPoly(hard,[pts-[x0,y0]],255)
+        if not hard.any():continue
+        silica=region['class_name']=='silica_soil'
+        soft=cv2.GaussianBlur(hard,(0,0),sigma*(.8 if silica else 1.8))
+        alpha=soft.astype(np.float32)/255
+        if silica:
+            chunk=cv2.GaussianBlur(rng.random(hard.shape).astype(np.float32),(0,0),sigma*2.4)
+            alpha=np.clip(alpha*(.35+1.15*chunk)-.28,0,1)
+        color=np.array([188,206,216] if silica else [176,196,208],np.float32)
+        cover=float(region.get('dust_cover',.3))
+        color=color*(1-cover*.45)+mean*cover*.45
+        alpha=alpha[:,:,None]*(1-cover*.35)
+        patch=albedo[y0:y1,x0:x1]
+        painted=(patch*(1-alpha)+color*alpha).astype(np.float32)
+        mean+=(painted.astype(np.float64)-patch).sum(axis=(0,1))/(height*width)
+        patch[:]=painted
+        if silica:
+            _embed_stones(rng,patch,hard,size_m*hard.shape[1]/width)
+            if normal is not None:
+                noise=rng.normal(0,.18,(*hard.shape,2)).astype(np.float32)
+                normal[y0:y1,x0:x1,:2]+=noise*(hard[:,:,None]/255)
+        target=mask[y0:y1,x0:x1];target[hard>128]=region['mask_id']
+    if normal is not None:
+        normal/=np.maximum(np.linalg.norm(normal,axis=2,keepdims=True),1e-6)
+    if rough is not None and mask.any():
+        rough=np.where(mask>0,np.maximum(np.asarray(rough,dtype=np.float32),210),rough)
+    return albedo,normal,rough,mask
 
 
 def paint_procedural_ground(folder, regions, size_m, seed):
@@ -497,13 +555,18 @@ def _blob(rng, longest):
     return poly / current * longest
 
 
-def _place(rng, field, driveable, config, occupied, radius):
+def _place(rng, field, driveable, config, occupied, radius, band=None):
     size = field.size
     clearance = config['rocks']['clearance_m']
     spawn = config['terrain']['spawn_clearance_m']
     limit = math.tan(math.radians(config['terrain']['max_slope_deg']))
+    if band:limit=math.tan(math.radians(8.))
     for _ in range(800):
-        xy = rng.uniform(-size * 0.40, size * 0.40, 2)
+        if band:
+            angle=(rng.randint(4)*math.pi/2+rng.uniform(-.3,.3)) if band=='outer' else rng.uniform(-math.pi,math.pi)
+            distance=rng.uniform(*( (4.,6.) if band=='near' else (13.5,15.5) ))
+            xy=distance*np.array([math.cos(angle),math.sin(angle)])
+        else:xy = rng.uniform(-size * 0.40, size * 0.40, 2)
         if max(abs(xy)) + radius > size / 2 - 0.5:
             continue
         if np.linalg.norm(xy) < spawn + radius + 0.25:
@@ -513,7 +576,8 @@ def _place(rng, field, driveable, config, occupied, radius):
         if np.linalg.norm(driveable.gradient(*xy)) > limit:
             continue
         return xy
-    raise ValueError('Placement constraints could not be met; reduce candidate count or sizes')
+    from .reachability import LayoutError
+    raise LayoutError('Placement constraints could not be met; reduce candidate count or sizes')
 
 
 def json_vertices(root, asset):

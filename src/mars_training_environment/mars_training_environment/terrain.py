@@ -1,9 +1,7 @@
 """Height fields for placement, the picture, and the labeler.
 
-The coarse field is the driveable surface: broad relief, a flat spawn pad, and
-the collision mesh. The visual field is that surface plus wind ripples and low
-ridges, on a finer grid. Labels use the visual field, because that is what the
-camera sees.
+Historical profiles retain separate coarse collision and fine visual fields.
+mixed_reachable v1 uses one triangle surface for all consumers; grain is texture.
 """
 import math
 from pathlib import Path
@@ -87,22 +85,56 @@ def _ripples(rng, x, y, blend, config):
     return np.clip(out, -0.04, 0.04)*blend
 
 
+def _value_noise(rng, x, y, spacing, extent):
+    u,v=(x+extent)/spacing,(y+extent)/spacing
+    grid=rng.uniform(-1,1,(math.ceil(float(v.max()))+2,math.ceil(float(u.max()))+2))
+    i,j=np.floor(u).astype(int),np.floor(v).astype(int)
+    a,b=u-i,v-j
+    a=a*a*a*(a*(a*6-15)+10);b=b*b*b*(b*(b*6-15)+10)
+    return ((1-a)*(1-b)*grid[j,i]+a*(1-b)*grid[j,i+1]
+            +(1-a)*b*grid[j+1,i]+a*b*grid[j+1,i+1])
+
+
+def _mixed_heights(rng, x, y, size):
+    extent=size/2+4
+    wx=x+1.2*_value_noise(rng,x,y,5.5,extent)
+    wy=y+1.2*_value_noise(rng,x,y,5.5,extent)
+    h=sum(weight*_value_noise(rng,wx,wy,scale,extent)
+          for scale,weight in [(5.,.36),(2.5,.16),(1.2,.07)])
+    for index in range(12):
+        cx,cy=rng.uniform(-size*.43,size*.43,2)
+        sx,sy=rng.uniform(.55,1.8,2)
+        angle=rng.uniform(0,math.tau)
+        dx,dy=x-cx,y-cy
+        a,b=dx*math.cos(angle)+dy*math.sin(angle),-dx*math.sin(angle)+dy*math.cos(angle)
+        amplitude=rng.uniform(.16,.42)*(1 if index%3 else -.7)
+        h+=amplitude*np.exp(-.5*((a/sx)**2+(b/sy)**2))
+    return h
+
+
 def generate_terrain(seed, config, folder):
+    from .reachability import PROFILE, validate_profile
+    validate_profile(config)
+    shared=config.get('profile')==PROFILE
     rng = np.random.RandomState(seed)
     n, size = config['grid_size'], config['size_m']
     coords = np.linspace(-size/2, size/2, n)
     x, y = np.meshgrid(coords, coords)
     h = np.zeros_like(x)
-    # Broad undulations, elongated ridges and shallow negative Gaussian bowls.
-    for _ in range(9):
-        angle, phase = rng.uniform(0, 2*math.pi, 2)
-        frequency = rng.uniform(.2, 1.5)
-        h += rng.uniform(.03, .14)*np.sin((x*math.cos(angle)+y*math.sin(angle))*frequency+phase)
-    for _ in range(7):
-        cx, cy = rng.uniform(-size*.4, size*.4, 2)
-        sx, sy = rng.uniform(.9, 2.8, 2)
-        h += rng.uniform(-.4, .4)*np.exp(-((x-cx)/sx)**2-((y-cy)/sy)**2)
-    blend = _spawn_blend(x, y, config['spawn_clearance_m'])
+    if shared:
+        h=_mixed_heights(rng,x,y,size)
+    else:
+        for _ in range(9):
+            angle, phase = rng.uniform(0, 2*math.pi, 2)
+            frequency = rng.uniform(.2, 1.5)
+            h += rng.uniform(.03, .14)*np.sin((x*math.cos(angle)+y*math.sin(angle))*frequency+phase)
+        for _ in range(7):
+            cx, cy = rng.uniform(-size*.4, size*.4, 2)
+            sx, sy = rng.uniform(.9, 2.8, 2)
+            h += rng.uniform(-.4, .4)*np.exp(-((x-cx)/sx)**2-((y-cy)/sy)**2)
+    # Flat vertices cover every triangle intersecting the entire clear disk.
+    pad=config['spawn_clearance_m']+(math.sqrt(2)*size/(n-1) if shared else 0)
+    blend = _spawn_blend(x, y, pad)
     h = (h-h[n//2, n//2])*blend
     h *= config['relief_m']/max(float(np.ptp(h)), 1e-8)
     field = Terrain(h, size)
@@ -120,9 +152,12 @@ def generate_terrain(seed, config, folder):
     visual_n = config['visual_grid_size']
     fine = np.linspace(-size/2, size/2, visual_n)
     fx, fy = np.meshgrid(fine, fine)
-    visual_h = base.height(fx, fy) + _ripples(rng, fx, fy, _spawn_blend(fx, fy, config['spawn_clearance_m']), config)
-    visual_h -= float(visual_h[visual_n//2, visual_n//2])
-    visual = Terrain(visual_h, size)
+    if shared:
+        visual_h=h.copy();visual=base
+    else:
+        visual_h = base.height(fx, fy) + _ripples(rng, fx, fy, _spawn_blend(fx, fy, config['spawn_clearance_m']), config)
+        visual_h -= float(visual_h[visual_n//2, visual_n//2])
+        visual = Terrain(visual_h, size)
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     png(folder/'heightmap.png', np.flipud(encoded))
@@ -153,5 +188,19 @@ def generate_terrain(seed, config, folder):
                 'heightmap_min_m': low, 'heightmap_range_m': float(h.max()-h.min()),
                 'maximum_slope_deg': math.degrees(base.maximum_slope()),
                 'grid_size': n, 'visual_grid_size': visual_n, 'spawn_z_m': float(visual.height(0., 0.))}
+    if shared:
+        from .common import digest
+        document.update(profile=PROFILE,profile_version=config.get('profile_version',1),shared_surface=True,
+                        surface_sha256=digest({'heights':h.tolist(),'size_m':size}),
+                        geometric_ripples=False,collision_mesh='terrain.dae')
     write_json(folder/'terrain.json', document)
+    if config.get('profile_version')==2:
+        from .environment_v2 import apron_mesh
+        vertices,faces=apron_mesh(base,config['apron_m'])
+        write_dae(folder/'terrain_apron.dae',vertices,faces,uv=vertices[:,:2]/config['texture_tile_m'])
+        (folder/'context_ground.png').write_bytes((folder/'ground.png').read_bytes())
+        document['context_geometry']=dict(mesh='terrain_apron.dae',width_m=config['apron_m'],
+            extent_m=80.,shared_surface=True,evaluator_only=True,
+            geometry_sha256=__import__('hashlib').sha256((folder/'terrain_apron.dae').read_bytes()).hexdigest())
+        write_json(folder/'terrain.json',document)
     return visual, base, document

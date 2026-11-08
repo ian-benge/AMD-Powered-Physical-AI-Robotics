@@ -3,6 +3,9 @@ import math
 
 
 class SafetyGate:
+    MAX_LINEAR_SPEED = .5
+    MAX_ANGULAR_SPEED = .6
+
     def __init__(self, command_timeout=.35, sensor_timeout=1., clock_timeout=.5):
         self.command_timeout, self.sensor_timeout, self.clock_timeout = command_timeout, sensor_timeout, clock_timeout
         self.mode, self.reason = 'stopped', 'startup'
@@ -47,7 +50,8 @@ class SafetyGate:
         if not all(math.isfinite(x) for x in (v, w)):
             self.stop('invalid_command')
             return
-        self.commands[source] = (max(0., min(.2, v)), max(-.6, min(.6, w)), now)
+        self.commands[source] = (max(0., min(self.MAX_LINEAR_SPEED, v)),
+                                 max(-self.MAX_ANGULAR_SPEED, min(self.MAX_ANGULAR_SPEED, w)), now)
 
     def stop(self, reason):
         self.mode, self.reason = 'stopped', reason

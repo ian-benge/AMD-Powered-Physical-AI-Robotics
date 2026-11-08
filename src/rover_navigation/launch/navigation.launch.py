@@ -25,10 +25,23 @@ def setup(context):
     source = Path(LaunchConfiguration('scene').perform(context)).resolve()
     speed = float(LaunchConfiguration('navigation_speed').perform(context))
     pitch = float(LaunchConfiguration('camera_pitch').perform(context))
+    engine = LaunchConfiguration('sensor_render_engine').perform(context)
+    rgb_far = float(LaunchConfiguration('camera_rgb_far').perform(context))
+    if not math.isfinite(rgb_far) or not 8 <= rgb_far <= 20:
+        raise ValueError('camera_rgb_far must be finite and in [8, 20] metres')
+    if engine not in ('ogre2', 'ogre'):
+        raise ValueError('sensor_render_engine must be ogre2 or ogre')
+    if engine == 'ogre' and LaunchConfiguration('sensor_headless').perform(context) == 'true':
+        raise ValueError('Ogre sensor rendering requires sensor_headless:=false and an active display')
     if not math.isfinite(pitch) or not 0 <= pitch < math.pi/2:
         raise ValueError('camera_pitch must be finite and in [0, pi/2) radians')
     if not math.isfinite(speed) or not 0 < speed <= .2:
         raise ValueError('navigation_speed must be in (0, 0.20] m/s')
+    from rover_navigation.manual_input import ManualInput
+    initial=float(LaunchConfiguration('manual_initial_linear_speed').perform(context))
+    ManualInput(max_linear=float(LaunchConfiguration('manual_max_linear_speed').perform(context)),
+                max_angular=float(LaunchConfiguration('manual_max_angular_speed').perform(context)),
+                initial_linear=None if initial==-1 else initial)
     run = Path(LaunchConfiguration('session').perform(context)).expanduser().resolve()
     if run.exists():
         raise ValueError('Use a new session directory; map/session evidence is never overwritten')
@@ -37,10 +50,16 @@ def setup(context):
         raise ValueError('Localization requires an existing RTAB-Map database')
     run.mkdir(parents=True)
     scene = copy.deepcopy(json.loads(source.read_text()))
+    from mars_training_environment.environment_v2 import operating_map_size
+    scene['operating_map_size_m']=operating_map_size(scene,LaunchConfiguration('map_size_m').perform(context))
     scene['config'] = live_camera_config(scene['config'], 960)
     # A navigation-only pitch closes the near-ground gap from the original
     # high/mildly tilted camera. Capture/live profiles and the source scene stay intact.
     scene['config']['camera']['tilt_rad'] = pitch
+    scene['config']['camera']['rgb_far_m'] = rgb_far
+    scene['config']['camera']['far_clip_mode'] = 'axial' if engine == 'ogre' else 'radial'
+    scene['config']['camera']['near_clip_mode'] = 'occlude' if engine == 'ogre' else 'clip'
+    scene['config']['camera']['render_engine'] = engine
     ground_view(scene['config']['camera'])  # validate the complete experiment geometry
     bundle = source.parents[2]
     assets = json.loads((bundle/'assets/catalog.json').read_text())
@@ -75,13 +94,22 @@ def build_nodes(context, scene, run, source, database):
     description = robot_description(scene['config'], navigation=True, drive_center_x=DRIVE_CENTER_X)
     (run/'robot.urdf').write_text(description)
     (run/'session.json').write_text(json.dumps(dict(scene=str(source), camera=camera, database=database,
+                                                   container_image=os.environ.get('NAV_IMAGE', 'rover-navigation'),
+                                                   install_relative=os.environ.get('NAV_INSTALL_REL', 'install_navigation'),
                                                    predicted_ground_view=ground_view(camera),
                                                    drive_center_x=DRIVE_CENTER_X,
                                                    terrain_collision=LaunchConfiguration('terrain_collision').perform(context),
                                                    terrain_backend=LaunchConfiguration('terrain_backend').perform(context),
                                                    terrain_url=LaunchConfiguration('terrain_url').perform(context),
+                                                   adaptive_terrain=LaunchConfiguration('adaptive_terrain').perform(context),
+                                                   sensor_headless=LaunchConfiguration('sensor_headless').perform(context),
+                                                   sensor_render_engine=LaunchConfiguration('sensor_render_engine').perform(context),
                                                    fixture=LaunchConfiguration('fixture').perform(context),
                                                    navigation_speed=float(LaunchConfiguration('navigation_speed').perform(context)),
+                                                   manual_max_linear_speed=float(LaunchConfiguration('manual_max_linear_speed').perform(context)),
+                                                   manual_max_angular_speed=float(LaunchConfiguration('manual_max_angular_speed').perform(context)),
+                                                   manual_initial_linear_speed=float(LaunchConfiguration('manual_initial_linear_speed').perform(context)),
+                                                   map_size_m=scene['operating_map_size_m'],
                                                    gui=LaunchConfiguration('gui').perform(context),
                                                    rviz=LaunchConfiguration('rviz').perform(context),
                                                    mission_controls=LaunchConfiguration('mission_controls').perform(context),
@@ -119,7 +147,9 @@ def build_nodes(context, scene, run, source, database):
     sim = {'use_sim_time': True}
     gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource(str(
         Path(get_package_share_directory('ros_gz_sim'))/'launch/gz_sim.launch.py')),
-        launch_arguments={'gz_args': '-r '+('' if LaunchConfiguration('gui').perform(context) == 'true' else '-s --headless-rendering ')+str(run/'world.sdf'),
+        launch_arguments={'gz_args': '-r '+('' if LaunchConfiguration('gui').perform(context) == 'true' else '-s ')+
+                          ('--headless-rendering ' if LaunchConfiguration('sensor_headless').perform(context) == 'true' else '')+
+                          '--render-engine-server '+LaunchConfiguration('sensor_render_engine').perform(context)+' '+str(run/'world.sdf'),
                           'on_exit_shutdown': 'true'}.items())
     bridge = Node(package='ros_gz_bridge', executable='parameter_bridge',
                   parameters=[sim, {'config_file': str(run/'bridge.yaml')}])
@@ -158,9 +188,12 @@ def build_nodes(context, scene, run, source, database):
                    'navigation_speed': float(LaunchConfiguration('navigation_speed').perform(context)),
                    'waypoints': LaunchConfiguration('waypoints').perform(context)} if name == 'mission' else {}
         if name == 'terrain':
+            options['map_size_m']=scene['operating_map_size_m']
             options['mapping_on_confirm'] = LaunchConfiguration('mapping_on_confirm').perform(context) == 'true'
             options['terrain_backend'] = LaunchConfiguration('terrain_backend').perform(context)
             options['terrain_url'] = LaunchConfiguration('terrain_url').perform(context)
+            options['adaptive_terrain'] = LaunchConfiguration('adaptive_terrain').perform(context) == 'true'
+            options['evidence_output'] = str(run/'terrain-evidence-events.jsonl')
         nodes.append(Node(package='rover_navigation', executable=name, output='screen', parameters=[sim, options]))
     if LaunchConfiguration('rviz').perform(context) == 'true':
         nodes.append(Node(package='rviz2', executable='rviz2', name='navigation_rviz',
@@ -168,7 +201,10 @@ def build_nodes(context, scene, run, source, database):
                           additional_env={'LIBGL_ALWAYS_SOFTWARE': LaunchConfiguration('rviz_software_rendering').perform(context)}))
     if LaunchConfiguration('mission_controls').perform(context) == 'true':
         nodes.append(Node(package='rover_navigation', executable='mission_controls', output='screen',
-                          parameters=[{'session': str(run), 'port': int(LaunchConfiguration('controls_port').perform(context))}]))
+                          parameters=[{'session': str(run), 'port': int(LaunchConfiguration('controls_port').perform(context)),
+                                       'max_linear_speed':float(LaunchConfiguration('manual_max_linear_speed').perform(context)),
+                                       'initial_linear_speed':float(LaunchConfiguration('manual_initial_linear_speed').perform(context)),
+                                       'max_angular_speed':float(LaunchConfiguration('manual_max_angular_speed').perform(context))}]))
         nodes.append(Node(package='rover_navigation', executable='evaluate', output='screen',
                           parameters=[sim, {'output': str(run/'mission-events.jsonl')}]))
     if LaunchConfiguration('preview').perform(context) == 'true':
@@ -203,7 +239,11 @@ def generate_launch_description():
         DeclareLaunchArgument('scene'), DeclareLaunchArgument('session'),
         DeclareLaunchArgument('database', default_value=''),
         DeclareLaunchArgument('gui', default_value='false'),
+        DeclareLaunchArgument('sensor_headless', default_value='true'),
+        DeclareLaunchArgument('sensor_render_engine', default_value='ogre2'),
+        DeclareLaunchArgument('adaptive_terrain', default_value='true'),
         DeclareLaunchArgument('camera_pitch', default_value='0.4'),
+        DeclareLaunchArgument('camera_rgb_far', default_value='8'),
         DeclareLaunchArgument('fixture', default_value=''),
         DeclareLaunchArgument('terrain_collision', default_value='visual'),
         DeclareLaunchArgument('preview', default_value='false'),
@@ -213,6 +253,10 @@ def generate_launch_description():
         DeclareLaunchArgument('rviz_software_rendering', default_value='1'),
         DeclareLaunchArgument('mission_controls', default_value='false'),
         DeclareLaunchArgument('controls_port', default_value='8774'),
+        DeclareLaunchArgument('manual_max_linear_speed', default_value='0.50'),
+        DeclareLaunchArgument('manual_initial_linear_speed', default_value='-1'),
+        DeclareLaunchArgument('map_size_m', default_value='auto'),
+        DeclareLaunchArgument('manual_max_angular_speed', default_value='0.60'),
         DeclareLaunchArgument('mapping_on_confirm', default_value='false'),
         DeclareLaunchArgument('navigation_speed', default_value='0.10'),
         DeclareLaunchArgument('detector_model', default_value=''),

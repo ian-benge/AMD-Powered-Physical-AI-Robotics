@@ -111,6 +111,8 @@ async function main() {
       report.trackingHiddenAgain=true;
     }
     if(drive) {
+      // Preserve the historical bounded trial speeds despite adjustable UI defaults.
+      await evaluate("if(document.getElementById('linear-speed')){setSpeed('linear',.05);setSpeed('angular',.3);}");
       await selectManual();
       const key = turn ? 'ArrowRight' : 'ArrowUp', code = turn ? 39 : 38;
       await press(key,code,'keyDown');

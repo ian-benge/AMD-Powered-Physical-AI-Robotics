@@ -23,7 +23,7 @@ from std_srvs.srv import Trigger
 from tf2_ros import Buffer, TransformListener, TransformException
 
 from rover_perception.live_core import image_to_bgr
-from .manual_input import ManualInput
+from .manual_input import ManualInput, SPEED_LIMITS
 from .diagnostics import localization_health, map_overlay, reason_colors
 from .ros_utils import apply_tf, stamp_seconds
 from .coverage import image_detail
@@ -37,7 +37,13 @@ class Controls(Node):
         self.lock = threading.Lock()
         self.latest = {}
         self.sim_clock = None
-        self.manual_input = ManualInput()
+        self.declare_parameter('max_linear_speed', SPEED_LIMITS['linear']['max'])
+        self.declare_parameter('max_angular_speed', SPEED_LIMITS['angular']['max'])
+        self.declare_parameter('initial_linear_speed', -1.)
+        initial=self.get_parameter('initial_linear_speed').value
+        self.manual_input = ManualInput(max_linear=self.get_parameter('max_linear_speed').value,
+                                        max_angular=self.get_parameter('max_angular_speed').value,
+                                        initial_linear=None if initial==-1. else initial)
         self.manual_pub = None
         self.camera = self.annotated = self.map_image = None
         self.reason_image = None
@@ -141,6 +147,7 @@ class Controls(Node):
                       for name, value in self.latest.items()}
             clock = self.sim_clock
         result['session'] = self.session
+        result['manual_speed_limits'] = self.manual_input.limits
         try:
             with urlopen('http://127.0.0.1:8776/status', timeout=.2) as response:
                 result['scene'] = dict(available=True, **json.load(response))
@@ -176,7 +183,7 @@ class Controls(Node):
         if guard.get('mode') != 'manual' or not guard.get('ready') or guard.get('age_seconds', 99) > .6:
             self.manual_input.release()
             reason = guard.get('reason') or 'manual mode has not been selected'
-            detail = ('Requested motion reaches unknown or unsafe ground. Turn toward mapped ground, or restart the scene.'
+            detail = ('The full predicted motion sweep reaches unknown or unsafe ground. Inspect the rejected cell and fresh coverage before selecting a mode again.'
                       if reason == 'unsafe_or_unobserved_ground' else
                       'Check fresh sensors and explicitly enable manual drive again.')
             raise ValueError(f'Manual control stopped: {reason}. {detail}')
@@ -187,12 +194,12 @@ class Controls(Node):
         return dict(success=True, command=[v, w])
 
     def call(self, name):
-        if name == 'restart':
+        if name in ('restart', 'new-scene'):
             stopped = self.call('stop')
             if not stopped['success']:
                 return stopped
             try:
-                with urlopen(Request('http://127.0.0.1:8776/restart', data=b'', method='POST'), timeout=2.) as response:
+                with urlopen(Request('http://127.0.0.1:8776/'+name, data=b'', method='POST'), timeout=2.) as response:
                     return json.load(response)
             except (OSError, ValueError) as error:
                 return dict(success=False, message='Could not restart scene: '+str(error))
@@ -297,7 +304,7 @@ def handler(node):
                 except (ValueError, TypeError, KeyError) as error:
                     self.close_connection = True
                     return self.reply(400, dict(success=False, message=str(error)))
-            if self.path not in ('/start', '/stop', '/manual', '/confirm', '/restart'):
+            if self.path not in ('/start', '/stop', '/manual', '/confirm', '/restart', '/new-scene'):
                 return self.reply(404, dict(message='Not found'))
             if self.headers.get('Content-Length', '0') != '0':
                 return self.reply(400, dict(message='This action takes no request body'))

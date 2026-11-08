@@ -10,6 +10,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
 from .core import Grid, TerrainMemory
+from .terrain_compute import MAX_GRID_SIDE
 
 LIMIT = 32*1024*1024
 PROTOCOL = 'rover-terrain-v1'
@@ -71,7 +72,7 @@ class RemoteTerrainCompute:
         if (status.get('protocol') != PROTOCOL or not status.get('ready')
                 or status.get('backend') != 'rocm' or not status.get('hip')):
             raise ValueError('Ready AMD ROCm terrain service required; no CPU fallback')
-        self.metadata = {k:status[k] for k in ('protocol','backend','device','torch','hip','geometry') if k in status}
+        self.metadata = {k:status[k] for k in ('protocol','backend','device','torch','hip','geometry','max_memory_side') if k in status}
         self.timings = {}
 
     def call(self, operation, meta, **arrays):
@@ -119,7 +120,7 @@ def dispatch(compute, meta, arrays):
     if operation == 'project':
         source = meta.pop('source')
         costs, reasons = arrays['costs'], arrays['reasons']
-        if (costs.ndim != 2 or reasons.shape != costs.shape or max(costs.shape) > 1200
+        if (costs.ndim != 2 or reasons.shape != costs.shape or max(costs.shape) > MAX_GRID_SIDE
                 or costs.dtype != np.int8 or reasons.dtype != np.int8
                 or not np.isin(costs, list(range(101))+[-1]).all()
                 or not np.isfinite(list(source.values())).all() or source['resolution'] <= 0):
@@ -134,7 +135,8 @@ def dispatch(compute, meta, arrays):
 
 def create_server(compute, port=8782):
     lock = threading.Lock()
-    state = dict(ready=True, error=None, completed=0, operations={}, protocol=PROTOCOL, **compute.metadata)
+    state = dict(ready=True, error=None, completed=0, operations={}, protocol=PROTOCOL,
+                 max_memory_side=MAX_GRID_SIDE, **compute.metadata)
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass

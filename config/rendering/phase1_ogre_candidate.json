@@ -1,0 +1,14 @@
+{
+  "camera": {
+    "width": 960,
+    "height": 540,
+    "tilt_rad": 0.4,
+    "rate_hz": 30,
+    "near_m": 0.3,
+    "far_m": 8.0,
+    "rgb_far_m": 20.0,
+    "far_clip_mode": "axial",
+    "near_clip_mode": "occlude",
+    "render_engine": "ogre"
+  }
+}

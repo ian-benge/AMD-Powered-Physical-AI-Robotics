@@ -7,6 +7,7 @@ import zlib
 from pathlib import Path
 
 import numpy as np
+from .serialization import canonical, digest, stable_numbers
 
 from rover_training.geometry import APPEARANCE_CLASSES, CLASS_NAMES
 
@@ -32,10 +33,35 @@ def read_config(path=None):
             if section not in config or not isinstance(values, dict):
                 raise ValueError(f'Unknown/non-object configuration section: {section}')
             unknown = set(values) - set(config[section])
+            if section == 'camera':
+                unknown -= {'rgb_far_m', 'far_clip_mode', 'near_clip_mode', 'render_engine'}
+            if section == 'terrain':
+                unknown -= {'profile','profile_version','layout_attempts','apron_m','density','sunlight'}
+            if section == 'capture':
+                unknown -= {'target_schema'}
             if unknown:
                 raise ValueError(f'Unknown {section} keys: {sorted(unknown)}')
             config[section].update(values)
     t, r, c, cap = (config[k] for k in ('terrain', 'rocks', 'camera', 'capture'))
+    from .reachability import validate_profile
+    validate_profile(t)
+    from .robot import camera_clips
+    camera_clips(c)
+    if t.get('profile_version')==2:
+        expected=dict(width=960,height=540,tilt_rad=.4,near_m=.3,far_m=8.,rgb_far_m=20.,
+                      render_engine='ogre',far_clip_mode='axial',near_clip_mode='occlude')
+        if any(c.get(k)!=v for k,v in expected.items()):
+            raise ValueError('Environment v2 requires the qualified deployed camera profile')
+    if c.get('far_clip_mode', 'radial') not in ('radial', 'axial'):
+        raise ValueError('far_clip_mode must be radial or axial')
+    if c.get('near_clip_mode', 'clip') not in ('clip', 'occlude'):
+        raise ValueError('near_clip_mode must be clip or occlude')
+    if c.get('render_engine', 'ogre2') not in ('ogre', 'ogre2'):
+        raise ValueError('render_engine must be ogre or ogre2')
+    if 'render_engine' in c:
+        expected = ('axial', 'occlude') if c['render_engine'] == 'ogre' else ('radial', 'clip')
+        if (c.get('far_clip_mode','radial'),c.get('near_clip_mode','clip')) != expected:
+            raise ValueError('Explicit render_engine requires its matching qualified clipping modes')
     n = t['grid_size']
     visual_n = t['visual_grid_size']
     if not isinstance(n, int) or n < 17 or (n - 1) & (n - 2):
@@ -103,7 +129,8 @@ def read_config(path=None):
         candidates = config['candidates']
         available = set(candidates['categories']) if candidates['enabled'] else set()
         for name, choices in [('pale_soil_patch',[('silica_soil','silica_count'),('pale_lookalike','pale_lookalike_count')]),
-                              ('yellow_crystal_rock',[('sulfur_rock','sulfur_count')])]:
+                              ('yellow_crystal_rock',[('sulfur_rock','sulfur_count')]),
+                              ('mudstone_slab',[('cheyava_rock','cheyava_count'),('veined_lookalike','veined_lookalike_count')])]:
             if quotas.get(name,0) and not any(category in available and candidates[key][1]>0 for category,key in choices):
                 raise ValueError(f'target_class_views requests {name}, but no such candidates are enabled')
     return config
@@ -134,26 +161,6 @@ def _validate_candidates(config):
         raise ValueError('slab_surface_height_m must be between 0.001 and 0.05 m')
     if not 0 < float(cand['slab_embed_m']) <= 0.1 or not 0 < float(cand['slab_edge_blend_m']) <= 0.2:
         raise ValueError('Invalid mudstone embedding depth or edge blend')
-
-
-def stable_numbers(value):
-    # Sub-nanometre differences between Windows/Linux BLAS must not change IDs.
-    if isinstance(value, float):
-        rounded = round(value, 10)
-        return 0.0 if rounded == 0 else rounded
-    if isinstance(value, dict):
-        return {k:stable_numbers(v) for k,v in value.items()}
-    if isinstance(value, (list,tuple)):
-        return [stable_numbers(v) for v in value]
-    return value
-
-
-def canonical(value):
-    return json.dumps(stable_numbers(value), sort_keys=True, separators=(',', ':'), allow_nan=False)
-
-
-def digest(value):
-    return hashlib.sha256(canonical(value).encode()).hexdigest()
 
 
 def write_json(path, value):

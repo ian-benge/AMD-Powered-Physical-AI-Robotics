@@ -51,7 +51,7 @@ def sphere_mesh(index, rings=9, sectors=18):
     return v, np.asarray(faces, dtype=int)
 
 
-def read_collada(path):
+def read_collada(path, normalize=True):
     """Read position-indexed triangles/polylist from our existing untransformed Fuel DAEs."""
     ns = {'c': 'http://www.collada.org/2005/11/COLLADASchema'}
     root = ET.parse(path).getroot()
@@ -92,8 +92,9 @@ def read_collada(path):
         v = v[:, [0, 2, 1]] * [1, -1, 1]
     elif up != 'Z_UP':
         raise ValueError('Unsupported imported up axis')
-    v -= (v.max(axis=0) + v.min(axis=0))/2
-    v /= np.ptp(v, axis=0).max()
+    if normalize:
+        v -= (v.max(axis=0) + v.min(axis=0))/2
+        v /= np.ptp(v, axis=0).max()
     return v, np.asarray(ff, dtype=int)
 
 

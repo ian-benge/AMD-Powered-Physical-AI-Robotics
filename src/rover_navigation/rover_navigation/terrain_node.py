@@ -2,13 +2,16 @@
 from collections import deque
 import math
 import json
+import hashlib
 import time
+from pathlib import Path
+from dataclasses import asdict
 
 import message_filters
 import numpy as np
 import rclpy
 from grid_map_msgs.msg import GridMap
-from nav_msgs.msg import OccupancyGrid
+from nav_msgs.msg import OccupancyGrid, Odometry
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy, ReliabilityPolicy, qos_profile_sensor_data
 from rclpy.time import Time
@@ -18,10 +21,11 @@ from std_msgs.msg import Float32MultiArray, MultiArrayDimension, String
 from std_srvs.srv import Trigger
 from tf2_ros import Buffer, TransformException, TransformListener
 
-from .core import Grid, TerrainMemory, aligned_copy, depth_points, terrain_reasons, traversability
+from .core import Grid, TerrainMemory, aligned_copy, depth_points, mask_outside_memory, terrain_reasons, traversability
 from .ros_utils import apply_tf, grid_message, stamp_seconds
 from .coverage import coverage_profile
 from .terrain_compute import CpuTerrainCompute
+from .terrain_evidence import ClearanceLocalization, ClearingPolicy, TerrainEvidence
 
 
 class Terrain(Node):
@@ -30,13 +34,16 @@ class Terrain(Node):
         for name, value in dict(max_slope_deg=12., max_step_m=.03, map_size_m=20.,
                                 clear_start_radius_m=1.1, hazard_confirmations=2,
                                 mapping_on_confirm=False, terrain_backend='cpu',
-                                terrain_url='http://127.0.0.1:8782').items():
+                                terrain_url='http://127.0.0.1:8782', adaptive_terrain=True,
+                                evidence_output='').items():
             self.declare_parameter(name, value)
         self.mapping_on_confirm = self.get_parameter('mapping_on_confirm').value
         backend = self.get_parameter('terrain_backend').value
         if backend == 'rocm_http':
             from .terrain_service import RemoteTerrainCompute
             self.compute = RemoteTerrainCompute(self.get_parameter('terrain_url').value)
+            if round(self.get_parameter('map_size_m').value/.025)>self.compute.metadata.get('max_memory_side',1200):
+                raise ValueError('Terrain service cannot hold this map; start the checked environment-v2 terrain candidate')
         elif backend == 'cpu':
             self.compute = CpuTerrainCompute()
         else:
@@ -54,6 +61,16 @@ class Terrain(Node):
         self.start_map = None
         self.last_global = -math.inf
         self.coverage = None
+        self.adaptive_enabled = self.get_parameter('adaptive_terrain').value
+        self.localization = ClearanceLocalization()
+        self.evidence = None
+        output = self.get_parameter('evidence_output').value
+        self.event_stream = Path(output).open('x') if output else None
+        if self.event_stream:
+            self.event_stream.write(json.dumps(dict(kind='configuration', adaptive_terrain=self.adaptive_enabled,
+                policy=asdict(ClearingPolicy())))+'\n')
+            self.event_stream.flush()
+        self.create_subscription(Odometry, '/odom', self.odometry, qos_profile_sensor_data)
         self.depth = message_filters.Subscriber(self, Image, '/oak/depth/image_raw', qos_profile=qos_profile_sensor_data)
         self.info = message_filters.Subscriber(self, CameraInfo, '/oak/camera_info', qos_profile=qos_profile_sensor_data)
         self.sync = message_filters.ApproximateTimeSynchronizer([self.depth, self.info], 5, .015)
@@ -69,7 +86,11 @@ class Terrain(Node):
         self.mapping_pub = self.create_publisher(String, '/navigation/mapping_status', durable)
         self.create_service(Trigger, '/navigation/confirm_clear_start', self.confirm)
         self.create_timer(.2, self.publish_mapping_status)
-        self.create_timer(.2, self.update)
+        # A 40 m projection can spend most of a 200 ms timer period computing.
+        # Poll ready image-time transforms sooner; unchanged stamp checks still
+        # admit each depth frame once and the sensor bounds the processing rate.
+        self.update_period_seconds = .05 if self.get_parameter('map_size_m').value == 40. else .2
+        self.create_timer(self.update_period_seconds, self.update)
         if self.mapping_on_confirm:
             size = self.get_parameter('map_size_m').value
             blank = Grid(np.full((round(size/.05), round(size/.05)), -1, np.int8), .05, -size/2, -size/2)
@@ -77,6 +98,14 @@ class Terrain(Node):
             self.map_reasons_pub.publish(grid_message(blank, 'map', self.get_clock().now().to_msg()))
 
     def publish_mapping_status(self):
+        if self.evidence is not None:
+            now_sim = self.get_clock().now().nanoseconds/1e9
+            reason = self.localization.check(self.last_stamp or now_sim, time.monotonic())
+            if self.last_stamp is None or now_sim-self.last_stamp > .6:
+                reason = 'accepted depth unavailable or stale'
+            if reason:
+                self.evidence.suspend(reason, now_sim)
+            self.flush_evidence()
         msg = String()
         msg.data = json.dumps(dict(waiting_for_confirmation=self.mapping_on_confirm and self.start is None,
                                    clearance_confirmed=self.start is not None,
@@ -86,9 +115,60 @@ class Terrain(Node):
                                    compute=self.compute.metadata, compute_error=self.compute_error,
                                    compute_timings=getattr(self.compute, 'timings', {}),
                                    coverage=getattr(self, 'coverage', None),
+                                   terrain_evidence=(self.evidence.status if self.evidence else
+                                       dict(enabled=self.adaptive_enabled, suspended='waiting for measured terrain',
+                                            cleared_cells=0, pending_cells=0)),
                                    thresholds=dict(slope_deg=self.get_parameter('max_slope_deg').value,
                                                    height_change_m=self.get_parameter('max_step_m').value)))
         self.mapping_pub.publish(msg)
+
+    def flush_evidence(self):
+        if self.evidence is not None:
+            if getattr(self, 'event_stream', None):
+                for event in self.evidence.events:
+                    self.event_stream.write(json.dumps(event)+'\n')
+                self.event_stream.flush()
+            self.evidence.events.clear()
+
+    def record_frame(self, depth, info, camera, inverse, frame, layers, local, global_grid):
+        """Read-only provenance for replaying the actual successful publication."""
+        if not getattr(self, 'event_stream', None):
+            return
+        def grid_record(grid):
+            if grid is None:
+                return None
+            return dict(origin=[grid.x, grid.y], resolution=grid.resolution,
+                        shape=list(grid.data.shape), sha256=hashlib.sha256(grid.data.tobytes()).hexdigest())
+        translation, quaternion = self.rigid(camera)
+        row = dict(kind='terrain_frame', stamp=stamp_seconds(depth.header.stamp),
+            input_sha256=hashlib.sha256(bytes(depth.data)).hexdigest(),
+            calibration_k=list(info.k), camera_to_odom=dict(translation=translation, quaternion=quaternion),
+            projection_to_odom=(dict(zip(('translation', 'quaternion'), self.rigid(inverse))) if inverse else None),
+            thresholds=dict(slope_deg=self.get_parameter('max_slope_deg').value,
+                            height_change_m=self.get_parameter('max_step_m').value),
+            current_frame=grid_record(frame), local=grid_record(local), global_map=grid_record(global_grid),
+            observed_cells=int((layers['observation_count'] > 0).sum()),
+            hazard_cells=int((frame.data >= 90).sum()),
+            terrain_evidence=(dict(self.evidence.status) if self.evidence else dict(enabled=False)))
+        received=getattr(self,'frame_received_monotonic',None)
+        if received is not None:
+            row['depth_to_local_publication_seconds']=getattr(self,'local_publication_monotonic',time.monotonic())-received
+            row['local_publication_monotonic']=self.local_publication_monotonic
+            started = getattr(self, 'frame_update_started_monotonic', None)
+            if started is not None:
+                row['depth_wait_seconds'] = started-received
+                row['mapping_processing_seconds'] = self.local_publication_monotonic-started
+                row['update_poll_period_seconds'] = self.update_period_seconds
+        self.event_stream.write(json.dumps(row)+'\n')
+        self.event_stream.flush()
+
+    def odometry(self, msg):
+        if msg.header.frame_id != 'odom' or msg.child_frame_id != 'base_link':
+            self.localization.valid = False
+            return
+        p, q = msg.pose.pose.position, msg.pose.pose.orientation
+        self.localization.add(stamp_seconds(msg.header.stamp), [p.x, p.y, p.z],
+                              [q.x, q.y, q.z, q.w], msg.pose.covariance, time.monotonic())
 
     def camera(self, depth, info):
         if (depth.width, depth.height, depth.header.frame_id) != (info.width, info.height, info.header.frame_id):
@@ -180,6 +260,8 @@ class Terrain(Node):
         if self.last_stamp is not None and latest_stamp < self.last_stamp:
             self.global_cloud, self.start, self.start_map = None, None, None
             self.cached_cloud = self.memory = None
+            self.evidence = None
+            self.localization = ClearanceLocalization()
             self.coverage = None
             self.last_stamp, self.last_global = None, -math.inf
             self.pending.clear()
@@ -189,6 +271,8 @@ class Terrain(Node):
             return
         depth, info, tf, pose = ready
         stamp = stamp_seconds(depth.header.stamp)
+        self.frame_update_started_monotonic = started
+        self.frame_received_monotonic=next((v[2] for v in self.pending if stamp_seconds(v[0].header.stamp)==stamp),started)
         try:
             center = (pose.transform.translation.x, pose.transform.translation.y)
             # Classify this frame alone: spans and slopes across frames would
@@ -210,7 +294,27 @@ class Terrain(Node):
             if self.memory is None:
                 self.memory = TerrainMemory(self.get_parameter('map_size_m').value, .025,
                                             self.get_parameter('hazard_confirmations').value)
+                if getattr(self, 'adaptive_enabled', False):
+                    self.evidence = TerrainEvidence(self.memory)
             self.memory.remember(frame, reasons)
+            map_tf = inverse = None
+            if self.tf.can_transform('map', 'odom', Time()):
+                map_tf = self.tf.lookup_transform('map', 'odom', Time())
+                inverse = self.tf.lookup_transform('odom', 'map', Time())
+            if getattr(self, 'evidence', None) is not None:
+                suspension = self.localization.check(stamp, time.monotonic())
+                try:
+                    # RTAB-Map broadcasts ahead by tf_tolerance. Require TF to
+                    # bracket NOW instead of rejecting that future publication.
+                    correction_time = self.get_clock().now()
+                    correction = self.tf.lookup_transform('map', 'odom', correction_time)
+                    age = correction_time.nanoseconds/1e9-stamp_seconds(correction.header.stamp)
+                    if map_tf is None or not -.05 <= age <= .6:
+                        raise ValueError('map localization unavailable or stale')
+                except (TransformException, ValueError):
+                    suspension = 'map localization unavailable or stale'
+                self.evidence.observe(self.memory, frame, frame_layers, translation[:2], stamp, suspension)
+                self.flush_evidence()
             n = round(6./.025)
             origin = np.floor((np.asarray(center)-3.)/.025)*.025
             local = aligned_copy(self.memory.grid, Grid(np.empty((n, n), np.int8), .025, *origin))
@@ -220,14 +324,14 @@ class Terrain(Node):
             fresh_reasons = aligned_copy(reasons, local).data
             fresh_hazards = fresh_reasons > 0
             local_reasons.data[fresh_hazards] = np.maximum(0, local_reasons.data[fresh_hazards]) | fresh_reasons[fresh_hazards]
-            map_tf = None
-            inverse = None
-            if self.tf.can_transform('map', 'odom', Time()):
-                map_tf = self.tf.lookup_transform('map', 'odom', Time())
-                inverse = self.tf.lookup_transform('odom', 'map', Time())
             seed_local = apply_tf([self.start_map], inverse)[0] if self.start_map is not None and inverse is not None else None
             local = self.seeded(local, seed_local)
             local_reasons.data[(local.data >= 0) & (local.data < 90)] = 0
+            if self.get_parameter('map_size_m').value == 40.:
+                # Context terrain is rendered and collidable, but observations
+                # there cannot expand the declared navigation operating area.
+                mask_outside_memory(local, self.memory.grid)
+                mask_outside_memory(local_reasons, self.memory.grid)
             self.last_stamp = stamp
             self.pending = deque((sample for sample in self.pending
                                   if stamp_seconds(sample[0].header.stamp) > stamp),
@@ -252,6 +356,9 @@ class Terrain(Node):
             # Publish safety input only after all requested GPU operations succeed.
             self.local_reasons_pub.publish(grid_message(local_reasons, 'odom', depth.header.stamp))
             self.local_pub.publish(grid_message(local, 'odom', depth.header.stamp))
+            self.local_publication_monotonic=time.monotonic()
+            self.record_frame(depth, info, tf, inverse, frame, frame_layers, local,
+                              global_grid if map_tf is not None else None)
             self.update_seconds = time.monotonic()-started
             self.compute_error = ''
         except (TransformException, ValueError, OSError, RuntimeError) as error:

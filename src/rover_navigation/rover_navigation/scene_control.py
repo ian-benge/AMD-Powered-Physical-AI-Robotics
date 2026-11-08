@@ -3,8 +3,11 @@ import argparse
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import os
 from pathlib import Path
 import re
+import secrets
+import shutil
 import subprocess
 import threading
 import time
@@ -33,30 +36,78 @@ class SceneControl:
 
     def status(self):
         with self.lock:
-            return dict(self.state)
+            return dict(self.state, can_generate=(self.bundle/'assets/catalog.json').is_file(), scene=self.scene)
 
-    def launch_command(self, session):
-        command = ['bash', 'scripts/halo_navigation.sh', str(self.bundle), self.scene, session]
+    def launch_command(self, session, bundle=None, scene=None, generated=False):
+        command = ['env', f"NAV_IMAGE={self.config.get('container_image', 'rover-navigation')}",
+                   f"NAV_INSTALL_REL={self.config.get('install_relative', 'install_navigation')}",
+                   'bash', 'scripts/halo_navigation.sh', str(bundle or self.bundle), scene or self.scene, session]
         for key in ('gui', 'rviz', 'fixture', 'terrain_collision', 'navigation_speed',
-                    'detector_model', 'detector_backend', 'detector_url', 'terrain_backend', 'terrain_url'):
+                    'detector_model', 'detector_backend', 'detector_url', 'terrain_backend', 'terrain_url',
+                    'adaptive_terrain', 'sensor_headless', 'sensor_render_engine',
+                    'manual_max_linear_speed', 'manual_max_angular_speed', 'manual_initial_linear_speed', 'map_size_m'):
+            if key == 'fixture' and generated:
+                continue
             if key in self.config and str(self.config[key]):
                 command.append(f'{key}:={self.config[key]}')
         command.extend(['preview:=true', 'mission_controls:=true', 'controls_port:=8777', 'mapping_on_confirm:=true'])
         command.append(f"camera_pitch:={self.config['camera'].get('tilt_rad', .4)}")
+        command.append(f"camera_rgb_far:={self.config['camera'].get('rgb_far_m', self.config['camera'].get('far_m', 8))}")
         # Never copy database:= from the previous session: restart starts fresh.
         return command
 
-    def restart(self):
+    def restart(self, new_scene=False):
         with self.lock:
-            if self.state['phase'] in ('stopping', 'starting'):
+            if self.state['phase'] in ('stopping', 'generating', 'starting'):
                 return dict(success=False, message='A scene restart is already in progress', **self.state)
-            session = 'restart-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid4().hex[:6]
+            if new_scene and not (self.bundle/'assets/catalog.json').is_file():
+                return dict(success=False, message='Scene generation needs the existing asset catalog', **self.state)
+            session = ('generated-' if new_scene else 'restart-')+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid4().hex[:6]
             self.state = dict(phase='stopping', session=session, error='')
-            result = dict(success=True, message='Restarting scene with a fresh map', **self.state)
-        threading.Thread(target=self.run_restart, args=(session,), daemon=True).start()
+            result = dict(success=True, message='Generating a new Martian scene' if new_scene else 'Restarting scene with a fresh map', **self.state)
+        threading.Thread(target=self.run_restart, args=(session, new_scene), daemon=True).start()
         return result
 
-    def run_restart(self, session):
+    def generate_scene(self, session):
+        output = self.sessions/'generated-scenes'/session
+        output.mkdir(parents=True, exist_ok=False)
+        def copy_asset(source, target):
+            try:
+                os.link(source, target)
+                return target
+            except OSError:
+                return shutil.copy2(source, target)
+        # Independent bundle paths keep the training bundle read-only. Existing
+        # assets are immutable; hard links avoid duplicating large mesh libraries.
+        shutil.copytree(self.bundle/'assets', output/'assets', copy_function=copy_asset)
+        shutil.copy2(self.bundle/'scenes'/self.scene/'scene.json', output/'template.json')
+        template=json.loads((output/'template.json').read_text())
+        version=template.get('config',{}).get('terrain',{}).get('profile_version',1)
+        # Pinned candidates keep source and installation in separate trees.
+        prefix='/work/source' if (self.project/'source/src/rover_navigation/rover_navigation/scene_generation.py').is_file() else '/work'
+        pythonpath=':'.join(prefix+'/src/'+name for name in ('rover_navigation','mars_training_environment','rover_training'))
+        seed = 1_000_000+secrets.randbelow(900_000_000)
+        logs = self.sessions/'control'
+        logs.mkdir(parents=True, exist_ok=True)
+        with (logs/(session+'-generation.log')).open('x') as log:
+            subprocess.run(['docker', 'run', '--rm', '--network', 'none',
+                '--label', 'rover.scene-generation=true', '--user', f'{os.getuid()}:{os.getgid()}',
+                '-e', 'PYTHONPATH='+pythonpath,
+                '-v', str(self.project)+':/work:ro', '-v', str(output)+':/generated', '-w', '/work',
+                self.config.get('container_image','rover-navigation'), 'python3', '-m', 'rover_navigation.scene_generation',
+                '--template', '/generated/template.json', '--output', '/generated', '--seed', str(seed)],
+                stdout=log, stderr=subprocess.STDOUT, check=True, timeout=600. if version==2 else 180.)
+        scene = f'scene_{seed:06d}'
+        if not (output/'scenes'/scene/'scene.json').is_file():
+            raise RuntimeError('Generator did not produce a scene; inspect the generation log')
+        return output, scene
+
+    def start_process(self, command, log):
+        """Lifecycle hook for an attended supervisor's atomic stop/start gate."""
+        return subprocess.Popen(command,cwd=self.project,stdout=log,stderr=subprocess.STDOUT,
+                                start_new_session=True)
+
+    def run_restart(self, session, new_scene=False):
         try:
             # Allow the old control page to acknowledge its restart request.
             time.sleep(.5)
@@ -70,7 +121,7 @@ class SceneControl:
             if inspected.returncode == 0:
                 container = json.loads(inspected.stdout)[0]
                 mounts = container.get('Mounts', [])
-                if (container['Config']['Image'] != 'rover-navigation' or
+                if (container['Config']['Image'] != self.config.get('container_image', 'rover-navigation') or
                         not any(m['Destination'] == '/work' and Path(m['Source']).resolve() == self.project for m in mounts)):
                     raise RuntimeError('Container does not belong to this navigation checkout')
                 subprocess.run(['docker', 'stop', '--time', '15', 'rover-navigation'],
@@ -81,11 +132,15 @@ class SceneControl:
                     if time.monotonic() >= removed:
                         raise RuntimeError('Previous navigation container has not finished removing')
                     time.sleep(.1)
+            bundle, scene = self.bundle, self.scene
+            if new_scene:
+                with self.lock:
+                    self.state['phase'] = 'generating'
+                bundle, scene = self.generate_scene(session)
             logs = self.sessions/'control'
             logs.mkdir(parents=True, exist_ok=True)
             with (logs/(session+'.log')).open('x') as log:
-                self.process = subprocess.Popen(self.launch_command(session), cwd=self.project,
-                                                stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                self.process = self.start_process(self.launch_command(session, bundle, scene, new_scene),log)
             with self.lock:
                 self.state['phase'] = 'starting'
             deadline = time.monotonic()+120.
@@ -100,6 +155,9 @@ class SceneControl:
                             guard.get('pose_age_seconds') is not None and guard['pose_age_seconds'] < 1. and
                             guard.get('clock_age_seconds', 99) < .5):
                         with self.lock:
+                            self.bundle, self.scene = bundle, scene
+                            if new_scene:
+                                self.config['fixture'] = ''
                             self.state['phase'] = 'ready'
                         return
                 except (OSError, ValueError):
@@ -139,11 +197,11 @@ def handler(manager):
         def do_POST(self):
             if not self.local():
                 return self.reply(403, dict(success=False, message='Local scene control clients only'))
-            if self.path != '/restart':
+            if self.path not in ('/restart', '/new-scene'):
                 return self.reply(404, dict(success=False, message='Not found'))
             if self.headers.get('Content-Length', '0') != '0':
                 return self.reply(400, dict(success=False, message='Restart takes no request body'))
-            result = manager.restart()
+            result = manager.restart(new_scene=self.path == '/new-scene')
             self.reply(202 if result['success'] else 409, result)
     return Handler
 
@@ -221,10 +279,10 @@ def gateway_handler(manager):
         def do_POST(self):
             if not self.local():
                 return self.reply(403, dict(success=False, message='Use the local rover page'))
-            if self.path == '/restart':
+            if self.path in ('/restart', '/new-scene'):
                 if self.headers.get('Content-Length', '0') != '0':
                     return self.reply(400, dict(success=False, message='Restart takes no request body'))
-                result = manager.restart()
+                result = manager.restart(new_scene=self.path == '/new-scene')
                 return self.reply(202 if result['success'] else 409, result)
             if self.path not in ('/drive', '/release', '/stop', '/start', '/manual', '/confirm'):
                 return self.reply(404, dict(success=False, message='Not found'))

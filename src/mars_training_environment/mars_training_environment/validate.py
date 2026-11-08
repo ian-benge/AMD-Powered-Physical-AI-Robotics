@@ -12,6 +12,7 @@ from rover_training.geometry import CLASS_NAMES, class_id_for
 from .common import digest, require_label_schema, split_for_seed, write_json
 from .terrain import Terrain
 from .quality import frame_checks
+from .box_verification import persisted_box_check_errors, SENSOR_DEPTH, GAZEBO_BOXES
 
 
 def validate_scene(scene,assets):
@@ -141,7 +142,7 @@ def validate_dataset(root,bundle,require_complete=True):
     seeds,splits_seen = {},{}
     empty = clipped = hidden = tiny = 0
     image_hashes = {}
-    bbox_checks,bbox_disagreements = [],[]
+    bbox_checks = []
     for file in sorted((root/'metadata').glob('*/*.json')):
         r = json.loads(file.read_text())
         records.append(r)
@@ -217,13 +218,10 @@ def validate_dataset(root,bundle,require_complete=True):
             if not r.get('capture_checks', {}).get('passed'):
                 errors.append(f'{file.name}: capture acceptance marker missing')
         check = r.get('bbox_check')
-        if check is None:
-            if s['config']['capture'].get('require_bbox_check'):
-                errors.append(f'{file.name}: Gazebo bounding-box check missing')
-        else:
+        for reason in persisted_box_check_errors(check, r['labels'], r.get('depth_quality', {}), s['config']):
+            errors.append(f'{file.name}: {reason}')
+        if check is not None:
             bbox_checks.append(check)
-            if not check['agrees']:
-                bbox_disagreements.append(r['image'])
         counts[r['split']] += 1
         scene_counts[r['scene_id']] += 1
     if require_complete:
@@ -242,17 +240,27 @@ def validate_dataset(root,bundle,require_complete=True):
     ann = [r['annotation_seconds'] for r in records]
     quality = [r['depth_quality']['rock_depth_median_error_m'] for r in records if 'rock_depth_median_error_m' in r['depth_quality']]
     preview = contact_sheet(root,records) if records else None
+    sensor_checks = [c for c in bbox_checks if c.get('backend') == SENSOR_DEPTH]
+    bbox_checks = [c for c in bbox_checks if c.get('backend', GAZEBO_BOXES) == GAZEBO_BOXES]
+    gazebo_disagreements = [r['image'] for r in records if r.get('bbox_check')
+        and r['bbox_check'].get('backend', GAZEBO_BOXES) == GAZEBO_BOXES and not r['bbox_check']['agrees']]
     ious = [c['median_iou'] for c in bbox_checks if c['median_iou'] is not None]
-    gazebo_check = {'frames_checked':len(bbox_checks),'frames_agreeing':len(bbox_checks)-len(bbox_disagreements),
+    gazebo_check = {'frames_checked':len(bbox_checks),'frames_agreeing':len(bbox_checks)-len(gazebo_disagreements),
                     'labels_matched':sum(c['matched'] for c in bbox_checks),
                     'labels_without_gazebo_match':sum(len(c['labels_without_gazebo_match']) for c in bbox_checks),
                     'gazebo_boxes_for_rejected_rocks':sum(c['gazebo_boxes_for_rejected_rocks'] for c in bbox_checks),
                     'gazebo_boxes_below_policy':sum(c.get('gazebo_boxes_below_policy',0) for c in bbox_checks),
                     'gazebo_boxes_unexplained':sum(c['gazebo_boxes_unexplained'] for c in bbox_checks),
                     'median_iou':float(np.median(ious)) if ious else None,
-                    'disagreeing_images':bbox_disagreements}
+                    'disagreeing_images':gazebo_disagreements}
+    sensor_check = {'backend':SENSOR_DEPTH, 'frames_checked':len(sensor_checks),
+                    'frames_agreeing':sum(bool(c.get('agrees')) for c in sensor_checks),
+                    'objects_checked':sum(len(c.get('objects', [])) for c in sensor_checks),
+                    'geometry_only_objects':sum(row.get('depth_check_scope')=='geometry_only_beyond_usable_depth'
+                        for c in sensor_checks for row in c.get('objects', []))}
     return {'errors':errors,'frames':len(records),'split_counts':dict(counts),'scene_counts':dict(scene_counts),
             'gazebo_bbox_check':gazebo_check,
+            'sensor_depth_bbox_check':sensor_check,
             'empty_frames':empty,'clipped_labels':clipped,'fully_occluded_objects_rejected':hidden,'tiny_objects_rejected':tiny,
             'reserved_meshes':plan['reserved_meshes'],'capture_wall_seconds_including_launches':wall,
             'images_per_wall_second':len(records)/wall if wall else None,

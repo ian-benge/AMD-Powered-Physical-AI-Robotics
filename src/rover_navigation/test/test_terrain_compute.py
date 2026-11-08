@@ -13,6 +13,10 @@ from rover_navigation.terrain_service import pack, unpack, dispatch, PROTOCOL, c
 
 
 class TerrainProtocolTests(unittest.TestCase):
+    def test_40_m_memory_limit_is_bounded(self):
+        from rover_navigation.terrain_compute import dimensions
+        self.assertEqual(dimensions(.025,40.,(0,0),12.,.03)[0],1600)
+        with self.assertRaises(ValueError):dimensions(.025,40.025,(0,0),12.,.03)
     def test_binary_roundtrip_and_no_pickle(self):
         meta, data = unpack(pack(dict(operation='depth'), data=np.arange(5, dtype=np.uint8)))
         self.assertEqual(meta['operation'], 'depth')

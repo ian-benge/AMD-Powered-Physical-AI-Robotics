@@ -1,4 +1,4 @@
-"""Orchestrate a bounded dataset run; one isolated Gazebo process group per scene."""
+"""Orchestrate bounded capture with cleanup of each launch's owned processes."""
 import argparse
 import json
 import os
@@ -12,6 +12,7 @@ from rover_training.yolo_export import write_dataset_index
 from .common import read_config, require_label_schema, write_json
 from .generate import generate_bundle
 from .review import write_review_page
+from .process_cleanup import CaptureProcessScope
 
 
 def stop_group(process):
@@ -26,21 +27,30 @@ def stop_group(process):
 
 
 @contextmanager
-def simulator_process(cmd,log):
+def simulator_process(cmd,log,qualified_desktop=False):
     """Headless Gazebo (EGL rendering) kept off every other simulator's network."""
     env = os.environ.copy()
-    env.setdefault('LIBGL_ALWAYS_SOFTWARE','1')
+    if qualified_desktop:
+        from .capture_attempts import require_desktop_renderer
+        require_desktop_renderer(env)
+        env['LIBGL_ALWAYS_SOFTWARE']='0'
+    else:env.setdefault('LIBGL_ALWAYS_SOFTWARE','1')
     # Separate Gazebo transport partition and container-local ROS discovery, so a
     # simulator in another container cannot inject its clock or robot description.
     env['GZ_PARTITION'] = f'mars_capture_{os.getpid()}_{time.monotonic_ns()}'
     env.setdefault('ROS_AUTOMATIC_DISCOVERY_RANGE','LOCALHOST')
-    process = None
+    process = scope = None
     try:
         process = subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT,env=env,start_new_session=True)
+        scope = CaptureProcessScope(process)
         yield process
     finally:
         if process is not None:
-            stop_group(process)
+            try:
+                stop_group(process)
+            finally:
+                if scope is not None:
+                    scope.cleanup()
 
 
 def _remove_scene_files(output, ident):
@@ -91,6 +101,11 @@ def capture_bundle(bundle,output,resume=False,scene_ids=None):
         scene = json.loads(scene_path.read_text())
         require_label_schema(scene)
         write_json(output/'scenes'/f'{ident}.json',scene)
+        from .environment_v2 import is_v2
+        if is_v2(scene['config']):
+            from .capture_attempts import capture_scene
+            if capture_scene(bundle,output,entry,scene,resume,simulator_process):completed.append(ident)
+            continue
         report_path = output/'reports'/f'{ident}.json'
         if report_path.exists():
             report = json.loads(report_path.read_text())

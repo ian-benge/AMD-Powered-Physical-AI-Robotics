@@ -5,6 +5,7 @@ from collections import Counter
 from pathlib import Path
 
 from rover_training.geometry import CLASS_NAMES, class_id_for
+from .environment_v2 import target_names,export_class_id
 
 
 class ViewPlanningError(ValueError):
@@ -13,7 +14,9 @@ class ViewPlanningError(ValueError):
 
 def validate_class_quotas(capture):
     quotas = capture.get('target_class_views', {})
-    if not isinstance(quotas, dict) or set(quotas)-set(CLASS_NAMES):
+    if capture.get('target_schema','source') not in ('source','four_class_export'):
+        raise ValueError('Unknown capture target schema')
+    if not isinstance(quotas, dict) or set(quotas)-set(target_names(capture)):
         raise ValueError('target_class_views must map canonical class names to view counts')
     if any(type(value) is not int or value < 0 for value in quotas.values()):
         raise ValueError('target_class_views counts must be nonnegative integers')
@@ -33,13 +36,14 @@ def class_view_schedule(capture, rng, empty=False, rocks_only=False):
         return [None]*count
     if rocks_only:
         return [0]*count
-    classes = [cid for cid, name in enumerate(CLASS_NAMES) for _ in range(quotas.get(name, 0))]
+    classes = [cid for cid, name in enumerate(target_names(capture)) for _ in range(quotas.get(name, 0))]
     rng.shuffle(classes)
     return classes
 
 
-def targets_for_class(targets, class_id):
-    return [target for target in targets if class_id_for(target.get('class_name', 'rock')) == class_id]
+def targets_for_class(targets, class_id, capture=None):
+    identity=export_class_id if capture and len(target_names(capture))==4 else lambda target:class_id_for(target.get('class_name','rock'))
+    return [target for target in targets if identity(target)==class_id]
 
 
 def class_coverage(scenes):
@@ -54,6 +58,7 @@ def class_coverage(scenes):
         if scene.get('class_names') != list(CLASS_NAMES) or split not in actual:
             raise ValueError(f'{ident}: invalid scene label schema or split')
         capture = scene['config']['capture']
+        names=target_names(capture)
         validate_class_quotas(capture)
         quotas = capture.get('target_class_views', {})
         by_name = {obj['name']:obj for obj in scene['objects']+scene.get('regions', [])}
@@ -61,6 +66,10 @@ def class_coverage(scenes):
         frames[split] += len(scene['views'])
         if len(scene['views']) != capture['views_per_scene']:
             errors.append(f'{ident}: unexpected number of views')
+        if len(names)==4:
+            poses=[tuple(v.get('xyz',[])+v.get('rpy',[])) for v in scene['views']]
+            if any(len(pose)!=6 for pose in poses) or len(set(poses))!=len(poses):
+                errors.append(f'{ident}: capture viewpoints must be distinct full poses')
         for view in scene['views']:
             name = view.get('target_name')
             if not name:
@@ -77,8 +86,11 @@ def class_coverage(scenes):
                 errors.append(f'{ident}/{view["id"]}: background scene has a target')
             if quotas and view.get('requested_target_class_id') != cid:
                 errors.append(f'{ident}/{view["id"]}: requested target class was not retained')
-            scene_counts[CLASS_NAMES[cid]] += 1
-            actual[split][CLASS_NAMES[cid]] += 1
+            counted=export_class_id(obj) if len(names)==4 else cid
+            if len(names)==4 and (view.get('target_export_class_id')!=counted or view.get('requested_export_class_id')!=counted):
+                errors.append(f'{ident}/{view["id"]}: export target identity mismatch')
+            scene_counts[names[counted]] += 1
+            actual[split][names[counted]] += 1
         if quotas:
             rocks_only = scene['seed'] in scene['config']['dataset'].get('rocks_only_seeds', [])
             wanted = (Counter() if scene['empty'] else
@@ -86,10 +98,11 @@ def class_coverage(scenes):
             if scene_counts != wanted:
                 errors.append(f'{ident}: target quota mismatch: expected {dict(wanted)}, got {dict(scene_counts)}')
             expected[split].update(wanted)
+    names=target_names(scenes[0]['config']['capture']) if scenes else CLASS_NAMES
     return {'frames':sum(frames.values()), 'split_counts':dict(frames),
             'background_views':dict(backgrounds),
-            'primary_target_counts':{s:{name:c[name] for name in CLASS_NAMES} for s,c in actual.items()},
-            'expected_target_counts':{s:{name:c[name] for name in CLASS_NAMES} for s,c in expected.items()},
+            'primary_target_counts':{s:{name:c[name] for name in names} for s,c in actual.items()},
+            'expected_target_counts':{s:{name:c[name] for name in names} for s,c in expected.items()},
             'errors':errors}
 
 

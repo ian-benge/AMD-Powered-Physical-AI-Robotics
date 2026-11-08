@@ -12,13 +12,16 @@ from unittest.mock import MagicMock, patch
 class NodeDouble:
     # rclpy.Node.clients is read-only; preserve that API in the startup test.
     clients = property(lambda self: iter(()))
+    parameter_overrides = {}
 
     def __init__(self, name):
         self.create_client = MagicMock()
         self.create_subscription = MagicMock()
         self.create_publisher = MagicMock()
-        self.declare_parameter = MagicMock()
-        self.get_parameter = lambda name: SimpleNamespace(value='')
+        parameters = {}
+        self.declare_parameter = MagicMock(side_effect=lambda name,value: parameters.setdefault(
+            name,self.parameter_overrides.get(name,value)))
+        self.get_parameter = lambda name: SimpleNamespace(value=parameters[name])
 
 
 class ControlsTests(unittest.TestCase):
@@ -35,6 +38,15 @@ class ControlsTests(unittest.TestCase):
     def test_controls_construct_using_real_node_property_contract(self):
         node = self.module.Controls()
         self.assertEqual(set(node.service_clients), {'start', 'stop', 'manual', 'confirm'})
+
+    def test_declared_qualification_limits_reject_a_cached_higher_speed(self):
+        with patch.dict(NodeDouble.parameter_overrides,dict(max_linear_speed=.05,max_angular_speed=.3)):
+            node=self.module.Controls()
+        self.assertEqual(node.manual_input.limits['linear']['max'],.05)
+        node.latest['status']=dict(data=dict(mode='manual',ready=True),received=self.module.time.monotonic())
+        node.manual_pub=MagicMock();token=node.manual_input.arm()
+        self.assertTrue(node.drive(dict(session=token,sequence=1,linear=.05,angular=0.))['success'])
+        with self.assertRaises(ValueError):node.drive(dict(session=token,sequence=2,linear=.2,angular=0.))
 
     def test_image_detail_failure_cannot_crash_controls_or_refresh_guard_health(self):
         node = self.module.Controls()

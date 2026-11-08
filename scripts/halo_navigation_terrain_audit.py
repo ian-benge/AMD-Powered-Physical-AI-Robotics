@@ -16,7 +16,7 @@ import time
 import cv2
 import numpy as np
 import rclpy
-from nav_msgs.msg import OccupancyGrid
+from nav_msgs.msg import OccupancyGrid, Odometry
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
 from rclpy.time import Time
@@ -33,9 +33,11 @@ class Audit(Node):
     def __init__(self):
         super().__init__('navigation_terrain_audit')
         self.map, self.depth, self.infos = None, None, {}
-        self.buffers = {name: {} for name in ('map', 'depth', 'rgb', 'info', 'local', 'reasons')}
+        self.buffers = {name: {} for name in ('map', 'depth', 'rgb', 'info', 'local', 'reasons', 'local_reasons')}
         self.arrivals = {name: deque(maxlen=5000) for name in self.buffers}
         self.status = {}
+        self.mapping_status = {}
+        self.truth = deque(maxlen=300)  # evaluator-only; never forwarded to mapping/control
         self.last_captured = -math.inf
         self.tf = Buffer()
         self.listener = TransformListener(self.tf, self)
@@ -44,11 +46,20 @@ class Audit(Node):
         self.create_subscription(OccupancyGrid, '/navigation/terrain_map', lambda m: self.cache('map', m), durable)
         self.create_subscription(OccupancyGrid, '/navigation/terrain_reasons', lambda m: self.cache('reasons', m), durable)
         self.create_subscription(OccupancyGrid, '/navigation/local_ground', lambda m: self.cache('local', m), 1)
+        self.create_subscription(OccupancyGrid, '/navigation/local_ground_reasons', lambda m: self.cache('local_reasons', m), 1)
         self.create_subscription(Image, '/oak/depth/image_raw', lambda m: self.cache('depth', m), qos_profile_sensor_data)
         self.create_subscription(Image, '/oak/image_raw', lambda m: self.cache('rgb', m), qos_profile_sensor_data)
         self.create_subscription(CameraInfo, '/oak/camera_info',
                                  lambda m: self.cache('info', m), qos_profile_sensor_data)
         self.create_subscription(String, '/navigation/status', lambda m: self.status.update(json.loads(m.data)), 1)
+        self.create_subscription(String, '/navigation/mapping_status',
+                                 lambda m: self.mapping_status.update(json.loads(m.data)), durable)
+        self.create_subscription(Odometry, '/odom_gt', self.truth_sample, qos_profile_sensor_data)
+
+    def truth_sample(self, msg):
+        p, q = msg.pose.pose.position, msg.pose.pose.orientation
+        self.truth.append(dict(stamp=stamp_seconds(msg.header.stamp), frame=msg.header.frame_id,
+            child=msg.child_frame_id, position=[p.x,p.y,p.z], quaternion=[q.x,q.y,q.z,q.w]))
 
     def cache(self, name, msg):
         cache = self.buffers[name]
@@ -82,7 +93,7 @@ def capture(prefix, node, ready):
     """Raw bytes preserve depth encoding, row stride and endian order without reinterpretation."""
     depth, info, camera, pose = ready
     stamp = stamp_seconds(depth.header.stamp)
-    arrays = {name: from_grid(node.matched[name]).data for name in ('map', 'local', 'reasons')}
+    arrays = {name: from_grid(node.matched[name]).data for name in ('map', 'local', 'reasons', 'local_reasons')}
     arrays.update(depth_bytes=np.frombuffer(bytes(depth.data), np.uint8),
                   rgb_bgr=image_to_bgr(node.matched['rgb']))
     np.savez_compressed(prefix.with_suffix('.npz'), **arrays)
@@ -97,23 +108,39 @@ def capture(prefix, node, ready):
     grids = {name: dict(frame=msg.header.frame_id, stamp=stamp_seconds(msg.header.stamp),
                        origin=[msg.info.origin.position.x, msg.info.origin.position.y],
                        resolution=msg.info.resolution, width=msg.info.width, height=msg.info.height)
-             for name, msg in node.matched.items() if name in ('map', 'local', 'reasons')}
+             for name, msg in node.matched.items() if name in ('map', 'local', 'reasons', 'local_reasons')}
     row = dict(stamp=stamp, wall_received=time.monotonic(), exact_rgb_depth_info_terrain_stamp=True,
                depth=dict(encoding=depth.encoding, width=depth.width, height=depth.height, step=depth.step,
                           is_bigendian=bool(depth.is_bigendian), frame=depth.header.frame_id),
                calibration=dict(k=list(info.k), d=list(info.d), distortion_model=info.distortion_model),
                transforms=dict(camera_to_map=tf_record(camera), drive_center_to_map=tf_record(pose),
                  camera_to_odom=tf_record(node.tf.lookup_transform('odom', depth.header.frame_id, Time.from_msg(depth.header.stamp)))),
-               grids=grids, guard_status=dict(node.status),
+               grids=grids, guard_status=dict(node.status), mapping_status=dict(node.mapping_status),
                guard_status_alignment='latest receipt; guard sim_time recorded separately',
                map_projection_alignment='map is the published processing-time projection; image-time transforms are separate',
                known_cells=int((arrays['map'] >= 0).sum()), hazard_cells=int((arrays['map'] >= 90).sum()),
                cause_cells=dict(slope=int(((arrays['reasons'] > 0) & ((arrays['reasons'] & 2) != 0)).sum()),
                                 height_change=int(((arrays['reasons'] > 0) & ((arrays['reasons'] & 4) != 0)).sum())))
+    row['evaluator_truth'] = truth_bracket(node.truth, stamp)
+    if row['evaluator_truth']['available']:
+        row['evaluator_truth']['camera_to_base'] = tf_record(node.tf.lookup_transform(
+            'base_link', depth.header.frame_id, Time.from_msg(depth.header.stamp)))
     prefix.with_suffix('.json').write_text(json.dumps(row, indent=2, allow_nan=False)+'\n')
     node.last_captured = stamp
     return dict(stamp=stamp, known_cells=row['known_cells'], hazard_cells=row['hazard_cells'],
                 cause_cells=row['cause_cells'], evidence=prefix.name)
+
+
+def truth_bracket(samples, stamp):
+    """Retain both image-time 6-D pose observations; no nearest-pose substitution."""
+    before=max((v for v in samples if v['stamp'] <= stamp),key=lambda v:v['stamp'],default=None)
+    after=min((v for v in samples if v['stamp'] >= stamp),key=lambda v:v['stamp'],default=None)
+    if (before is None or after is None or stamp-before['stamp'] > .05 or after['stamp']-stamp > .05
+            or before['frame'] != after['frame'] or before['child'] != after['child']
+            or not all(math.isfinite(x) for v in (before,after) for x in v['position']+v['quaternion'])):
+        return dict(available=False, reason='No finite matching image-time truth bracket within 50 ms')
+    return dict(available=True, before=before, after=after, source='/odom_gt',
+                evaluator_only=True, truth_to_navigation=False)
 
 
 def capture_unmapped_sensor(prefix, node):
@@ -151,7 +178,7 @@ def timing_summary(samples):
 
 
 def heightfield(values, size):
-    """Bilinear sampler for a square grid spanning [-size/2, size/2] in both axes."""
+    """Sample the saved mesh's anti-diagonal triangles, without fitting orientation."""
     grid = np.asarray(values, dtype=float)
     n = grid.shape[0]-1
 
@@ -163,7 +190,9 @@ def heightfield(values, size):
         u, v = np.clip(u, 0, n-1e-9), np.clip(v, 0, n-1e-9)
         i, j = v.astype(int), u.astype(int)
         a, b = v-i, u-j
-        z = (g[i, j]*(1-a)*(1-b)+g[i, j+1]*(1-a)*b+g[i+1, j]*a*(1-b)+g[i+1, j+1]*a*b)
+        z00, z10, z01, z11 = g[i, j], g[i, j+1], g[i+1, j], g[i+1, j+1]
+        z = np.where(a+b <= 1, z00+b*(z10-z00)+a*(z01-z00),
+                     z11+(1-b)*(z01-z11)+(1-a)*(z10-z11))
         return np.where(inside, z, np.nan)
     return sample
 
@@ -227,22 +256,31 @@ def run(args):
                     edge = np.minimum(edge, np.hypot(fx-rx, fy-ry)-rr)
                 report['frame'].update(hazards_near_rocks=int((hazard & (edge <= .10)).sum()),
                                        hazards_away_from_rocks=int((hazard & (edge > .10)).sum()))
-                # Measured ground is relative to the spawn pose; compare shapes, not absolute height.
+                # Truth is evaluator-only. Preserve fixed world orientation and
+                # absolute residuals; a best-fit orientation can conceal errors.
                 measured = layers['elevation']
                 ok = np.isfinite(measured) & (edge > .15)
                 fits = {}
                 for name, key in (('visual', 'heights'), ('collision', 'base_heights')):
                     sample = heightfield(terrain[key], terrain['size_m'])
-                    best = None
+                    alternatives = []
                     for transpose in (False, True):
                         for flip in (False, True):
                             truth = sample(fx[ok], fy[ok], transpose, flip)
                             good = np.isfinite(truth)
                             residual = measured[ok][good]-truth[good]
-                            rms = float(np.sqrt(np.mean((residual-np.median(residual))**2)))
-                            if best is None or rms < best[0]:
-                                best = (rms, transpose, flip)
-                    fits[name] = dict(rms_m=best[0], transpose=best[1], flip=best[2])
+                            if not residual.size:
+                                continue
+                            row = dict(rms_m=float(np.sqrt(np.mean(residual**2))),
+                                bias_m=float(np.median(residual)),
+                                shape_rms_m=float(np.sqrt(np.mean((residual-np.median(residual))**2))),
+                                transpose=transpose, flip=flip, samples=int(residual.size))
+                            alternatives.append(row)
+                    fits[name] = dict(fixed_world_orientation=next((r for r in alternatives
+                        if not r['transpose'] and not r['flip']), None),
+                        diagnostic_orientation_alternatives=alternatives,
+                        sampler='saved anti-diagonal triangles',
+                        limitation='VIO map coordinates versus evaluator world; drift/registration must be assessed, never fitted away for acceptance')
                 report['measured_vs_heightfield'] = fits
             report['passed'] = True  # capture integrity, NOT terrain accuracy or missing-ground acceptance
             report['acceptance_scope'] = 'Read-only synchronized evidence capture; interpret fixture results separately'
@@ -285,6 +323,6 @@ if __name__ == '__main__':
     parser.add_argument('--duration', type=float, default=0., help='Bounded wall seconds of synchronized evidence, max 120')
     parser.add_argument('--interval', type=float, default=1., help='Seconds between saved bundles, minimum 0.2')
     args = parser.parse_args()
-    if not 0 <= args.duration <= 120 or not .2 <= args.interval <= 30 or not 0 < args.wait <= 120:
-        parser.error('Require duration 0..120 s, interval 0.2..30 s, wait 0..120 s')
+    if not 0 <= args.duration <= 600 or not .2 <= args.interval <= 30 or not 0 < args.wait <= 120:
+        parser.error('Require duration 0..600 s, interval 0.2..30 s, wait 0..120 s')
     raise SystemExit(run(args))

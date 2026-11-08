@@ -247,6 +247,8 @@ class SafetyTests(unittest.TestCase):
         gate.select('manual', 1.)
         gate.command('manual', -1., 9., 1.)
         self.assertEqual(gate.output(1., lambda v, w: True), (0., .6))
+        gate.command('manual', 9., -9., 1.)
+        self.assertEqual(gate.output(1., lambda v, w: True), (.5, -.6))
         gate.command('manual', math.nan, 0., 1.)
         self.assertEqual(gate.mode, 'stopped')
 
