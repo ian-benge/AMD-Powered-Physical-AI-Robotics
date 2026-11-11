@@ -11,7 +11,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG UBUNTU_MIRROR=""
 RUN if [ -n "$UBUNTU_MIRROR" ]; then \
         case "$UBUNTU_MIRROR" in https://*) ;; *) echo 'UBUNTU_MIRROR must use HTTPS' >&2; exit 1 ;; esac; \
-        sed -i -E "s|https?://(archive|security)\.ubuntu\.com/ubuntu/?|${UBUNTU_MIRROR%/}|g" /etc/apt/sources.list.d/ubuntu.sources; \
+        sed -i -E "s@https?://(archive|security)\.ubuntu\.com/ubuntu/?@${UBUNTU_MIRROR%/}@g" /etc/apt/sources.list.d/ubuntu.sources; \
     fi \
     && printf 'Acquire::Retries "3";\nAcquire::http::Timeout "20";\nAcquire::https::Timeout "20";\n' > /etc/apt/apt.conf.d/80-retries \
     && apt-get -o APT::Update::Error-Mode=any update && apt-get install -y --no-install-recommends \
