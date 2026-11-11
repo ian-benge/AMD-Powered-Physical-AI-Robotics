@@ -7,8 +7,8 @@
       "source_sha256": "ecc76f0ca36e15f55e881e825a8d003a7ba6854079402c446b7ea6255977d2cd",
       "source_bytes": 25386,
       "published": "evidence/amd-testing-20261111/model/MODEL_METRICS_SUMMARY_V2.json",
-      "published_sha256": "e34bbcc3ae50bef50b366faf72b820f66b0215ea6317367730fb1da559cb02c3",
-      "published_bytes": 27400,
+      "published_sha256": "14a96edaab9f18f54be6f1b6b26ad8d7b27b3c2fae23ef138c4b2864800db18a",
+      "published_bytes": 25354,
       "transformation": "JSON reindent and LF normalization only; original metric values and evidence hashes retained."
     },
     {

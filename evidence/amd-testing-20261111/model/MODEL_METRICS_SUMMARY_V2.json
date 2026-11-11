@@ -1,1 +1,763 @@
-"{\n  \"created_utc\": \"2026-11-09T00:54:25.554548+00:00\",\n  \"checkpoint_epoch\": 22,\n  \"training_saved_epochs\": 28,\n  \"checkpoint_sha256\": \"90fca4a3e4fa702f213c044e7ac09fb0271a4e70d6b71ca670d7e0913da1793f\",\n  \"training_images\": 5300,\n  \"validation_images\": 100,\n  \"test_images\": 100,\n  \"human_review_complete\": false,\n  \"model_promoted\": false,\n  \"evidence\": {\n    \"npu/candidate-fp32-cpu-val.json\": \"2539ec536e4e77a9af980b83a469a867a1ee3150d0551e8a165db2e5abf89bb7\",\n    \"npu/candidate-npu-val.json\": \"b2274baf8463b0537da159466592eaa4a9bc6701452fb5053306e1ea00d0faf4\",\n    \"npu/baseline-npu-val.json\": \"aea61b632f8cea3bfacff01137af1b4b189123b5fbbfcff234ef96506ce95d33\",\n    \"gpu/candidate-val.json\": \"f1937dc5fe42195c38778e8b48f35bddef9624f868a50d9fdc947dda5d2336cc\",\n    \"gpu/baseline-val.json\": \"b597517cf8ccec8ade4c454194f6efe9655a8eb5e1ee5eba4dffc436f2738741\",\n    \"npu/candidate-fp32-cpu-test.json\": \"9876284462b8fb19580dbdc5fe351a329c51cd9a1d4892b88bdd83d0d75b21c2\",\n    \"npu/candidate-npu-test.json\": \"b961daacb785c4de6dbfb627dd9ec0b34e541e21c0f42b1d6231c659a13b775d\",\n    \"npu/baseline-npu-test.json\": \"072590489eefbf118010e456ff88a0895ab3ae593631c0e3f1d0ce35d2ec5f14\",\n    \"gpu/candidate-test.json\": \"c7ac446c058725ab9d0e5746b88cbae87f0e89f54d9847749a840ccf366e244a\",\n    \"gpu/baseline-test.json\": \"8a66c8dbac06fbb351ad71d11fa6c5b63fa75e3efcc2de39d355c79b00d3b1db\"\n  },\n  \"npu\": {\n    \"val\": {\n      \"candidate-fp32-cpu\": {\n        \"dataset\": \"d2e7e5bd418910d40625848a6872f1a9d635a3ebd7ae479421ce700f2fc9c6c6\",\n        \"frames\": 100,\n        \"metrics\": {\n          \"map50\": 0.9760362378251887,\n          \"map50_95\": 0.8626641191220698,\n          \"classes\": {\n            \"rock\": {\n              \"class_id\": 0,\n              \"instances\": 511,\n              \"map50\": 0.9849292810434183,\n              \"map50_95\": 0.8524129834182268,\n              \"recall_at_025\": 0.9628180039138943,\n              \"precision_at_025\": 0.9628180039138943,\n              \"true_positives_at_025\": 492,\n              \"predictions_at_025\": 511\n            },\n            \"pale_soil_patch\": {\n              \"class_id\": 1,\n              \"instances\": 54,\n              \"map50\": 0.9852868471424665,\n              \"map50_95\": 0.7732353376569565,\n              \"recall_at_025\": 0.9814814814814815,\n              \"precision_at_025\": 0.9636363636363636,\n              \"true_positives_at_025\": 53,\n              \"predictions_at_025\": 55\n            },\n            \"yellow_crystal_rock\": {\n              \"class_id\": 2,\n              \"instances\": 42,\n              \"map50\": 0.9745348837209302,\n              \"map50_95\": 0.9529141309216194,\n              \"recall_at_025\": 0.9523809523809523,\n              \"precision_at_025\": 1.0,\n              \"true_positives_at_025\": 40,\n              \"predictions_at_025\": 40\n            },\n            \"mudstone_slab\": {\n              \"class_id\": 3,\n              \"instances\": 19,\n              \"map50\": 0.9593939393939396,\n              \"map50_95\": 0.8720940244914767,\n              \"recall_at_025\": 1.0,\n              \"precision_at_025\": 1.0,\n              \"true_positives_at_025\": 19,\n              \"predictions_at_025\": 19\n            }\n          },\n          \"fixed_confidence\": 0.25,\n          \"fixed_iou\": 0.5,\n          \"ap_iou_thresholds\": [\n            0.5,\n            0.55,\n            0.6,\n            0.65,\n            0.7,\n            0.75,\n            0.8,\n            0.8500000000000001,\n            0.9,\n            0.95\n          ],\n          \"ap_interpolation\": \"101-point precision envelope trapezoid\",\n          \"matching\": \"per-image class-aware greedy IoU, one-to-one\"\n        },\n        \"timings\": {\n          \"preprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 1.3721750379772857,\n            \"median\": 1.3508864940376952,\n            \"p95\": 1.5148969934671186\n          },\n          \"execution_ms\": {\n            \"count\": 100,\n            \"mean\": 45.46327965974342,\n            \"median\": 39.71019449818414,\n            \"p95\": 72.1494137236732\n          },\n          \"postprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 0.9424289892194793,\n            \"median\": 0.8781840006122366,\n            \"p95\": 1.358407402585726\n          }\n        }\n      },\n      \"candidate-npu\": {\n        \"dataset\": \"d2e7e5bd418910d40625848a6872f1a9d635a3ebd7ae479421ce700f2fc9c6c6\",\n        \"frames\": 100,\n        \"metrics\": {\n          \"map50\": 0.9868216707108082,\n          \"map50_95\": 0.858195112655594,\n          \"classes\": {\n            \"rock\": {\n              \"class_id\": 0,\n              \"instances\": 511,\n              \"map50\": 0.9845661441226936,\n              \"map50_95\": 0.8472969590510638,\n              \"recall_at_025\": 0.9628180039138943,\n              \"precision_at_025\": 0.9628180039138943,\n              \"true_positives_at_025\": 492,\n              \"predictions_at_025\": 511\n            },\n            \"pale_soil_patch\": {\n              \"class_id\": 1,\n              \"instances\": 54,\n              \"map50\": 0.9936296296296296,\n              \"map50_95\": 0.7820444032255833,\n              \"recall_at_025\": 0.9814814814814815,\n              \"precision_at_025\": 0.9464285714285714,\n              \"true_positives_at_025\": 53,\n              \"predictions_at_025\": 56\n            },\n            \"yellow_crystal_rock\": {\n              \"class_id\": 2,\n              \"instances\": 42,\n              \"map50\": 0.9740909090909091,\n              \"map50_95\": 0.9525507829912023,\n              \"recall_at_025\": 0.9523809523809523,\n              \"precision_at_025\": 1.0,\n              \"true_positives_at_025\": 40,\n              \"predictions_at_025\": 40\n            },\n            \"mudstone_slab\": {\n              \"class_id\": 3,\n              \"instances\": 19,\n              \"map50\": 0.995,\n              \"map50_95\": 0.8508883053545266,\n              \"recall_at_025\": 1.0,\n              \"precision_at_025\": 1.0,\n              \"true_positives_at_025\": 19,\n              \"predictions_at_025\": 19\n            }\n          },\n          \"fixed_confidence\": 0.25,\n          \"fixed_iou\": 0.5,\n          \"ap_iou_thresholds\": [\n            0.5,\n            0.55,\n            0.6,\n            0.65,\n            0.7,\n            0.75,\n            0.8,\n            0.8500000000000001,\n            0.9,\n            0.95\n          ],\n          \"ap_interpolation\": \"101-point precision envelope trapezoid\",\n          \"matching\": \"per-image class-aware greedy IoU, one-to-one\"\n        },\n        \"timings\": {\n          \"preprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 0.828977499040775,\n            \"median\": 0.8104110020212829,\n            \"p95\": 0.8970719703938811\n          },\n          \"execution_ms\": {\n            \"count\": 100,\n            \"mean\": 23.600944871432148,\n            \"median\": 23.430162502336316,\n            \"p95\": 24.505203844455536\n          },\n          \"postprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 0.968753699271474,\n            \"median\": 0.890377996256575,\n            \"p95\": 1.3580644605099224\n          }\n        }\n      },\n      \"baseline-npu\": {\n        \"dataset\": \"d2e7e5bd418910d40625848a6872f1a9d635a3ebd7ae479421ce700f2fc9c6c6\",\n        \"frames\": 100,\n        \"metrics\": {\n          \"map50\": 0.9790379583969658,\n          \"map50_95\": 0.8420315579151576,\n          \"classes\": {\n            \"rock\": {\n              \"class_id\": 0,\n              \"instances\": 511,\n              \"map50\": 0.9724292122122897,\n              \"map50_95\": 0.8193754586873785,\n              \"recall_at_025\": 0.974559686888454,\n              \"precision_at_025\": 0.9205175600739371,\n              \"true_positives_at_025\": 498,\n              \"predictions_at_025\": 541\n            },\n            \"pale_soil_patch\": {\n              \"class_id\": 1,\n              \"instances\": 54,\n              \"map50\": 0.9794226213755733,\n              \"map50_95\": 0.7522406597662086,\n              \"recall_at_025\": 0.9259259259259259,\n              \"precision_at_025\": 0.9615384615384616,\n              \"true_positives_at_025\": 50,\n              \"predictions_at_025\": 52\n            },\n            \"yellow_crystal_rock\": {\n              \"class_id\": 2,\n              \"instances\": 42,\n              \"map50\": 0.9717999999999999,\n              \"map50_95\": 0.9213403237275004,\n              \"recall_at_025\": 0.9523809523809523,\n              \"precision_at_025\": 0.975609756097561,\n              \"true_positives_at_025\": 40,\n              \"predictions_at_025\": 41\n            },\n            \"mudstone_slab\": {\n              \"class_id\": 3,\n              \"instances\": 19,\n              \"map50\": 0.9925000000000002,\n              \"map50_95\": 0.8751697894795427,\n              \"recall_at_025\": 1.0,\n              \"precision_at_025\": 0.76,\n              \"true_positives_at_025\": 19,\n              \"predictions_at_025\": 25\n            }\n          },\n          \"fixed_confidence\": 0.25,\n          \"fixed_iou\": 0.5,\n          \"ap_iou_thresholds\": [\n            0.5,\n            0.55,\n            0.6,\n            0.65,\n            0.7,\n            0.75,\n            0.8,\n            0.8500000000000001,\n            0.9,\n            0.95\n          ],\n          \"ap_interpolation\": \"101-point precision envelope trapezoid\",\n          \"matching\": \"per-image class-aware greedy IoU, one-to-one\"\n        },\n        \"timings\": {\n          \"preprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 0.7835520969820209,\n            \"median\": 0.7656570087419823,\n            \"p95\": 0.8584349401644431\n          },\n          \"execution_ms\": {\n            \"count\": 100,\n            \"mean\": 23.507262312050443,\n            \"median\": 23.45224699820392,\n            \"p95\": 24.259090951818507\n          },\n          \"postprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 0.9560380392940715,\n            \"median\": 0.9457360138185322,\n            \"p95\": 1.3917969510657713\n          }\n        }\n      }\n    },\n    \"test\": {\n      \"candidate-fp32-cpu\": {\n        \"dataset\": \"87f81fb9829be8a79decaf0bbebf3e79ccb796741c92d462c5fcbfa2fe5ab9f4\",\n        \"frames\": 100,\n        \"metrics\": {\n          \"map50\": 0.93960726725665,\n          \"map50_95\": 0.7969356922430175,\n          \"classes\": {\n            \"rock\": {\n              \"class_id\": 0,\n              \"instances\": 519,\n              \"map50\": 0.9543722029912952,\n              \"map50_95\": 0.7875144165138881,\n              \"recall_at_025\": 0.9248554913294798,\n              \"precision_at_025\": 0.9248554913294798,\n              \"true_positives_at_025\": 480,\n              \"predictions_at_025\": 519\n            },\n            \"pale_soil_patch\": {\n              \"class_id\": 1,\n              \"instances\": 76,\n              \"map50\": 0.9102617139037683,\n              \"map50_95\": 0.7187039679872458,\n              \"recall_at_025\": 0.868421052631579,\n              \"precision_at_025\": 0.9295774647887324,\n              \"true_positives_at_025\": 66,\n              \"predictions_at_025\": 71\n            },\n            \"yellow_crystal_rock\": {\n              \"class_id\": 2,\n              \"instances\": 44,\n              \"map50\": 0.9759999999999999,\n              \"map50_95\": 0.9624958351761757,\n              \"recall_at_025\": 0.9545454545454546,\n              \"precision_at_025\": 1.0,\n              \"true_positives_at_025\": 42,\n              \"predictions_at_025\": 42\n            },\n            \"mudstone_slab\": {\n              \"class_id\": 3,\n              \"instances\": 21,\n              \"map50\": 0.9177951521315365,\n              \"map50_95\": 0.7190285492947608,\n              \"recall_at_025\": 0.8095238095238095,\n              \"precision_at_025\": 0.8947368421052632,\n              \"true_positives_at_025\": 17,\n              \"predictions_at_025\": 19\n            }\n          },\n          \"fixed_confidence\": 0.25,\n          \"fixed_iou\": 0.5,\n          \"ap_iou_thresholds\": [\n            0.5,\n            0.55,\n            0.6,\n            0.65,\n            0.7,\n            0.75,\n            0.8,\n            0.8500000000000001,\n            0.9,\n            0.95\n          ],\n          \"ap_interpolation\": \"101-point precision envelope trapezoid\",\n          \"matching\": \"per-image class-aware greedy IoU, one-to-one\"\n        },\n        \"timings\": {\n          \"preprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 1.4391092196456157,\n            \"median\": 1.3855004945071414,\n            \"p95\": 1.6002019896404818\n          },\n          \"execution_ms\": {\n            \"count\": 100,\n            \"mean\": 42.35213514970383,\n            \"median\": 38.488403501105495,\n            \"p95\": 56.7986319787451\n          },\n          \"postprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 1.0369269491638988,\n            \"median\": 0.9921044984366745,\n            \"p95\": 1.5772359925904311\n          }\n        }\n      },\n      \"candidate-npu\": {\n        \"dataset\": \"87f81fb9829be8a79decaf0bbebf3e79ccb796741c92d462c5fcbfa2fe5ab9f4\",\n        \"frames\": 100,\n        \"metrics\": {\n          \"map50\": 0.9407125162301976,\n          \"map50_95\": 0.7889923780402408,\n          \"classes\": {\n            \"rock\": {\n              \"class_id\": 0,\n              \"instances\": 519,\n              \"map50\": 0.9557080794925605,\n              \"map50_95\": 0.7861228429720011,\n              \"recall_at_025\": 0.9248554913294798,\n              \"precision_at_025\": 0.9302325581395349,\n              \"true_positives_at_025\": 480,\n              \"predictions_at_025\": 516\n            },\n            \"pale_soil_patch\": {\n              \"class_id\": 1,\n              \"instances\": 76,\n              \"map50\": 0.9226922378918222,\n              \"map50_95\": 0.714485024340037,\n              \"recall_at_025\": 0.868421052631579,\n              \"precision_at_025\": 0.9166666666666666,\n              \"true_positives_at_025\": 66,\n              \"predictions_at_025\": 72\n            },\n            \"yellow_crystal_rock\": {\n              \"class_id\": 2,\n              \"instances\": 44,\n              \"map50\": 0.9755333333333333,\n              \"map50_95\": 0.9558931808280636,\n              \"recall_at_025\": 0.9545454545454546,\n              \"precision_at_025\": 1.0,\n              \"true_positives_at_025\": 42,\n              \"predictions_at_025\": 42\n            },\n            \"mudstone_slab\": {\n              \"class_id\": 3,\n              \"instances\": 21,\n              \"map50\": 0.908916414203074,\n              \"map50_95\": 0.6994684640208615,\n              \"recall_at_025\": 0.8095238095238095,\n              \"precision_at_025\": 0.8947368421052632,\n              \"true_positives_at_025\": 17,\n              \"predictions_at_025\": 19\n            }\n          },\n          \"fixed_confidence\": 0.25,\n          \"fixed_iou\": 0.5,\n          \"ap_iou_thresholds\": [\n            0.5,\n            0.55,\n            0.6,\n            0.65,\n            0.7,\n            0.75,\n            0.8,\n            0.8500000000000001,\n            0.9,\n            0.95\n          ],\n          \"ap_interpolation\": \"101-point precision envelope trapezoid\",\n          \"matching\": \"per-image class-aware greedy IoU, one-to-one\"\n        },\n        \"timings\": {\n          \"preprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 0.8280098481918685,\n            \"median\": 0.7890870037954301,\n            \"p95\": 1.0048819895018808\n          },\n          \"execution_ms\": {\n            \"count\": 100,\n            \"mean\": 23.463255990936887,\n            \"median\": 23.304886504774913,\n            \"p95\": 24.216035412973724\n          },\n          \"postprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 0.9997946402290836,\n            \"median\": 0.9508560033282265,\n            \"p95\": 1.6489820045535453\n          }\n        }\n      },\n      \"baseline-npu\": {\n        \"dataset\": \"87f81fb9829be8a79decaf0bbebf3e79ccb796741c92d462c5fcbfa2fe5ab9f4\",\n        \"frames\": 100,\n        \"metrics\": {\n          \"map50\": 0.9239446406268164,\n          \"map50_95\": 0.766653666923041,\n          \"classes\": {\n            \"rock\": {\n              \"class_id\": 0,\n              \"instances\": 519,\n              \"map50\": 0.9281989262733988,\n              \"map50_95\": 0.7347561432882675,\n              \"recall_at_025\": 0.9210019267822736,\n              \"precision_at_025\": 0.8754578754578755,\n              \"true_positives_at_025\": 478,\n              \"predictions_at_025\": 546\n            },\n            \"pale_soil_patch\": {\n              \"class_id\": 1,\n              \"instances\": 76,\n              \"map50\": 0.8896001849644154,\n              \"map50_95\": 0.6645612964080349,\n              \"recall_at_025\": 0.8552631578947368,\n              \"precision_at_025\": 0.9027777777777778,\n              \"true_positives_at_025\": 65,\n              \"predictions_at_025\": 72\n            },\n            \"yellow_crystal_rock\": {\n              \"class_id\": 2,\n              \"instances\": 44,\n              \"map50\": 0.9579599999999999,\n              \"map50_95\": 0.9305715388735607,\n              \"recall_at_025\": 0.9318181818181818,\n              \"precision_at_025\": 1.0,\n              \"true_positives_at_025\": 41,\n              \"predictions_at_025\": 41\n            },\n            \"mudstone_slab\": {\n              \"class_id\": 3,\n              \"instances\": 21,\n              \"map50\": 0.9200194512694513,\n              \"map50_95\": 0.7367256891223012,\n              \"recall_at_025\": 0.8095238095238095,\n              \"precision_at_025\": 0.8095238095238095,\n              \"true_positives_at_025\": 17,\n              \"predictions_at_025\": 21\n            }\n          },\n          \"fixed_confidence\": 0.25,\n          \"fixed_iou\": 0.5,\n          \"ap_iou_thresholds\": [\n            0.5,\n            0.55,\n            0.6,\n            0.65,\n            0.7,\n            0.75,\n            0.8,\n            0.8500000000000001,\n            0.9,\n            0.95\n          ],\n          \"ap_interpolation\": \"101-point precision envelope trapezoid\",\n          \"matching\": \"per-image class-aware greedy IoU, one-to-one\"\n        },\n        \"timings\": {\n          \"preprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 0.773734547838103,\n            \"median\": 0.75244800245855,\n            \"p95\": 0.8470560584100895\n          },\n          \"execution_ms\": {\n            \"count\": 100,\n            \"mean\": 23.17392802098766,\n            \"median\": 23.15956199890934,\n            \"p95\": 23.896362505911384\n          },\n          \"postprocess_ms\": {\n            \"count\": 100,\n            \"mean\": 1.035876160603948,\n            \"median\": 1.0258380061713979,\n            \"p95\": 1.6235519025940446\n          }\n        }\n      }\n    }\n  },\n  \"gpu\": {\n    \"val\": {\n      \"candidate\": {\n        \"frames\": 100,\n        \"settings\": {\n          \"imgsz\": 960,\n          \"batch\": 4,\n          \"device\": \"qualified ROCm GPU\",\n          \"half\": false,\n          \"rect\": false,\n          \"conf\": 0.001,\n          \"nms_iou\": 0.7,\n          \"max_det\": 300\n        },\n        \"overall\": {\n          \"metrics/precision(B)\": 0.9912713025992033,\n          \"metrics/recall(B)\": 0.9708402203893087,\n          \"metrics/mAP50(B)\": 0.9884188600876949,\n          \"metrics/mAP50-95(B)\": 0.8497653284458867,\n          \"fitness\": 0.8497653284458867\n        },\n        \"classes\": {\n          \"rock\": {\n            \"precision\": 0.975297806819261,\n            \"recall\": 0.9373776908023483,\n            \"map50\": 0.9810482638400246,\n            \"map50_95\": 0.8248084295354493\n          },\n          \"pale_soil_patch\": {\n            \"precision\": 0.989787403577552,\n            \"recall\": 0.9814814814814815,\n            \"map50\": 0.9943103448275862,\n            \"map50_95\": 0.7607316547441946\n          },\n          \"yellow_crystal_rock\": {\n            \"precision\": 1.0,\n            \"recall\": 0.9680227308285599,\n            \"map50\": 0.9833168316831683,\n            \"map50_95\": 0.9432355152181886\n          },\n          \"mudstone_slab\": {\n            \"precision\": 1.0,\n            \"recall\": 0.9964789784448453,\n            \"map50\": 0.995,\n            \"map50_95\": 0.8702857142857143\n          }\n        },\n        \"speed_ms\": {\n          \"preprocess\": 0.8577450306620449,\n          \"inference\": 10.733093850139994,\n          \"loss\": 0.0013971497537568212,\n          \"postprocess\": 0.4902620398206637\n        },\n        \"precision_recall_definition\": \"Ultralytics mean-F1 operating point; AP confidence floor 0.001\"\n      },\n      \"baseline\": {\n        \"frames\": 100,\n        \"settings\": {\n          \"imgsz\": 960,\n          \"batch\": 4,\n          \"device\": \"qualified ROCm GPU\",\n          \"half\": false,\n          \"rect\": false,\n          \"conf\": 0.001,\n          \"nms_iou\": 0.7,\n          \"max_det\": 300\n        },\n        \"overall\": {\n          \"metrics/precision(B)\": 0.9758163080670578,\n          \"metrics/recall(B)\": 0.9341049759752799,\n          \"metrics/mAP50(B)\": 0.9853196437990643,\n          \"metrics/mAP50-95(B)\": 0.8280761573864257,\n          \"fitness\": 0.8280761573864257\n        },\n        \"classes\": {\n          \"rock\": {\n            \"precision\": 0.9810645529019577,\n            \"recall\": 0.9125234640427566,\n            \"map50\": 0.9803214513110993,\n            \"map50_95\": 0.8057333564126574\n          },\n          \"pale_soil_patch\": {\n            \"precision\": 1.0,\n            \"recall\": 0.8808665340834423,\n            \"map50\": 0.9784349016629358,\n            \"map50_95\": 0.7276849183332701\n          },\n          \"yellow_crystal_rock\": {\n            \"precision\": 1.0,\n            \"recall\": 0.9430299057749205,\n            \"map50\": 0.990022222222222,\n            \"map50_95\": 0.9183169103553313\n          },\n          \"mudstone_slab\": {\n            \"precision\": 0.9222006793662731,\n            \"recall\": 1.0,\n            \"map50\": 0.9925000000000002,\n            \"map50_95\": 0.8605694444444445\n          }\n        },\n        \"speed_ms\": {\n          \"preprocess\": 0.6421702000079677,\n          \"inference\": 11.059976649703458,\n          \"loss\": 0.0013478798791766167,\n          \"postprocess\": 0.4617634500027634\n        },\n        \"precision_recall_definition\": \"Ultralytics mean-F1 operating point; AP confidence floor 0.001\"\n      }\n    },\n    \"test\": {\n      \"candidate\": {\n        \"frames\": 100,\n        \"settings\": {\n          \"imgsz\": 960,\n          \"batch\": 4,\n          \"device\": \"qualified ROCm GPU\",\n          \"half\": false,\n          \"rect\": false,\n          \"conf\": 0.001,\n          \"nms_iou\": 0.7,\n          \"max_det\": 300\n        },\n        \"overall\": {\n          \"metrics/precision(B)\": 0.9657938619867958,\n          \"metrics/recall(B)\": 0.8787801971805627,\n          \"metrics/mAP50(B)\": 0.9520368314705612,\n          \"metrics/mAP50-95(B)\": 0.7840817069365971,\n          \"fitness\": 0.7840817069365971\n        },\n        \"classes\": {\n          \"rock\": {\n            \"precision\": 0.9646119509589829,\n            \"recall\": 0.8928490578499342,\n            \"map50\": 0.9514414303672604,\n            \"map50_95\": 0.7613491361735872\n          },\n          \"pale_soil_patch\": {\n            \"precision\": 0.9745900863115055,\n            \"recall\": 0.868421052631579,\n            \"map50\": 0.9121007753811308,\n            \"map50_95\": 0.6860057967793087\n          },\n          \"yellow_crystal_rock\": {\n            \"precision\": 0.9802302417302867,\n            \"recall\": 0.9545454545454546,\n            \"map50\": 0.9895204402515723,\n            \"map50_95\": 0.966151416937182\n          },\n          \"mudstone_slab\": {\n            \"precision\": 0.9437431689464083,\n            \"recall\": 0.7993052236952832,\n            \"map50\": 0.9550846798822812,\n            \"map50_95\": 0.72282047785631\n          }\n        },\n        \"speed_ms\": {\n          \"preprocess\": 0.6660880296840332,\n          \"inference\": 10.727686789468862,\n          \"loss\": 0.001249849738087505,\n          \"postprocess\": 0.5038477291236632\n        },\n        \"precision_recall_definition\": \"Ultralytics mean-F1 operating point; AP confidence floor 0.001\"\n      },\n      \"baseline\": {\n        \"frames\": 100,\n        \"settings\": {\n          \"imgsz\": 960,\n          \"batch\": 4,\n          \"device\": \"qualified ROCm GPU\",\n          \"half\": false,\n          \"rect\": false,\n          \"conf\": 0.001,\n          \"nms_iou\": 0.7,\n          \"max_det\": 300\n        },\n        \"overall\": {\n          \"metrics/precision(B)\": 0.9406667049881744,\n          \"metrics/recall(B)\": 0.8739942104211449,\n          \"metrics/mAP50(B)\": 0.93984738593165,\n          \"metrics/mAP50-95(B)\": 0.7590501500981977,\n          \"fitness\": 0.7590501500981977\n        },\n        \"classes\": {\n          \"rock\": {\n            \"precision\": 0.9506716404221686,\n            \"recall\": 0.8940269749518305,\n            \"map50\": 0.9419459132142105,\n            \"map50_95\": 0.7305813084633365\n          },\n          \"pale_soil_patch\": {\n            \"precision\": 0.9412334486376993,\n            \"recall\": 0.8429846743687021,\n            \"map50\": 0.9089606709494857,\n            \"map50_95\": 0.6458834291035762\n          },\n          \"yellow_crystal_rock\": {\n            \"precision\": 1.0,\n            \"recall\": 0.9494413828402374,\n            \"map50\": 0.9908417508417509,\n            \"map50_95\": 0.9415240822447177\n          },\n          \"mudstone_slab\": {\n            \"precision\": 0.8707617308928297,\n            \"recall\": 0.8095238095238095,\n            \"map50\": 0.9176412087211525,\n            \"map50_95\": 0.7182117805811602\n          }\n        },\n        \"speed_ms\": {\n          \"preprocess\": 0.8192945897462778,\n          \"inference\": 10.722076140227728,\n          \"loss\": 0.001460349594708532,\n          \"postprocess\": 0.4935155308339745\n        },\n        \"precision_recall_definition\": \"Ultralytics mean-F1 operating point; AP confidence floor 0.001\"\n      }\n    }\n  }\n}\n"
+{
+  "created_utc": "2026-11-09T00:54:25.554548+00:00",
+  "checkpoint_epoch": 22,
+  "training_saved_epochs": 28,
+  "checkpoint_sha256": "90fca4a3e4fa702f213c044e7ac09fb0271a4e70d6b71ca670d7e0913da1793f",
+  "training_images": 5300,
+  "validation_images": 100,
+  "test_images": 100,
+  "human_review_complete": false,
+  "model_promoted": false,
+  "evidence": {
+    "npu/candidate-fp32-cpu-val.json": "2539ec536e4e77a9af980b83a469a867a1ee3150d0551e8a165db2e5abf89bb7",
+    "npu/candidate-npu-val.json": "b2274baf8463b0537da159466592eaa4a9bc6701452fb5053306e1ea00d0faf4",
+    "npu/baseline-npu-val.json": "aea61b632f8cea3bfacff01137af1b4b189123b5fbbfcff234ef96506ce95d33",
+    "gpu/candidate-val.json": "f1937dc5fe42195c38778e8b48f35bddef9624f868a50d9fdc947dda5d2336cc",
+    "gpu/baseline-val.json": "b597517cf8ccec8ade4c454194f6efe9655a8eb5e1ee5eba4dffc436f2738741",
+    "npu/candidate-fp32-cpu-test.json": "9876284462b8fb19580dbdc5fe351a329c51cd9a1d4892b88bdd83d0d75b21c2",
+    "npu/candidate-npu-test.json": "b961daacb785c4de6dbfb627dd9ec0b34e541e21c0f42b1d6231c659a13b775d",
+    "npu/baseline-npu-test.json": "072590489eefbf118010e456ff88a0895ab3ae593631c0e3f1d0ce35d2ec5f14",
+    "gpu/candidate-test.json": "c7ac446c058725ab9d0e5746b88cbae87f0e89f54d9847749a840ccf366e244a",
+    "gpu/baseline-test.json": "8a66c8dbac06fbb351ad71d11fa6c5b63fa75e3efcc2de39d355c79b00d3b1db"
+  },
+  "npu": {
+    "val": {
+      "candidate-fp32-cpu": {
+        "dataset": "d2e7e5bd418910d40625848a6872f1a9d635a3ebd7ae479421ce700f2fc9c6c6",
+        "frames": 100,
+        "metrics": {
+          "map50": 0.9760362378251887,
+          "map50_95": 0.8626641191220698,
+          "classes": {
+            "rock": {
+              "class_id": 0,
+              "instances": 511,
+              "map50": 0.9849292810434183,
+              "map50_95": 0.8524129834182268,
+              "recall_at_025": 0.9628180039138943,
+              "precision_at_025": 0.9628180039138943,
+              "true_positives_at_025": 492,
+              "predictions_at_025": 511
+            },
+            "pale_soil_patch": {
+              "class_id": 1,
+              "instances": 54,
+              "map50": 0.9852868471424665,
+              "map50_95": 0.7732353376569565,
+              "recall_at_025": 0.9814814814814815,
+              "precision_at_025": 0.9636363636363636,
+              "true_positives_at_025": 53,
+              "predictions_at_025": 55
+            },
+            "yellow_crystal_rock": {
+              "class_id": 2,
+              "instances": 42,
+              "map50": 0.9745348837209302,
+              "map50_95": 0.9529141309216194,
+              "recall_at_025": 0.9523809523809523,
+              "precision_at_025": 1,
+              "true_positives_at_025": 40,
+              "predictions_at_025": 40
+            },
+            "mudstone_slab": {
+              "class_id": 3,
+              "instances": 19,
+              "map50": 0.9593939393939396,
+              "map50_95": 0.8720940244914767,
+              "recall_at_025": 1,
+              "precision_at_025": 1,
+              "true_positives_at_025": 19,
+              "predictions_at_025": 19
+            }
+          },
+          "fixed_confidence": 0.25,
+          "fixed_iou": 0.5,
+          "ap_iou_thresholds": [
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7,
+            0.75,
+            0.8,
+            0.8500000000000001,
+            0.9,
+            0.95
+          ],
+          "ap_interpolation": "101-point precision envelope trapezoid",
+          "matching": "per-image class-aware greedy IoU, one-to-one"
+        },
+        "timings": {
+          "preprocess_ms": {
+            "count": 100,
+            "mean": 1.3721750379772857,
+            "median": 1.3508864940376952,
+            "p95": 1.5148969934671186
+          },
+          "execution_ms": {
+            "count": 100,
+            "mean": 45.46327965974342,
+            "median": 39.71019449818414,
+            "p95": 72.1494137236732
+          },
+          "postprocess_ms": {
+            "count": 100,
+            "mean": 0.9424289892194793,
+            "median": 0.8781840006122366,
+            "p95": 1.358407402585726
+          }
+        }
+      },
+      "candidate-npu": {
+        "dataset": "d2e7e5bd418910d40625848a6872f1a9d635a3ebd7ae479421ce700f2fc9c6c6",
+        "frames": 100,
+        "metrics": {
+          "map50": 0.9868216707108082,
+          "map50_95": 0.858195112655594,
+          "classes": {
+            "rock": {
+              "class_id": 0,
+              "instances": 511,
+              "map50": 0.9845661441226936,
+              "map50_95": 0.8472969590510638,
+              "recall_at_025": 0.9628180039138943,
+              "precision_at_025": 0.9628180039138943,
+              "true_positives_at_025": 492,
+              "predictions_at_025": 511
+            },
+            "pale_soil_patch": {
+              "class_id": 1,
+              "instances": 54,
+              "map50": 0.9936296296296296,
+              "map50_95": 0.7820444032255833,
+              "recall_at_025": 0.9814814814814815,
+              "precision_at_025": 0.9464285714285714,
+              "true_positives_at_025": 53,
+              "predictions_at_025": 56
+            },
+            "yellow_crystal_rock": {
+              "class_id": 2,
+              "instances": 42,
+              "map50": 0.9740909090909091,
+              "map50_95": 0.9525507829912023,
+              "recall_at_025": 0.9523809523809523,
+              "precision_at_025": 1,
+              "true_positives_at_025": 40,
+              "predictions_at_025": 40
+            },
+            "mudstone_slab": {
+              "class_id": 3,
+              "instances": 19,
+              "map50": 0.995,
+              "map50_95": 0.8508883053545266,
+              "recall_at_025": 1,
+              "precision_at_025": 1,
+              "true_positives_at_025": 19,
+              "predictions_at_025": 19
+            }
+          },
+          "fixed_confidence": 0.25,
+          "fixed_iou": 0.5,
+          "ap_iou_thresholds": [
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7,
+            0.75,
+            0.8,
+            0.8500000000000001,
+            0.9,
+            0.95
+          ],
+          "ap_interpolation": "101-point precision envelope trapezoid",
+          "matching": "per-image class-aware greedy IoU, one-to-one"
+        },
+        "timings": {
+          "preprocess_ms": {
+            "count": 100,
+            "mean": 0.828977499040775,
+            "median": 0.8104110020212829,
+            "p95": 0.8970719703938811
+          },
+          "execution_ms": {
+            "count": 100,
+            "mean": 23.600944871432148,
+            "median": 23.430162502336316,
+            "p95": 24.505203844455536
+          },
+          "postprocess_ms": {
+            "count": 100,
+            "mean": 0.968753699271474,
+            "median": 0.890377996256575,
+            "p95": 1.3580644605099224
+          }
+        }
+      },
+      "baseline-npu": {
+        "dataset": "d2e7e5bd418910d40625848a6872f1a9d635a3ebd7ae479421ce700f2fc9c6c6",
+        "frames": 100,
+        "metrics": {
+          "map50": 0.9790379583969658,
+          "map50_95": 0.8420315579151576,
+          "classes": {
+            "rock": {
+              "class_id": 0,
+              "instances": 511,
+              "map50": 0.9724292122122897,
+              "map50_95": 0.8193754586873785,
+              "recall_at_025": 0.974559686888454,
+              "precision_at_025": 0.9205175600739371,
+              "true_positives_at_025": 498,
+              "predictions_at_025": 541
+            },
+            "pale_soil_patch": {
+              "class_id": 1,
+              "instances": 54,
+              "map50": 0.9794226213755733,
+              "map50_95": 0.7522406597662086,
+              "recall_at_025": 0.9259259259259259,
+              "precision_at_025": 0.9615384615384616,
+              "true_positives_at_025": 50,
+              "predictions_at_025": 52
+            },
+            "yellow_crystal_rock": {
+              "class_id": 2,
+              "instances": 42,
+              "map50": 0.9717999999999999,
+              "map50_95": 0.9213403237275004,
+              "recall_at_025": 0.9523809523809523,
+              "precision_at_025": 0.975609756097561,
+              "true_positives_at_025": 40,
+              "predictions_at_025": 41
+            },
+            "mudstone_slab": {
+              "class_id": 3,
+              "instances": 19,
+              "map50": 0.9925000000000002,
+              "map50_95": 0.8751697894795427,
+              "recall_at_025": 1,
+              "precision_at_025": 0.76,
+              "true_positives_at_025": 19,
+              "predictions_at_025": 25
+            }
+          },
+          "fixed_confidence": 0.25,
+          "fixed_iou": 0.5,
+          "ap_iou_thresholds": [
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7,
+            0.75,
+            0.8,
+            0.8500000000000001,
+            0.9,
+            0.95
+          ],
+          "ap_interpolation": "101-point precision envelope trapezoid",
+          "matching": "per-image class-aware greedy IoU, one-to-one"
+        },
+        "timings": {
+          "preprocess_ms": {
+            "count": 100,
+            "mean": 0.7835520969820209,
+            "median": 0.7656570087419823,
+            "p95": 0.8584349401644431
+          },
+          "execution_ms": {
+            "count": 100,
+            "mean": 23.507262312050443,
+            "median": 23.45224699820392,
+            "p95": 24.259090951818507
+          },
+          "postprocess_ms": {
+            "count": 100,
+            "mean": 0.9560380392940715,
+            "median": 0.9457360138185322,
+            "p95": 1.3917969510657713
+          }
+        }
+      }
+    },
+    "test": {
+      "candidate-fp32-cpu": {
+        "dataset": "87f81fb9829be8a79decaf0bbebf3e79ccb796741c92d462c5fcbfa2fe5ab9f4",
+        "frames": 100,
+        "metrics": {
+          "map50": 0.93960726725665,
+          "map50_95": 0.7969356922430175,
+          "classes": {
+            "rock": {
+              "class_id": 0,
+              "instances": 519,
+              "map50": 0.9543722029912952,
+              "map50_95": 0.7875144165138881,
+              "recall_at_025": 0.9248554913294798,
+              "precision_at_025": 0.9248554913294798,
+              "true_positives_at_025": 480,
+              "predictions_at_025": 519
+            },
+            "pale_soil_patch": {
+              "class_id": 1,
+              "instances": 76,
+              "map50": 0.9102617139037683,
+              "map50_95": 0.7187039679872458,
+              "recall_at_025": 0.868421052631579,
+              "precision_at_025": 0.9295774647887324,
+              "true_positives_at_025": 66,
+              "predictions_at_025": 71
+            },
+            "yellow_crystal_rock": {
+              "class_id": 2,
+              "instances": 44,
+              "map50": 0.9759999999999999,
+              "map50_95": 0.9624958351761757,
+              "recall_at_025": 0.9545454545454546,
+              "precision_at_025": 1,
+              "true_positives_at_025": 42,
+              "predictions_at_025": 42
+            },
+            "mudstone_slab": {
+              "class_id": 3,
+              "instances": 21,
+              "map50": 0.9177951521315365,
+              "map50_95": 0.7190285492947608,
+              "recall_at_025": 0.8095238095238095,
+              "precision_at_025": 0.8947368421052632,
+              "true_positives_at_025": 17,
+              "predictions_at_025": 19
+            }
+          },
+          "fixed_confidence": 0.25,
+          "fixed_iou": 0.5,
+          "ap_iou_thresholds": [
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7,
+            0.75,
+            0.8,
+            0.8500000000000001,
+            0.9,
+            0.95
+          ],
+          "ap_interpolation": "101-point precision envelope trapezoid",
+          "matching": "per-image class-aware greedy IoU, one-to-one"
+        },
+        "timings": {
+          "preprocess_ms": {
+            "count": 100,
+            "mean": 1.4391092196456157,
+            "median": 1.3855004945071414,
+            "p95": 1.6002019896404818
+          },
+          "execution_ms": {
+            "count": 100,
+            "mean": 42.35213514970383,
+            "median": 38.488403501105495,
+            "p95": 56.7986319787451
+          },
+          "postprocess_ms": {
+            "count": 100,
+            "mean": 1.0369269491638988,
+            "median": 0.9921044984366745,
+            "p95": 1.5772359925904311
+          }
+        }
+      },
+      "candidate-npu": {
+        "dataset": "87f81fb9829be8a79decaf0bbebf3e79ccb796741c92d462c5fcbfa2fe5ab9f4",
+        "frames": 100,
+        "metrics": {
+          "map50": 0.9407125162301976,
+          "map50_95": 0.7889923780402408,
+          "classes": {
+            "rock": {
+              "class_id": 0,
+              "instances": 519,
+              "map50": 0.9557080794925605,
+              "map50_95": 0.7861228429720011,
+              "recall_at_025": 0.9248554913294798,
+              "precision_at_025": 0.9302325581395349,
+              "true_positives_at_025": 480,
+              "predictions_at_025": 516
+            },
+            "pale_soil_patch": {
+              "class_id": 1,
+              "instances": 76,
+              "map50": 0.9226922378918222,
+              "map50_95": 0.714485024340037,
+              "recall_at_025": 0.868421052631579,
+              "precision_at_025": 0.9166666666666666,
+              "true_positives_at_025": 66,
+              "predictions_at_025": 72
+            },
+            "yellow_crystal_rock": {
+              "class_id": 2,
+              "instances": 44,
+              "map50": 0.9755333333333333,
+              "map50_95": 0.9558931808280636,
+              "recall_at_025": 0.9545454545454546,
+              "precision_at_025": 1,
+              "true_positives_at_025": 42,
+              "predictions_at_025": 42
+            },
+            "mudstone_slab": {
+              "class_id": 3,
+              "instances": 21,
+              "map50": 0.908916414203074,
+              "map50_95": 0.6994684640208615,
+              "recall_at_025": 0.8095238095238095,
+              "precision_at_025": 0.8947368421052632,
+              "true_positives_at_025": 17,
+              "predictions_at_025": 19
+            }
+          },
+          "fixed_confidence": 0.25,
+          "fixed_iou": 0.5,
+          "ap_iou_thresholds": [
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7,
+            0.75,
+            0.8,
+            0.8500000000000001,
+            0.9,
+            0.95
+          ],
+          "ap_interpolation": "101-point precision envelope trapezoid",
+          "matching": "per-image class-aware greedy IoU, one-to-one"
+        },
+        "timings": {
+          "preprocess_ms": {
+            "count": 100,
+            "mean": 0.8280098481918685,
+            "median": 0.7890870037954301,
+            "p95": 1.0048819895018808
+          },
+          "execution_ms": {
+            "count": 100,
+            "mean": 23.463255990936887,
+            "median": 23.304886504774913,
+            "p95": 24.216035412973724
+          },
+          "postprocess_ms": {
+            "count": 100,
+            "mean": 0.9997946402290836,
+            "median": 0.9508560033282265,
+            "p95": 1.6489820045535453
+          }
+        }
+      },
+      "baseline-npu": {
+        "dataset": "87f81fb9829be8a79decaf0bbebf3e79ccb796741c92d462c5fcbfa2fe5ab9f4",
+        "frames": 100,
+        "metrics": {
+          "map50": 0.9239446406268164,
+          "map50_95": 0.766653666923041,
+          "classes": {
+            "rock": {
+              "class_id": 0,
+              "instances": 519,
+              "map50": 0.9281989262733988,
+              "map50_95": 0.7347561432882675,
+              "recall_at_025": 0.9210019267822736,
+              "precision_at_025": 0.8754578754578755,
+              "true_positives_at_025": 478,
+              "predictions_at_025": 546
+            },
+            "pale_soil_patch": {
+              "class_id": 1,
+              "instances": 76,
+              "map50": 0.8896001849644154,
+              "map50_95": 0.6645612964080349,
+              "recall_at_025": 0.8552631578947368,
+              "precision_at_025": 0.9027777777777778,
+              "true_positives_at_025": 65,
+              "predictions_at_025": 72
+            },
+            "yellow_crystal_rock": {
+              "class_id": 2,
+              "instances": 44,
+              "map50": 0.9579599999999999,
+              "map50_95": 0.9305715388735607,
+              "recall_at_025": 0.9318181818181818,
+              "precision_at_025": 1,
+              "true_positives_at_025": 41,
+              "predictions_at_025": 41
+            },
+            "mudstone_slab": {
+              "class_id": 3,
+              "instances": 21,
+              "map50": 0.9200194512694513,
+              "map50_95": 0.7367256891223012,
+              "recall_at_025": 0.8095238095238095,
+              "precision_at_025": 0.8095238095238095,
+              "true_positives_at_025": 17,
+              "predictions_at_025": 21
+            }
+          },
+          "fixed_confidence": 0.25,
+          "fixed_iou": 0.5,
+          "ap_iou_thresholds": [
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7,
+            0.75,
+            0.8,
+            0.8500000000000001,
+            0.9,
+            0.95
+          ],
+          "ap_interpolation": "101-point precision envelope trapezoid",
+          "matching": "per-image class-aware greedy IoU, one-to-one"
+        },
+        "timings": {
+          "preprocess_ms": {
+            "count": 100,
+            "mean": 0.773734547838103,
+            "median": 0.75244800245855,
+            "p95": 0.8470560584100895
+          },
+          "execution_ms": {
+            "count": 100,
+            "mean": 23.17392802098766,
+            "median": 23.15956199890934,
+            "p95": 23.896362505911384
+          },
+          "postprocess_ms": {
+            "count": 100,
+            "mean": 1.035876160603948,
+            "median": 1.0258380061713979,
+            "p95": 1.6235519025940446
+          }
+        }
+      }
+    }
+  },
+  "gpu": {
+    "val": {
+      "candidate": {
+        "frames": 100,
+        "settings": {
+          "imgsz": 960,
+          "batch": 4,
+          "device": "qualified ROCm GPU",
+          "half": false,
+          "rect": false,
+          "conf": 0.001,
+          "nms_iou": 0.7,
+          "max_det": 300
+        },
+        "overall": {
+          "metrics/precision(B)": 0.9912713025992033,
+          "metrics/recall(B)": 0.9708402203893087,
+          "metrics/mAP50(B)": 0.9884188600876949,
+          "metrics/mAP50-95(B)": 0.8497653284458867,
+          "fitness": 0.8497653284458867
+        },
+        "classes": {
+          "rock": {
+            "precision": 0.975297806819261,
+            "recall": 0.9373776908023483,
+            "map50": 0.9810482638400246,
+            "map50_95": 0.8248084295354493
+          },
+          "pale_soil_patch": {
+            "precision": 0.989787403577552,
+            "recall": 0.9814814814814815,
+            "map50": 0.9943103448275862,
+            "map50_95": 0.7607316547441946
+          },
+          "yellow_crystal_rock": {
+            "precision": 1,
+            "recall": 0.9680227308285599,
+            "map50": 0.9833168316831683,
+            "map50_95": 0.9432355152181886
+          },
+          "mudstone_slab": {
+            "precision": 1,
+            "recall": 0.9964789784448453,
+            "map50": 0.995,
+            "map50_95": 0.8702857142857143
+          }
+        },
+        "speed_ms": {
+          "preprocess": 0.8577450306620449,
+          "inference": 10.733093850139994,
+          "loss": 0.0013971497537568212,
+          "postprocess": 0.4902620398206637
+        },
+        "precision_recall_definition": "Ultralytics mean-F1 operating point; AP confidence floor 0.001"
+      },
+      "baseline": {
+        "frames": 100,
+        "settings": {
+          "imgsz": 960,
+          "batch": 4,
+          "device": "qualified ROCm GPU",
+          "half": false,
+          "rect": false,
+          "conf": 0.001,
+          "nms_iou": 0.7,
+          "max_det": 300
+        },
+        "overall": {
+          "metrics/precision(B)": 0.9758163080670578,
+          "metrics/recall(B)": 0.9341049759752799,
+          "metrics/mAP50(B)": 0.9853196437990643,
+          "metrics/mAP50-95(B)": 0.8280761573864257,
+          "fitness": 0.8280761573864257
+        },
+        "classes": {
+          "rock": {
+            "precision": 0.9810645529019577,
+            "recall": 0.9125234640427566,
+            "map50": 0.9803214513110993,
+            "map50_95": 0.8057333564126574
+          },
+          "pale_soil_patch": {
+            "precision": 1,
+            "recall": 0.8808665340834423,
+            "map50": 0.9784349016629358,
+            "map50_95": 0.7276849183332701
+          },
+          "yellow_crystal_rock": {
+            "precision": 1,
+            "recall": 0.9430299057749205,
+            "map50": 0.990022222222222,
+            "map50_95": 0.9183169103553313
+          },
+          "mudstone_slab": {
+            "precision": 0.9222006793662731,
+            "recall": 1,
+            "map50": 0.9925000000000002,
+            "map50_95": 0.8605694444444445
+          }
+        },
+        "speed_ms": {
+          "preprocess": 0.6421702000079677,
+          "inference": 11.059976649703458,
+          "loss": 0.0013478798791766167,
+          "postprocess": 0.4617634500027634
+        },
+        "precision_recall_definition": "Ultralytics mean-F1 operating point; AP confidence floor 0.001"
+      }
+    },
+    "test": {
+      "candidate": {
+        "frames": 100,
+        "settings": {
+          "imgsz": 960,
+          "batch": 4,
+          "device": "qualified ROCm GPU",
+          "half": false,
+          "rect": false,
+          "conf": 0.001,
+          "nms_iou": 0.7,
+          "max_det": 300
+        },
+        "overall": {
+          "metrics/precision(B)": 0.9657938619867958,
+          "metrics/recall(B)": 0.8787801971805627,
+          "metrics/mAP50(B)": 0.9520368314705612,
+          "metrics/mAP50-95(B)": 0.7840817069365971,
+          "fitness": 0.7840817069365971
+        },
+        "classes": {
+          "rock": {
+            "precision": 0.9646119509589829,
+            "recall": 0.8928490578499342,
+            "map50": 0.9514414303672604,
+            "map50_95": 0.7613491361735872
+          },
+          "pale_soil_patch": {
+            "precision": 0.9745900863115055,
+            "recall": 0.868421052631579,
+            "map50": 0.9121007753811308,
+            "map50_95": 0.6860057967793087
+          },
+          "yellow_crystal_rock": {
+            "precision": 0.9802302417302867,
+            "recall": 0.9545454545454546,
+            "map50": 0.9895204402515723,
+            "map50_95": 0.966151416937182
+          },
+          "mudstone_slab": {
+            "precision": 0.9437431689464083,
+            "recall": 0.7993052236952832,
+            "map50": 0.9550846798822812,
+            "map50_95": 0.72282047785631
+          }
+        },
+        "speed_ms": {
+          "preprocess": 0.6660880296840332,
+          "inference": 10.727686789468862,
+          "loss": 0.001249849738087505,
+          "postprocess": 0.5038477291236632
+        },
+        "precision_recall_definition": "Ultralytics mean-F1 operating point; AP confidence floor 0.001"
+      },
+      "baseline": {
+        "frames": 100,
+        "settings": {
+          "imgsz": 960,
+          "batch": 4,
+          "device": "qualified ROCm GPU",
+          "half": false,
+          "rect": false,
+          "conf": 0.001,
+          "nms_iou": 0.7,
+          "max_det": 300
+        },
+        "overall": {
+          "metrics/precision(B)": 0.9406667049881744,
+          "metrics/recall(B)": 0.8739942104211449,
+          "metrics/mAP50(B)": 0.93984738593165,
+          "metrics/mAP50-95(B)": 0.7590501500981977,
+          "fitness": 0.7590501500981977
+        },
+        "classes": {
+          "rock": {
+            "precision": 0.9506716404221686,
+            "recall": 0.8940269749518305,
+            "map50": 0.9419459132142105,
+            "map50_95": 0.7305813084633365
+          },
+          "pale_soil_patch": {
+            "precision": 0.9412334486376993,
+            "recall": 0.8429846743687021,
+            "map50": 0.9089606709494857,
+            "map50_95": 0.6458834291035762
+          },
+          "yellow_crystal_rock": {
+            "precision": 1,
+            "recall": 0.9494413828402374,
+            "map50": 0.9908417508417509,
+            "map50_95": 0.9415240822447177
+          },
+          "mudstone_slab": {
+            "precision": 0.8707617308928297,
+            "recall": 0.8095238095238095,
+            "map50": 0.9176412087211525,
+            "map50_95": 0.7182117805811602
+          }
+        },
+        "speed_ms": {
+          "preprocess": 0.8192945897462778,
+          "inference": 10.722076140227728,
+          "loss": 0.001460349594708532,
+          "postprocess": 0.4935155308339745
+        },
+        "precision_recall_definition": "Ultralytics mean-F1 operating point; AP confidence floor 0.001"
+      }
+    }
+  }
+}
