@@ -1,0 +1,72 @@
+{
+  "status": "STATIONARY_INTERVAL_VERIFIED",
+  "errors": [],
+  "started_utc": "2026-11-10T22:09:11.533Z",
+  "steady_started_utc": "2026-11-10T22:09:41.533Z",
+  "ended_utc": "2026-11-10T22:14:41.533Z",
+  "warmup_seconds": 30,
+  "steady_seconds": 300,
+  "maximum_status_gap_seconds": 1.014,
+  "records": 330,
+  "observer_handoff": "Second observer started before first bounded observer expired. Analysis switches sources at 22:14:30 UTC; original single-input measurement retained; neither raw log modified. Hashed complete-line snapshots saved beside summary.",
+  "temperature_c": {
+    "n": 299,
+    "min": 78.5,
+    "max": 83.125,
+    "mean": 80.82190635451505,
+    "median": 80.875
+  },
+  "rolling_publication_p95_ms": {
+    "n": 299,
+    "min": 157.99871305005126,
+    "max": 165.64685499997722,
+    "mean": 161.94129449831212,
+    "median": 162.13804304989023
+  },
+  "reported_rtf": {
+    "n": 299,
+    "min": 0.9932853020963759,
+    "max": 0.9975171236041598,
+    "mean": 0.9958833971024066,
+    "median": 0.9960350159091702
+  },
+  "historical_guard_fault": {
+    "reason": "invalid_odometry",
+    "sim_time": 0.026,
+    "detail": {
+      "depth_age_seconds": null,
+      "pose_age_seconds": null,
+      "clock_age_seconds": 0.0008141560001604375,
+      "last_valid_pose": null,
+      "pose_stamp": null,
+      "odometry": {
+        "stamp": 0.004,
+        "frame": "odom",
+        "child_frame": "base_link",
+        "covariance_diagonal": [
+          19998,
+          19998,
+          19998,
+          19998,
+          19998,
+          19998
+        ]
+      }
+    }
+  },
+  "below_80_steady": false,
+  "latency_target_met": true,
+  "matched_baseline": false,
+  "motion_requested": false,
+  "autonomous_or_endurance_qualification": false,
+  "input_snapshots": [
+    {
+      "snapshot": "input-0.jsonl",
+      "sha256": "15937de9080c90419ccf8a72517c4cddf22606168a07bfb70f4ebbeaab18b7c1"
+    },
+    {
+      "snapshot": "input-1.jsonl",
+      "sha256": "e1b6e80ae5eee80d4fc170d53f14080ed4526578117ecd320bbc68b65efd1cf1"
+    }
+  ]
+}

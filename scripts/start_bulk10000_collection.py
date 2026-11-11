@@ -13,12 +13,13 @@ import sys
 import bulk10000_plan as policy
 import start_pilot200_collection as pilot
 from bulk_guarded_step import retry_session_scan
+from desktop_render_guard import DesktopUnavailable, stop_path
 
 CONTROL = Path(__file__).resolve().parent
 LATEST = CONTROL/'LATEST_COLLECTION.path'
 TRANSFER = ('start_bulk10000_collection.py', 'bulk10000_capture_worker.py',
             'bulk10000_plan.py', 'pilot200_capture_worker.py', 'process_cleanup.py',
-            'pilot200_environment_v2.json','bulk_guarded_step.py')
+            'pilot200_environment_v2.json','bulk_guarded_step.py','desktop_render_guard.py')
 
 
 def capture_application(pins):
@@ -213,7 +214,11 @@ def execute_batch(root, batch, plan_sha, pins, kit, case, trial, application=Non
         batch=batch['id'], runtime_version=2,capture_application=str(application),
         capture_runtime_sha256=policy.sha(runtime) if runtime.exists() else None,
         source_sha256={name:policy.sha(run/name) for name in TRANSFER}))
-    display, authority = pilot.desktop_authority()
+    try:
+        display, authority = pilot.desktop_authority()
+    except DesktopUnavailable as error:
+        atomic(root/'PROGRESS.json', dict(stage='DESKTOP_RECONNECT_REQUIRED', batch=batch['id'], reason=str(error)))
+        raise
     name = 'rover-bulk10000-'+stamp.lower()
     command = ['docker','run','--rm','--init','--name',name,'--network','host',
         '--shm-size=1g','--user',f'{os.getuid()}:{os.getgid()}', '--device','/dev/dri','--group-add','992']
@@ -244,7 +249,13 @@ def execute_batch(root, batch, plan_sha, pins, kit, case, trial, application=Non
     finally:
         authority.unlink(missing_ok=True)
     if code:
-        atomic(root/'PROGRESS.json',dict(stage='STOPPED_REVIEW_LOG', batch=batch['id'],
+        desktop_stop = stop_path(folder, run/'INVOCATION.json')
+        detail = dict(stage='STOPPED_REVIEW_LOG')
+        if desktop_stop.exists():
+            value = json.loads(desktop_stop.read_text())
+            if value.get('stage') == 'DESKTOP_RECONNECT_REQUIRED':
+                detail = dict(stage=value['stage'], reason=value['reason'], desktop_stop=str(desktop_stop))
+        atomic(root/'PROGRESS.json',dict(**detail, batch=batch['id'],
             progress_log=str(run/'guarded-step/log.txt'), exit_code=code))
         print('Outputs preserved. Close monitoring with halo-rover finish before a fresh session.',flush=True)
         return code

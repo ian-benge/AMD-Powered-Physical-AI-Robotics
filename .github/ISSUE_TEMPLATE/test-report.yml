@@ -1,0 +1,35 @@
+name: Testing report
+description: Report an AMD/platform test result, regression or reproduction failure.
+title: "[Testing] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        See docs/AMD_TESTING_GUIDE.md for entry points and acceptance limits.
+        This is a public repository. Review logs for credentials and host/network details before attaching them.
+  - type: input
+    id: revision
+    attributes:
+      label: Commit SHA and test command
+      placeholder: "git rev-parse HEAD; command used"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and artifact identities
+      description: OS/kernel, hardware, ROS/Gazebo, Python, ROCm/Ryzen AI versions, model/export hashes and scene/seed where applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and observed result
+      description: Include reproduction steps, UTC interval, failures, skipped checks and whether workloads shut down cleanly.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs and measurements
+      description: Add reviewed logs or artifact links. For live runs include temperature, sensor freshness, mapping latency and reported real-time factor. State the scope of each metric.

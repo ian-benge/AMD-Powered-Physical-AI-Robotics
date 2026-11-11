@@ -92,6 +92,9 @@ def classify_completion(before, after, code):
     if after.get('collection') != before.get('collection') or current < previous:
         raise RuntimeError('Campaign identity/progress changed')
     if code != 0:
+        if after.get('progress', {}).get('stage') == 'DESKTOP_RECONNECT_REQUIRED':
+            raise RuntimeError('DESKTOP_RECONNECT_REQUIRED: reconnect the Halo graphical desktop, then resume; '
+                               'outputs retained; no automatic retry')
         raise RuntimeError('Collector failed or was interrupted; outputs retained; no automatic retry')
     stage = after.get('progress', {}).get('stage')
     if stage == 'FULL10000_CAPTURE_COMPLETE_PENDING_REVIEW' and current == 10000:

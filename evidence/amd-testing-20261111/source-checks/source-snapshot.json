@@ -1,0 +1,1233 @@
+{
+  "files": [
+    {
+      "path": "config/portfolio_demo.json",
+      "sha256": "4a2aa3420607589c76ee05d966b08736e6afde3a6eea0989f050b784cc40db64"
+    },
+    {
+      "path": "config/rendering/phase1_ogre_candidate.json",
+      "sha256": "4afca2e06b0d2e6a41bc64d402655758e0ee89314f00b72996ccc86726b05781"
+    },
+    {
+      "path": "requirements-test.txt",
+      "sha256": "805dc34c5e20f779d0e66c260cebca2c7f80e995ff368c959020b3dc0fa1af72"
+    },
+    {
+      "path": "scripts/autonomous_demo_assess.py",
+      "sha256": "0bcb616aa8debd87a709c8861de944e356d09fb2205e062a7d0be6bb1ef08577"
+    },
+    {
+      "path": "scripts/autonomous_demo_reboot_recovery.py",
+      "sha256": "095dfbbf53dabec1b184fe7a98ac0ebbd2f734a34d5c8830e9e0f55a4b497e9f"
+    },
+    {
+      "path": "scripts/bulk10000_capture_worker.py",
+      "sha256": "ad6fc39d260e175260b50feb01bc03192475ab7f386522ce65989713f290c43a"
+    },
+    {
+      "path": "scripts/bulk10000_plan.py",
+      "sha256": "130882441ff51291b7c471c300fb6126895de9e0716435f72884a7a357d49082"
+    },
+    {
+      "path": "scripts/bulk10000_reboot_recovery.py",
+      "sha256": "24661b2d2f9b5a6a493afec1966bbffe27fabcffb898ee6d45054d2f7b65eadb"
+    },
+    {
+      "path": "scripts/bulk_guarded_step.py",
+      "sha256": "be7cac1ff6dcff535145597d3d92c29326f168c093a66129a0079575576ce9fc"
+    },
+    {
+      "path": "scripts/capture5000_assess.py",
+      "sha256": "1599c4ad8285a7efd769c8818957e01e49bda9811ec0659e7a6d20837eaad9ab"
+    },
+    {
+      "path": "scripts/capture5000_evaluate.py",
+      "sha256": "7f175efb9c53372ad0c4ba2220bd2d035f18d61ac98474d38f2533368809eb1f"
+    },
+    {
+      "path": "scripts/capture5000_stage.py",
+      "sha256": "c64502b5ae7be57922dcb9f7436dded97ad980b3418478353663d9353d510619"
+    },
+    {
+      "path": "scripts/capture_plan.sh",
+      "sha256": "37cc72c1ad66b3199419724aef9e31c3a093cc8baefc8909d21caaad3e42c79a"
+    },
+    {
+      "path": "scripts/capture_training_dataset.py",
+      "sha256": "f4b804ae743d756a117374601bcee606145290f238a19cb4c98654a68f0cac03"
+    },
+    {
+      "path": "scripts/capture_training_worker.py",
+      "sha256": "fac467bfb1e58f22f3916d72c5c3c2d2aa79efb0af9f9bcc06a5ced8b7935f40"
+    },
+    {
+      "path": "scripts/check_autonomous_demo_launch.py",
+      "sha256": "19829b72bd5b9d9d6f4c0234f55d1b2625e1c446c4d48dc33afb44d384f594a5"
+    },
+    {
+      "path": "scripts/demo_exterior_view.py",
+      "sha256": "9de6e437d1cb46e8b3860a3264d3b7dfbf2975ece76154af43fb7140aaaba94f"
+    },
+    {
+      "path": "scripts/desktop_render_guard.py",
+      "sha256": "bcd3c813cf21a382b43a98833dfce2cb7128dff2bed6a5dbb29540ce5f35fff2"
+    },
+    {
+      "path": "scripts/edit_autonomous_demo.py",
+      "sha256": "615913f56892076b3b0b46364004dd29beb57005e63f76ce3ac1624fa2b1e0e0"
+    },
+    {
+      "path": "scripts/environment_v2_diagnostics.py",
+      "sha256": "dc79a296685a4994a0a1900d46d966784b73f2f345ea5ce8a02fa8fdff2a5cd9"
+    },
+    {
+      "path": "scripts/environment_v2_mapping_suite.py",
+      "sha256": "397f3e1465d075d32924ee0b5356d8f9116e253c65734909d6ed3f0d6ffad851"
+    },
+    {
+      "path": "scripts/environment_v2_publication_benchmark.py",
+      "sha256": "bfc6a703dc2cca2daab4904f81ff99b5183662dad2766a763c9d93792995e7f2"
+    },
+    {
+      "path": "scripts/environment_v2_qualify.py",
+      "sha256": "d7d0f68d6734cc623691e322dffd736c30b092021322b55a4d878c376f59f4e7"
+    },
+    {
+      "path": "scripts/environment_v2_review_rendered.py",
+      "sha256": "7712f6e37fd60cc13eef7599068705f8be1f1e10a2a07675a4066769b18261cf"
+    },
+    {
+      "path": "scripts/environment_v2_review_run.py",
+      "sha256": "e6aaece82fb7dc6bdb2e86c4cf7d42afdf8d83a37946d5652e9b494be4a880ef"
+    },
+    {
+      "path": "scripts/environment_v2_supervise_live.py",
+      "sha256": "6eceadd41fb643547d1173e34989a5b564eae3811746454589c881c5c9feac4f"
+    },
+    {
+      "path": "scripts/environment_v2_terrain.py",
+      "sha256": "9318f620d2116d25c97e680137f8168b0bbc4b564219dc07003e8f9c814fb17e"
+    },
+    {
+      "path": "scripts/environment_v2_texture_probe.py",
+      "sha256": "b695362913ed932200b094fad513694a0e0561890c72a0c6442beed5831b6d80"
+    },
+    {
+      "path": "scripts/export_autonomous_demo.py",
+      "sha256": "37abf1fd8c6bed69c4a10b5dab999f5d5e77fcee3ee0a3d3e64d89691a9ae120"
+    },
+    {
+      "path": "scripts/halo_live_sim.sh",
+      "sha256": "e63f4d23f5d62b26071e40553d13378ac7d01993f0681f30649c61e994d99452"
+    },
+    {
+      "path": "scripts/halo_live_vision.sh",
+      "sha256": "93810b9714ba949fda378f141e96851a0ae7b71d2ffbf9343ce252171b1d3d48"
+    },
+    {
+      "path": "scripts/halo_navigation.sh",
+      "sha256": "d07a320096cb9b043388a6cfa9de102f118864c622ff3de881355084f75c7241"
+    },
+    {
+      "path": "scripts/halo_navigation_capture.py",
+      "sha256": "6c6a0653565250b095204a37c68cae394e522dc43b9f634331127ad0283b144a"
+    },
+    {
+      "path": "scripts/halo_navigation_coverage_check.py",
+      "sha256": "1ad5933b4b698e1cf90b910e4bbb9e3e6e7bdeda2f74d72bdc40119910412076"
+    },
+    {
+      "path": "scripts/halo_navigation_detection_check.py",
+      "sha256": "b30725f2787ef58ca310eedcb91c75647c551381ec12d4be2d258c1cee7fbef2"
+    },
+    {
+      "path": "scripts/halo_navigation_detector.sh",
+      "sha256": "d672e28c961c7a9c62d9c53af63845bd1718be419f444bdbf00e66e96e12c35d"
+    },
+    {
+      "path": "scripts/halo_navigation_manual_check.py",
+      "sha256": "3aeb4409803ee99ee94c4e71d2444ba260d84601e116dc574c16c53d77f19858"
+    },
+    {
+      "path": "scripts/halo_navigation_map_check.py",
+      "sha256": "0b02af09978c1640febf1105c6127986057b22951cade43d4bbf85f83b265586"
+    },
+    {
+      "path": "scripts/halo_navigation_mission_check.py",
+      "sha256": "2ed3b5cff8d539847d3e23d37699d436b22d44eff0d9fa6638f8c11893c3ba45"
+    },
+    {
+      "path": "scripts/halo_navigation_scene_control.sh",
+      "sha256": "acfa9d8590d443a7f7d441ef639848b078b4cb873ee74b0cd11dd6a688ec44cd"
+    },
+    {
+      "path": "scripts/halo_navigation_sensor_timing.py",
+      "sha256": "f0d732d88011172195033daa93097a59c6de2508b4902aaa379004c423a7cfe3"
+    },
+    {
+      "path": "scripts/halo_navigation_smoke.py",
+      "sha256": "bbbd13e99c59483ac0acde3ba61b28eb76b93750b0ecf7a3e2a7b72f1c2f50cc"
+    },
+    {
+      "path": "scripts/halo_navigation_terrain_audit.py",
+      "sha256": "bb2ef5014a468b2149504b6799c58ff6fb7b5f7cb4b678ebc3a16626c1ac6efe"
+    },
+    {
+      "path": "scripts/halo_navigation_tracking_check.py",
+      "sha256": "13583f89d1db3b0dfc1e3267d941f1e279cc6de01de7e907b98289a78d0e200d"
+    },
+    {
+      "path": "scripts/halo_navigation_tracking_replay.py",
+      "sha256": "fa5b8c208e4638ddf09e7409e71f2fa6e523efc279fdca44cea55c1a8cc7ed86"
+    },
+    {
+      "path": "scripts/halo_navigation_turn_check.py",
+      "sha256": "caa02561dc9cab4b2351046093beb73a898b2ac476c4daaf6f0c0b0f1bd48c83"
+    },
+    {
+      "path": "scripts/halo_npu_env.sh",
+      "sha256": "bd3bcb0e965259f1d6ce851675d0f201219a47da12ade6da4518467e1b1607aa"
+    },
+    {
+      "path": "scripts/halo_terrain_gpu.sh",
+      "sha256": "25e6f92ca7312a5f075805d2b7cf85bfcc450f34a9725479d2fc43bfea674815"
+    },
+    {
+      "path": "scripts/halo_terrain_gpu_check.py",
+      "sha256": "53501d358212744ac00b400e0269a1ec582a7746b40f1dae3d5fa8952b22f9ac"
+    },
+    {
+      "path": "scripts/halo_train_fourclass.sh",
+      "sha256": "ef548cb7eb549856f701b1837320a0bf038e1912cc65d4a91f185317adae14dd"
+    },
+    {
+      "path": "scripts/halo_train_npu_fallback.sh",
+      "sha256": "5e457a49a326f64865dfe3543157658e67c060314627c52c4bffb628758fa464"
+    },
+    {
+      "path": "scripts/halo_update_npu_firmware.sh",
+      "sha256": "c3d98a8c3c238269da1b3f7d9a8a9aa1b877e1141967482c6fd456266ed0cf68"
+    },
+    {
+      "path": "scripts/install_autonomous_demo_runtime.py",
+      "sha256": "e678d561c75ad2b4470d996e6b6ecdfdcdc0e728679e1791644ab1653c017351"
+    },
+    {
+      "path": "scripts/navigation_browser_check.cjs",
+      "sha256": "82e7e2c97b2b3c1de36c476fa5ee1f15c54ad1b53d92309e21b6256838e83c82"
+    },
+    {
+      "path": "scripts/navigation_speed_browser_check.cjs",
+      "sha256": "ea9343aaac28c20e845db579589a73eda70a6300eb9685872b604d85d3afeaee"
+    },
+    {
+      "path": "scripts/package_halo_live.py",
+      "sha256": "cc55cb48f6ca026c2689afef219b59d82bc60daeb62ffc66fe750a7482348e58"
+    },
+    {
+      "path": "scripts/phase1_analyze_fixture.py",
+      "sha256": "640848f371b417fcac9d151c3a62bcfd6fd306b5fc9a5319ff5b76b243c6f253"
+    },
+    {
+      "path": "scripts/phase1_build_candidate.py",
+      "sha256": "5ccf4fbb431459b420ba7289a51937ce1d5a94d063adaf945b4313f7c78e8dc6"
+    },
+    {
+      "path": "scripts/phase1_capture_fixture.py",
+      "sha256": "cf59e6f95802a0ee6d8a749fcffbab49235babae5869da3ae18320102be7b0fc"
+    },
+    {
+      "path": "scripts/phase1_evaluate_visibility.py",
+      "sha256": "2f6fea440960774245ff55602d5cc25497d415773443e84f65b27816c84d1515"
+    },
+    {
+      "path": "scripts/phase1_fixture_container.sh",
+      "sha256": "adef3d19c8095ac2169ecdb0f3a20a0097d9fc7dcb38b06d234da61597173886"
+    },
+    {
+      "path": "scripts/phase1_fixture_trials.sh",
+      "sha256": "ad9929b0d0040a58d93c22a5be63d7352e362a121d07b2094fd70435c03cd26b"
+    },
+    {
+      "path": "scripts/phase1_log_watch.py",
+      "sha256": "75f49bc513dc1347c0601be8244752345487ee60375737fe92c82269953b89f8"
+    },
+    {
+      "path": "scripts/phase1_pose_controller.py",
+      "sha256": "59673100bd5243dbb652286a837c38fcef0c045b7b27b51467ae224bc3a90211"
+    },
+    {
+      "path": "scripts/phase1_pose_sync.py",
+      "sha256": "e6388802b6066ff3057d225985a8d861235a9841118dd455b057eaa82ec3ed24"
+    },
+    {
+      "path": "scripts/phase1_renderer_provenance.py",
+      "sha256": "1443463a25d7ef38cd046ac72f08c55b219cff387763e0e2f32355e222080680"
+    },
+    {
+      "path": "scripts/phase1_run_fixture.py",
+      "sha256": "95621a197e620075461de697c7a076e51cf1d62ad5fdc8e458faca695f10bcc4"
+    },
+    {
+      "path": "scripts/phase1_supervise_live.py",
+      "sha256": "6dbefa09e668cccbd5d383da151efae3ad37fc8e7ded4d6a766a3c3d512c87de"
+    },
+    {
+      "path": "scripts/phase1_visibility_fixture.py",
+      "sha256": "fa4de5446852df7e82d9c06de167710b16926a7f4ecab2b2f7c3d81dd6da9859"
+    },
+    {
+      "path": "scripts/phase2_desktop_launch.py",
+      "sha256": "d9bebe2dc0fe9ca3c5d80ac9d17882cd69a191030690d5c32417e9dfb7a0d0ea"
+    },
+    {
+      "path": "scripts/phase2_supervise_live.py",
+      "sha256": "1c200f2a5adeb072cab208f39bad8a7356d397f48baf990cd36cf237d4869510"
+    },
+    {
+      "path": "scripts/phase2_validate_layouts.py",
+      "sha256": "646b91f0255714296232f214318b4509f6f583c27628b861d364b94261e2ed37"
+    },
+    {
+      "path": "scripts/phase3_ros_replay.py",
+      "sha256": "a5284646bf8cf436c00908ddd23a11599eab233c4fa0f5bac9d900ff7d5ccb26"
+    },
+    {
+      "path": "scripts/phase3_supervise_live.py",
+      "sha256": "f3e11c4451ad5ea3d65a35dcc099c7363e3dd2e3181f9224c02ad591826e7477"
+    },
+    {
+      "path": "scripts/phase3_validate_mapping.py",
+      "sha256": "63450669c7c8e434bb2a0bfc2021d1021b5750f1c35ec2cd5b46bbb272daaecc"
+    },
+    {
+      "path": "scripts/pilot200_capture_worker.py",
+      "sha256": "5e508ad0c58bc8ba9e9b2e22dc88f1855c384c8d5ddca02eac2f05d031062696"
+    },
+    {
+      "path": "scripts/plot_browser_thermal.py",
+      "sha256": "7244caf350b1724d72433746b4d6cb640af03f92df767fb215cc7a8a4ab468d2"
+    },
+    {
+      "path": "scripts/plot_demo_gui_off_thermal.py",
+      "sha256": "0e7c8b388dd91e8259485c6a98330eb24608a686b9bf6479e95120de56aef39a"
+    },
+    {
+      "path": "scripts/prepare_autonomous_demo.py",
+      "sha256": "b32b8f2cbd9a6efdc20d4d59fb68249fee69a54e37c43aea75b93274d0789eda"
+    },
+    {
+      "path": "scripts/prepare_capture5000_runtime.py",
+      "sha256": "a5063c81e23551c37ac98a091d5c77aed706ac0568c040040f1cde47b6659452"
+    },
+    {
+      "path": "scripts/prepare_demo_diagnostics.py",
+      "sha256": "82247b9dccce1b79a2996e5e8ecd9d7fcd84ee38a3d05b10b765cbd821d276fd"
+    },
+    {
+      "path": "scripts/probe_autonomous_demo.py",
+      "sha256": "5e267e07ad876da0125830a11ab35b070fa626298ac61f6fc2755192bdbbd5e9"
+    },
+    {
+      "path": "scripts/probe_demo_transport.py",
+      "sha256": "413e2e325ef587f746c182ea30b68f54286290b9ccc9236d56ff3830108f2c75"
+    },
+    {
+      "path": "scripts/record_autonomous_demo.mjs",
+      "sha256": "ed6f450ebdf9884439f7b48d861fbd1492dcba1087a041513fac4038140c46c7"
+    },
+    {
+      "path": "scripts/requirements-live.txt",
+      "sha256": "45ed9a60b1cbc9b30d128672fc7d4d1d6e6318d922efe35880c79a5472ddf618"
+    },
+    {
+      "path": "scripts/requirements-npu-export.txt",
+      "sha256": "da3159035c6441bd3ff5e2e242826321e7d5c49a2554e2e4ecede744f2af4f55"
+    },
+    {
+      "path": "scripts/run_checks.py",
+      "sha256": "defec9faa61a4d8282c1e04570c2ef27ed56d20eb718ec333eb52c1527628119"
+    },
+    {
+      "path": "scripts/start_autonomous_demo.sh",
+      "sha256": "d06176fed5480e7d05280ce51030caf4901d611ceb76d1e5c115b7b25620fc48"
+    },
+    {
+      "path": "scripts/start_bulk10000_collection.py",
+      "sha256": "57b5b30c9c35df28a0dd2c909111b49da2811290a9d80348beb7a4b98935945a"
+    },
+    {
+      "path": "scripts/start_bulk10000_continuous.py",
+      "sha256": "55e300fdf00b9e096ad88c0806b34ed5c6ee256ea8b39946e2f61f9442252020"
+    },
+    {
+      "path": "scripts/start_capture5000_assessment.sh",
+      "sha256": "8062e3610e12500678511a267a2d4f15728a8b967b3500a2ee534ee15b316efc"
+    },
+    {
+      "path": "scripts/start_capture5000_terrain.sh",
+      "sha256": "22632a59ec1cb39b01a8c45c94577f6b37a6a5995f03331bacf55dd49968f8be"
+    },
+    {
+      "path": "scripts/start_capture5000_training.py",
+      "sha256": "315b2b4668c6807192c182c1ff6d6886cad54c30b2d7b8811365f9524c56774d"
+    },
+    {
+      "path": "scripts/start_pilot200_collection.py",
+      "sha256": "aa490b393111f9bfc49742e7e89a925b7b9ecc1427cb95709ae6bfc4a01de5f9"
+    },
+    {
+      "path": "scripts/test_autonomous_demo_reboot_recovery.py",
+      "sha256": "da4f5be54e6400dd1d17c43d41f365de98fcf9e9ac282df4c7ff1769c76b4825"
+    },
+    {
+      "path": "scripts/test_autonomous_demo_tools.py",
+      "sha256": "46f0f54c4717dea7627bd0853955fabc81657e8613ace808b159284cb05929a3"
+    },
+    {
+      "path": "scripts/test_bulk10000.py",
+      "sha256": "f56596fefd3d65ffbd9b5ed336ad8d33b1522cc304e8945584f4bbeb8b131070"
+    },
+    {
+      "path": "scripts/test_bulk10000_continuous.py",
+      "sha256": "b45931b7d3706e861011fa7df96e3c7e3362e8f1e037a108bb0212b50f42bf79"
+    },
+    {
+      "path": "scripts/test_bulk10000_reboot_recovery.py",
+      "sha256": "7384d020b1a8b9b54f5300d74fd2aa5b66d51f06a514dac8da03990fab6b1ed7"
+    },
+    {
+      "path": "scripts/test_capture5000_assess.py",
+      "sha256": "c7044f8557acdd4fcaa566cdfe7b79e35c4b71783d85e5b2aa4cfe51511d6a01"
+    },
+    {
+      "path": "scripts/test_capture5000_evaluate.py",
+      "sha256": "d458742e5160b9dd887e906cd0e8b820414f5d9fabbb473dd80d74e73d5a2992"
+    },
+    {
+      "path": "scripts/test_capture_training.py",
+      "sha256": "2c82bb9731ba50cd8abdd2faf9a90f5e897ea68171c99f14bd9d604306ce9de6"
+    },
+    {
+      "path": "scripts/test_demo_exterior_view.py",
+      "sha256": "c7df195d2cd0e892db32ddd821395fe8f100de71820a2936119a6c7572d86e63"
+    },
+    {
+      "path": "scripts/test_desktop_render_guard.py",
+      "sha256": "43ff4a5d27c1b83390230ce3cab368904873e66ec78cd06523a08c4c4b58ab8e"
+    },
+    {
+      "path": "scripts/test_pilot200_starter.py",
+      "sha256": "e1aa0e9dbadf1d9ca60929463d1ee630d128d2a04d43eee681ad8f765294cc7d"
+    },
+    {
+      "path": "scripts/view_autonomous_demo.sh",
+      "sha256": "0e44b097308889b7b86faebd969c833e94f4b003e17e750c24e2e529ea6a35dc"
+    },
+    {
+      "path": "src/four_wheel_sim/config/controllers.yaml",
+      "sha256": "fb7733257ed48aab0f297c6e7bf95cceb701a5b61af5ed41e55e44d9e302dc54"
+    },
+    {
+      "path": "src/four_wheel_sim/config/controllers_jazzy.yaml",
+      "sha256": "9ab7167e84d6e9cf286ec53b5290cc4ed201b0ddbb2ea5c2f124b79a14497702"
+    },
+    {
+      "path": "src/four_wheel_sim/config/gz_bridge.yaml",
+      "sha256": "0b695f9187719c7fe73e08bc7f1a9fc3786724a0357da815baa246459186e2e5"
+    },
+    {
+      "path": "src/four_wheel_sim/config/make_map.py",
+      "sha256": "38ffde7952512d1abc20e4f88ef74db90e2cf23734dff3de1abc020360954296"
+    },
+    {
+      "path": "src/four_wheel_sim/config/maze.yaml",
+      "sha256": "84189df83503f9627bbf7502940cb857138fbc0363827c85dc7ecbea647cefce"
+    },
+    {
+      "path": "src/four_wheel_sim/config/nav2_params.yaml",
+      "sha256": "17564d1d30dbaa141b36b0424d900e286e724e736f47694b322a71a87f578f03"
+    },
+    {
+      "path": "src/four_wheel_sim/four_wheel_sim/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/four_wheel_sim/four_wheel_sim/base_controller.py",
+      "sha256": "1f994130dd5d6adf362800ff1bcec57a350820c65c4559bf55c8770f0e7db602"
+    },
+    {
+      "path": "src/four_wheel_sim/four_wheel_sim/maze.py",
+      "sha256": "dcaec8f7835029ed616e3e02cc5ce5273aef7f7160fa1500f3511ac6c7ad5954"
+    },
+    {
+      "path": "src/four_wheel_sim/four_wheel_sim/maze_waypoints.py",
+      "sha256": "77893a4508ae83a3586f2604951979cf9fa969271c442bcf50280ab27bd14c5a"
+    },
+    {
+      "path": "src/four_wheel_sim/four_wheel_sim/odom_gt.py",
+      "sha256": "0ad1781deb0c65baef197b9eceb12d4c8f5e6983a35b3b5c4e1290e83c1113b4"
+    },
+    {
+      "path": "src/four_wheel_sim/four_wheel_sim/path_runner.py",
+      "sha256": "24c2048bf8dea9e3881666b69322ab2685dcdccd6a48fb783a731170944b6188"
+    },
+    {
+      "path": "src/four_wheel_sim/four_wheel_sim/twist_stamper.py",
+      "sha256": "694f08995ed3f090affbf4e4e951664c05966dd14e968abba5e8ef0fad269a61"
+    },
+    {
+      "path": "src/four_wheel_sim/launch/gazebo.launch.py",
+      "sha256": "b75a45cdfac4de641ee6bda8e703da20eb2407e52435effb37d3c2733a2c43d9"
+    },
+    {
+      "path": "src/four_wheel_sim/launch/gz_harmonic.launch.py",
+      "sha256": "b5b10747a80d88da3f09046e14bcf7da42ec51d5c2b1fcd457c8b702be6f9685"
+    },
+    {
+      "path": "src/four_wheel_sim/launch/rtab_demo.py",
+      "sha256": "462e9cbb72c7eef0a72527cd0f29ff69b64d2f2616402a9a650bf2c4dcb3ef6a"
+    },
+    {
+      "path": "src/four_wheel_sim/launch/sim.launch.py",
+      "sha256": "9c9b677f1df66f08d780f63d138b10742fbdfedad4603ccf6b3adf96c0c34445"
+    },
+    {
+      "path": "src/four_wheel_sim/package.xml",
+      "sha256": "fa25510a8a2eae222b004a203d0e483e2541376f3cf6533660252332d6b828b4"
+    },
+    {
+      "path": "src/four_wheel_sim/setup.py",
+      "sha256": "6515e2bae4782bb5e6bbbd62faea95d1dabce9b006a1f3cb7c4bd0a45858c2f7"
+    },
+    {
+      "path": "src/four_wheel_sim/test/test_copyright.py",
+      "sha256": "ea71bbbc6247b5c14d176ed09f39ee274d563cc9b2ec355828ea451ceff31757"
+    },
+    {
+      "path": "src/four_wheel_sim/test/test_flake8.py",
+      "sha256": "37a813a0507f0ce51a2d0b57312d2cc078a0307a3ca85580ea801b0d2f9755d2"
+    },
+    {
+      "path": "src/four_wheel_sim/test/test_pep257.py",
+      "sha256": "e8b88d49ee296987b1b40069f81019b5fa09b1aa1bfee9a1faae45bb5cf53eda"
+    },
+    {
+      "path": "src/mars_training_environment/config/assets.json",
+      "sha256": "31d2219cd54ee79892d1238e142ee07a539ed1a275b6de9ea8d5fe7d47716777"
+    },
+    {
+      "path": "src/mars_training_environment/config/assets.lock.json",
+      "sha256": "ccca4fcaeff5e43ae59f65f707a5950d7c57e214e93d014a1da735a5b4b6498a"
+    },
+    {
+      "path": "src/mars_training_environment/config/coverage500_balanced.json",
+      "sha256": "b57a64ac7957a1c0bacc8671ef85c4710f8e57542322bd32c087083b4efba021"
+    },
+    {
+      "path": "src/mars_training_environment/config/live_eval.json",
+      "sha256": "0f0704bb1c106d91273e455a54c7d3ead1f3f70d62c153690a2982f9dcb86a6f"
+    },
+    {
+      "path": "src/mars_training_environment/config/mixed_reachable.json",
+      "sha256": "c1117af1b785bc05619ec7b1a5937e158586e142be0612b60f0088ec58a6b4bd"
+    },
+    {
+      "path": "src/mars_training_environment/config/mixed_reachable_v2.json",
+      "sha256": "22acce3f1fefbfbf831fc88990958d4be11fe5819f9bc8254658849e39cd832d"
+    },
+    {
+      "path": "src/mars_training_environment/config/pilot200_environment_v2.json",
+      "sha256": "a08db9d4afa702f8fe55d235ee58774ddb6b26bd69fc07b8940c32fd34ed22b9"
+    },
+    {
+      "path": "src/mars_training_environment/config/pilot50.json",
+      "sha256": "4109a600fbdb5276a1939e3a2abe3d95872f5c4bf81346d8c6496843b4d3344d"
+    },
+    {
+      "path": "src/mars_training_environment/config/sample.json",
+      "sha256": "c2d028000dfd85da2c7cd073d063b8d302ea5dcf4a90e3ea962bbf19d64a8062"
+    },
+    {
+      "path": "src/mars_training_environment/config/train960.yaml",
+      "sha256": "b1772c0f9c163ac55fb9c5b8e6cd9c0e016df465ea6b01a8b6e465b8164c8d37"
+    },
+    {
+      "path": "src/mars_training_environment/launch/mars_live.launch.py",
+      "sha256": "817f1f844db5e89496be0a0d44afbc1ec8a9e096ad8fac9f0c2821d48a59c0ae"
+    },
+    {
+      "path": "src/mars_training_environment/launch/mars_world.launch.py",
+      "sha256": "07f2a16e148a7a0bda935c5b09e54b6bf07f007acd995313dd67cc4be0d4c575"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/__init__.py",
+      "sha256": "2b09c24bf30def60b079c3f0e2e2cf874cc074fb44985ef39796206c7127416b"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/annotation.py",
+      "sha256": "4a1937819f90d9b5775960b569ae6d84dadd0d71a1cd8db90870479a3029b4d2"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/asset_cache.py",
+      "sha256": "f1af3fdda510bfc692685b52ead792a93def84ea2d82ce0987c6fb4223c75429"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/blender_prepare.py",
+      "sha256": "dda41584524fe8ecedfaa7ebefc4279a89a48608b5b0760073daf44b190e946e"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/box_verification.py",
+      "sha256": "dc8d6025516c7402d0320b74c1ccb3a6c655c4008e88e71ec10f7798b0fbc6f7"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/candidates.py",
+      "sha256": "afbdcd2c29623b14c8dc36781b2651e2185d99e826b20eadfdd7cbd3f5e01d8f"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/capture.py",
+      "sha256": "8621dac127288fa8820ba1542c2800e134c3d9de9a42ea4a994bd47a1382f510"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/capture_attempts.py",
+      "sha256": "c441010757427086c0dd67e7fa4d7b2867504f27cf742f3730d2deea80731d93"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/capture_recovery.py",
+      "sha256": "8292325c02a1fd624b65095dbe6bd837d2db8e1f2e0ce0fe66b10d40560eb3fe"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/common.py",
+      "sha256": "72fefa9c0c9a5265263b6c8419e293c7c363e1f245b3c92a2527f73365218767"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/dataset.py",
+      "sha256": "ffc3ae678c9c70307d6c43a4eb73e8a2db81023640e05680bb1776329359c6d4"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/dust.py",
+      "sha256": "33ac837258f2e84de7defd5f4f22da41c6abb1541b59858e53541bb672ce0e39"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/environment_v2.py",
+      "sha256": "ef6cbffabe5056dd192365824ed061a91a1951b9938b9f6f1f979bbaa0224cbf"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/framing.py",
+      "sha256": "2fa3e32dba6807f5b24785b8b0dae44a63d9a35bd07a0a008ee3ddff9d057ba0"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/generate.py",
+      "sha256": "6e38f59d7b46b6a1f4bee7fccc089d3a2db1e3665ea2403b3766b8736e4e5760"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/ground.py",
+      "sha256": "ccd4836211ef2bf82c0fd8aff8b18f92455c96b013618a6e000f2db143be6df0"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/meshes.py",
+      "sha256": "a513ad97218651aca6578a64c736cee3e36ef39f1f15c5d998862bfdf56712bb"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/planning.py",
+      "sha256": "c4d0f8de7be235a2dc7b02fc7df46588bbc399e896549d4595fb482f9ce6f30e"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/process_cleanup.py",
+      "sha256": "87336db7c1cf20df04a1d0d4360e6e327ab82592c381dfeee88e50536b071d6c"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/quality.py",
+      "sha256": "2b72c5a12346e5359f09fbe64a54875295f7c3c734768d437de8c30e4114bfa4"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/reachability.py",
+      "sha256": "946184bf734177cd61f554258a9bb3b3f5ae32c7029ba3f97fcf36c5ce944b94"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/reachability_audit.py",
+      "sha256": "664b6f1a817778bed6f88ec22dc26727cc015b5bdb4bfaebf7e8db44ea2b6e44"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/reclassify.py",
+      "sha256": "16a08c2f17930fa0a35ae4a605e0a29df4628c056c9d0624609831bae5fbb593"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/reframing.py",
+      "sha256": "1b913b07e1dfd56ace9ed76562a3cf0e6fae9a19fbd4f6d3a4209515bd2ff5e5"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/review.py",
+      "sha256": "25a2acfb7dbd8e048e49c7ce8d453c5e8b669a77230f6d68f17fc9cdd1971319"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/robot.py",
+      "sha256": "8481378d7e770a42dade0499e8a70b208f192513a8aa7b8b12cef8cfeb51a849"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/runtime_check.py",
+      "sha256": "eaa137b1c54d32294d33cb2bbcdc10bda2b4d3741547bb67ee16efbea57d6f4c"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/serialization.py",
+      "sha256": "3679f0c3d127994b2149fac9dab7bf0f94c290c6ee41a20d2512a7cb4a4fcacc"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/terrain.py",
+      "sha256": "7cb1166b2b60e8b301798971423b49177c558bea41ee80ce17d2f07975bd353e"
+    },
+    {
+      "path": "src/mars_training_environment/mars_training_environment/validate.py",
+      "sha256": "1ddb33756ab141a288843dce888f45c713275e5c870761348968aa7ef24b9b44"
+    },
+    {
+      "path": "src/mars_training_environment/package.xml",
+      "sha256": "e38248e0e283a2392bb17ad31aa538e3189def886519d715f2b31f7afdd4fee7"
+    },
+    {
+      "path": "src/mars_training_environment/setup.py",
+      "sha256": "b350f813b92d5658568e1d54675ba437400900d9b582606c9621876633351c83"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_box_verification.py",
+      "sha256": "3aec8d3aa461b1c4abe54c9d4d3c4a6c169775d737f31ffc7b1d44b46d69a106"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_capture_pose_feedback.py",
+      "sha256": "b68365738fbd954f0f4aec3d1b9685cccebc627d0f0e408f4fec50afac9e5297"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_capture_recovery.py",
+      "sha256": "edecaeee77b12428e6ff0c03c0e91a792cb9f351eb898037243b46efb8d1c157"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_class_quotas.py",
+      "sha256": "78f447feb2e3b28eaac4b8f054b86008f48e4ee982c908a8a11b96d3d0e95599"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_environment.py",
+      "sha256": "5143239ff6715ce598d8340269a271b7c2475cf56a0530b08cfc9c1c0062fb52"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_environment_v2.py",
+      "sha256": "fb75fab25f9ab421bad6916fb972cc445f214d87faa747ed07f0e28dfd797ccf"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_ground_projection.py",
+      "sha256": "216782b428a094f6c91aa6068ce9f48890404898d31a65769b6718ea249eac48"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_live_camera.py",
+      "sha256": "c63fb175c3f3a6b45e7c5839c267d3cb014399c26eeb6da6e8436722de3b8156"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_phase1_fixture.py",
+      "sha256": "138abcf320f28254186f7e7d1dcfb3936f4e41de90d78c213641d91e19a835c4"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_phase2_supervisor.py",
+      "sha256": "31cffde7067763154979beb95ab1eeab88b84a201e8edab96dbeb906ed3280a5"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_phase2_terminal_stop.py",
+      "sha256": "b9aaa3e09e673d6fdcc3ade9c7e496513d51209043450e98ad975dc0ab9a1522"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_process_cleanup.py",
+      "sha256": "a3ac85a422a4456b7e5ba080417ce686bf9753dea8487f3d4e787d2657c3c8cf"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_quality_review.py",
+      "sha256": "b9c348676c3df2064cc72378d8eb089f68d9d8d3ceb0f0f3406aac1489fc7df0"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_reachable_terrain.py",
+      "sha256": "6d16c2e8adcf973c913777c6b83be7059d42fa66e3ead52e1da27b3932f3d0e7"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_reclassify.py",
+      "sha256": "456597555877ec666375ab5cd4430543212688aeb22c303760de1786382a28d3"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_reframing.py",
+      "sha256": "d29d6a138ffdeeaee4ed292e181d64ea451fc435d9e087ef0c1c38c3f1531877"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_rendering_profile.py",
+      "sha256": "70c59075f0c6eaf5a99a009a082561208171b9f2840c2b7c3ce5706cf73ede13"
+    },
+    {
+      "path": "src/mars_training_environment/test/test_visibility_acceptance.py",
+      "sha256": "2a363f01a9ce01e4e7b00976e369c59bcd3eb512ff9e0808a2812981f6079731"
+    },
+    {
+      "path": "src/rover_navigation/config/fastdds.xml",
+      "sha256": "1a04466a8d169bbda6ce1379db14f3b373c91a66c942bfa29a7486a07e318002"
+    },
+    {
+      "path": "src/rover_navigation/config/nav2.yaml",
+      "sha256": "2f56718847d78c8e98e4ec3ec2953390883511e730389e289790ae8b0c3717a6"
+    },
+    {
+      "path": "src/rover_navigation/config/navigate.xml",
+      "sha256": "8a06c5aaaac42813b2bb50c474d4873b201a65ed1ce0352c84ebb76942db7701"
+    },
+    {
+      "path": "src/rover_navigation/launch/navigation.launch.py",
+      "sha256": "5d22ebfdcd5d1d2e369ff56afeced2b176d2fd6d014ade4a5f62519a64d16661"
+    },
+    {
+      "path": "src/rover_navigation/package.xml",
+      "sha256": "6c0c97308bc3a90b448f0827641958b7a19db1020fff02eb64e163dd6904bf48"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/__init__.py",
+      "sha256": "8bfee5d4f7db171625391d9a2a48bfa2b2d3036b1f385ea78d81eeae8225ef4d"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/core.py",
+      "sha256": "f03ed0363b30452466cd596de127aba7e87b0304a95396d528ea60d8b996b4e5"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/coverage.py",
+      "sha256": "55032662d98ec35b20ba0c1eda10f2b68355c9316f5de32573ad06c610ed595e"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/demo_core.py",
+      "sha256": "fa153fa5b5ceac48b3934a5bb3c7f21c8260b123acd790d22943cc6b75148329"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/demo_coverage.py",
+      "sha256": "1db8e4a3a7d12cee2ef8a1cba7e984a32b14cf0b6b73b6addb0f3fb41aeb6ec3"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/demo_node.py",
+      "sha256": "154ca3e69eb5ebde17af4c486013e945c417f2eb33dc9ace67685b87ea58268b"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/diagnostics.py",
+      "sha256": "d6ab14aa1c2e50f506a13bc1e49733f2b8da6f35e26b23e06609873b9d2bd0af"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/evaluate.py",
+      "sha256": "567710223e5b5a6083f08eb1578fbbc8312c45799f3f0a42222c8fb48fc2c889"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/fixtures.py",
+      "sha256": "d56ea7b69abed2e639669c7b275bb1251fe8438ad6719d375e6529916cafb815"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/goal_checks.py",
+      "sha256": "ba0839b23444bca2b65015ff51fef8b165c397f2fb639c870d729673fd0bc347"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/guard_node.py",
+      "sha256": "df9f16752eb304eb9a0466ea50db27fe49981b1f2b26a4000687056243ad5ab6"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/manual_input.py",
+      "sha256": "8a062cd31c6fc062bad77c53bea9981e6eec21f2c843f8f687ac55c07c8aba27"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/metrics.py",
+      "sha256": "a31a5945c62fff05f9bd5d23c6514f2516f0b39baa4202ce3cbbb8000023d290"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/mission_controls.py",
+      "sha256": "56a901401d299cda8ddc786d9819ceaf7792b88b4f6f216d63fccea2c01c93d5"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/mission_node.py",
+      "sha256": "224e51ad35a01476b8ef35c9726fb6d86b1e92f883d0bf7f6291f027596a5c5c"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/platform_telemetry.py",
+      "sha256": "d8d85c3bd7c1fe91b671c197b3fd055dfb0b646841eda44f78b8d0f50cbbb0bf"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/ros_utils.py",
+      "sha256": "fadf7670d9be28e5df879529e21cbc7c5d9e77363e133c19647fedc0a26c9941"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/safety.py",
+      "sha256": "4acc71ae4b3248afd22adc3041729056ce42bac763b3c541c675a0bd68cd18f7"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/sample_sites.py",
+      "sha256": "e849473ce4bba9f508bc722bfb6fdbffa42b9a8cb1ece9387ad19338ce02ba17"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/sample_sites_node.py",
+      "sha256": "071c84a84c00a972bc3a0992ada87c440279838f756d41a67430803a4939ba21"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/scene_control.py",
+      "sha256": "deab4b98d2eca4c4849c19324d302a00ce91575cefd0cf7a31971c5f9c54a784"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/scene_generation.py",
+      "sha256": "8d55e42d8a81582779520a9b54dfcca3a3d404e77b842608eaa33616d6e7349f"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/site_geometry.py",
+      "sha256": "2157a0701a437ad6dddfbaf0eeb2cc0aa97aacd71d9c83ed41ce7277101adb0f"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/soil_sites.py",
+      "sha256": "008972206f6e4d2301481b363901acf25437927232aaaf937c84ebeaf32ee663"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/terrain_compute.py",
+      "sha256": "0ddf23254dea4974f7cb5009d43b01adf9d8ffcd821e59336217ffa7318b737b"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/terrain_evidence.py",
+      "sha256": "a7db60db96daceed495919d75f15c70348c8e59af1ef0ef95717bc25a46e6f39"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/terrain_node.py",
+      "sha256": "eebd1da5628878610d8097c27bd68cd1e78bfd85f5339079d57eb172874a777e"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/terrain_service.py",
+      "sha256": "d10016b30a5b5281ab15923d29c0cbcc87583280034c77d0675d90c6730439b9"
+    },
+    {
+      "path": "src/rover_navigation/rover_navigation/tracking_evaluation.py",
+      "sha256": "207f18108092ef1a8fef994c99c4350e2664ddd7301e38f777bca585f64e68e5"
+    },
+    {
+      "path": "src/rover_navigation/setup.py",
+      "sha256": "7ae15ae6be5bd97c5226bb19036898637f98a644fbe23ba5eb95c29a4d0463bb"
+    },
+    {
+      "path": "src/rover_navigation/test/test_camera_recovery.cjs",
+      "sha256": "415a1501405ac150afc4322f948888efc5bc3d7862a026cacf44885a06f13e09"
+    },
+    {
+      "path": "src/rover_navigation/test/test_control_lifecycle.cjs",
+      "sha256": "34de9abc241cecd8d6c694705864352d3d7d708a1edd50a2e1fbf33e9fa27f46"
+    },
+    {
+      "path": "src/rover_navigation/test/test_core.py",
+      "sha256": "3f31be8268d5df824e89c87a150e54d4d6b1b8023b84397ac94af844405b697b"
+    },
+    {
+      "path": "src/rover_navigation/test/test_coverage.py",
+      "sha256": "e3c232e458df6caecdd3855fe914ee673e573046bc3e5678ecffea66125c1ea5"
+    },
+    {
+      "path": "src/rover_navigation/test/test_coverage_check.py",
+      "sha256": "4cde99a9d3a3553e12908debfc3d248359a7249aa10fdc54b8df7c4821395ab8"
+    },
+    {
+      "path": "src/rover_navigation/test/test_demo_adapter.py",
+      "sha256": "c68a5c3179e2ebb628649f798060eef3f34d50cc36e85aa836661b38924bd607"
+    },
+    {
+      "path": "src/rover_navigation/test/test_demo_controls.cjs",
+      "sha256": "425213e55e49f6ad53c142dfae8c4e966c683aa8c9c3d4996de87174dd3f5104"
+    },
+    {
+      "path": "src/rover_navigation/test/test_demo_core.py",
+      "sha256": "c6744a80b2168be37d1aab2add0e6c374397c77ef623e7e1a517a40faac78084"
+    },
+    {
+      "path": "src/rover_navigation/test/test_demo_page_integration.cjs",
+      "sha256": "63e2306001f33aca60e5974cfae6a15c965a0a02cf42f7ee8af8c6b5474ede27"
+    },
+    {
+      "path": "src/rover_navigation/test/test_diagnostics.py",
+      "sha256": "f26241412a345b3cb8868e9bd17732e8a5af322311743b4c64d7b108a3de0a0e"
+    },
+    {
+      "path": "src/rover_navigation/test/test_environment_v2_safety.py",
+      "sha256": "42d56278e7813610333954784cffb3cef3eb0425aae85c081d6d5af3b3892fa6"
+    },
+    {
+      "path": "src/rover_navigation/test/test_fixtures.py",
+      "sha256": "cc16d69a567d8ee423fed67c14b98fc54d780d97688e1d447f47fd840fc8c8e9"
+    },
+    {
+      "path": "src/rover_navigation/test/test_guard_adapter.py",
+      "sha256": "32f0357b4d568e079438d12aeff8a8d21894a1ca551a286abf3df4644490b584"
+    },
+    {
+      "path": "src/rover_navigation/test/test_launch.py",
+      "sha256": "51224ebc5d4def9f542ce69e953e991f7291020b450ba48af4b179dcb6b38194"
+    },
+    {
+      "path": "src/rover_navigation/test/test_manual_input.py",
+      "sha256": "f419ed8dca6201fac174249e767e51b39712f99801f8f95209d943dfc52c625d"
+    },
+    {
+      "path": "src/rover_navigation/test/test_manual_speed_controls.cjs",
+      "sha256": "ff3654ec0b5961133894e73b4b78d6400211e1a33beb3df8f7cc11b0045406db"
+    },
+    {
+      "path": "src/rover_navigation/test/test_metrics.py",
+      "sha256": "d8e09d6388813fbf964017eb1b678832083503190c220805092c36d187a4a3c6"
+    },
+    {
+      "path": "src/rover_navigation/test/test_mission_controls.py",
+      "sha256": "85561535dbe7333a1cbe6f1bfb5ba4fba149bc00a719077ea712cced7bc79920"
+    },
+    {
+      "path": "src/rover_navigation/test/test_platform_telemetry.py",
+      "sha256": "ed27cbcc3f1d674d1e7a3cebaea60476a3ae5fc9a186670e48cb677000ab0488"
+    },
+    {
+      "path": "src/rover_navigation/test/test_rendering_depth_contract.py",
+      "sha256": "d62391361b3363a7fa96e0666c2e3640618fb2956bc44b95ab60dd5abda33b70"
+    },
+    {
+      "path": "src/rover_navigation/test/test_sample_sites.py",
+      "sha256": "a4b125da3907603fb617145628d0500bacf3dab6f3236a593f1cb631c23fd663"
+    },
+    {
+      "path": "src/rover_navigation/test/test_scene_control.py",
+      "sha256": "3a95e8fb1d6eb40b038198872d44d751dc96fa61c71211197e5653823e4e753c"
+    },
+    {
+      "path": "src/rover_navigation/test/test_scene_generation.py",
+      "sha256": "ea333c3a45928b6a56bcc421862e14611c4256085a1ba17950e4f4cdd0aba50d"
+    },
+    {
+      "path": "src/rover_navigation/test/test_selected_goals.py",
+      "sha256": "9d81d7a9eb18a4662ddd46974bd6979c21194815252b20d1f48ff33548320055"
+    },
+    {
+      "path": "src/rover_navigation/test/test_site_tracking.py",
+      "sha256": "50d3d0237447c008959c2e67d6c9bbb145cb9ca4aa324f1e8c26147ec8443006"
+    },
+    {
+      "path": "src/rover_navigation/test/test_stamper.py",
+      "sha256": "b6956d8180d89ad834a34af4f0b898e76a28cfaa8b2f8cd840edd112b3438d6b"
+    },
+    {
+      "path": "src/rover_navigation/test/test_syntax.py",
+      "sha256": "4d569332c2a2fb1db556766eb88d620a6f2803a287c54ff8afedbca2657f3bb3"
+    },
+    {
+      "path": "src/rover_navigation/test/test_terrain_adapter.py",
+      "sha256": "30fddd11b87cc88b176ee198886eb4cfd791a9ba43986570c18a433c62879a51"
+    },
+    {
+      "path": "src/rover_navigation/test/test_terrain_audit.py",
+      "sha256": "cd0f3c4b1d95a619418cb15aaa7a0434dfb4522f00fa21f68a492a4990e6a26e"
+    },
+    {
+      "path": "src/rover_navigation/test/test_terrain_compute.py",
+      "sha256": "641d8498324e18ba5a28472a1d1fc84e3567821a6a93ecfd14b98465a1543d95"
+    },
+    {
+      "path": "src/rover_navigation/test/test_terrain_evidence.py",
+      "sha256": "38aed4a97ea9dce9c9ac95df90f8a48caa640a042cf81f5fd1b2d0bc851ed393"
+    },
+    {
+      "path": "src/rover_navigation/test/test_tracking_evaluation.py",
+      "sha256": "4ea6bf8b97fab55b9bdf729426908cf7d8a487c7ae5628b9e9378a0007a50f17"
+    },
+    {
+      "path": "src/rover_navigation/test/test_tracking_replay.py",
+      "sha256": "435a057a22243a8bef6d2444e2b717182abd3b5b5601072014c4d73e8d5690f3"
+    },
+    {
+      "path": "src/rover_navigation_interfaces/CMakeLists.txt",
+      "sha256": "c9d133db8c468a48e8d03838fc6775c21f65d4770728cdf2209578c4f39c4474"
+    },
+    {
+      "path": "src/rover_navigation_interfaces/package.xml",
+      "sha256": "2225408a80e32ac930bd6635bbd565aa4bceec04f5d8c5008e6b85364e4afbef"
+    },
+    {
+      "path": "src/rover_navigation_interfaces/srv/DemoCommand.srv",
+      "sha256": "37faa530fd8a37bd0b9158e2db42a39de68163532c18147d1eb8327d5aca5d0d"
+    },
+    {
+      "path": "src/rover_perception/config/oak.yaml",
+      "sha256": "2021e3318a1921678fbbc4cbb2976100a7d7462da10536201fabf912ea505488"
+    },
+    {
+      "path": "src/rover_perception/config/sim.yaml",
+      "sha256": "f3ccf098cbca95702e0f58053ccbf3a94aec52701110917ec37135918d429ef2"
+    },
+    {
+      "path": "src/rover_perception/launch/detector.launch.py",
+      "sha256": "bc1fa60f2dac251a8006e3745eca904d6fd16d527ac79bf9891cc0acbba50207"
+    },
+    {
+      "path": "src/rover_perception/package.xml",
+      "sha256": "d699e0c96883cc56310d8487d5f6186482393e8a14749dbe6791d3ffc1089437"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/detector_node.py",
+      "sha256": "1de7be5034e92fa2a6884ed6a8e0fa87066411ac73dad77ddcf3299a9b3e3abf"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/detector_service.py",
+      "sha256": "7460973794d6e2b0ab51072a47bb5cb5d030a16d4ad2fd4dcb7ccceeb7ea5b0a"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/detectors.py",
+      "sha256": "e8377067c533d98c42331f162a8181811538617977ad936e8f7340741863b27d"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/drive_mode.py",
+      "sha256": "f599bdabf4bcecff606c3d8d30382966224b039fa7a496a1cba522c71819fa37"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/gazebo_drive.py",
+      "sha256": "1641b7dfa93987c4ee800ea99b3601462b408dd9b80966bae78a4bf17afdafa8"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/live_bridge.py",
+      "sha256": "143049c435485c9f7c11b831d22cb1afe48c65f3935a9130d0813bb296f8ae56"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/live_core.py",
+      "sha256": "ca4d7fbb45a05392c52a9944b61d6762d84e3ea61caf923f8d830391f1de681f"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/live_dashboard.py",
+      "sha256": "e6a1ce14cf7aea46c7ba1504cb42b0ac38cdfcf3778ce7baf6f7793868c25257"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/live_web.py",
+      "sha256": "65d91a9cd0eec1565bcb49e754f998124dfed8ff444a2dd426b8861eca200dc5"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/npu_acceptance.py",
+      "sha256": "cebd4160401c2a1cdaa1304aab1e38cbc68db1c77c95f510c9d191415ec0d64c"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/npu_prepare.py",
+      "sha256": "d0ef56cbf53389d7a384f42f33522200a4a630b8b9c3cb5670638a196a6111a1"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/npu_tools.py",
+      "sha256": "da488975263c2e4ee39ae1b34caa8899a367c97516d5b1ab66e0f36ba4a6a955"
+    },
+    {
+      "path": "src/rover_perception/rover_perception/npu_tune.py",
+      "sha256": "29b05f45ef4ae84be46f278983ba1296c8576c90d28bc5debdfb977d9374c91d"
+    },
+    {
+      "path": "src/rover_perception/setup.py",
+      "sha256": "6042bf989ceb02044392ad348b31515d44025b10e608310752a3f69c7e728eb8"
+    },
+    {
+      "path": "src/rover_perception/test/test_deployment.py",
+      "sha256": "b3c0205b82e58465579b214a5712edae439128174ac1eacc1af763c2f34ad616"
+    },
+    {
+      "path": "src/rover_perception/test/test_detector_service.py",
+      "sha256": "d7f77d2176ed7c3e1460650917f721897d5f6b7d9f03bb7f9ee90bd9c824aee9"
+    },
+    {
+      "path": "src/rover_perception/test/test_detectors.py",
+      "sha256": "ffade05ecce140cf86cd165516b8f0e3bff021335a0a903cfe6de76573f8c8ea"
+    },
+    {
+      "path": "src/rover_perception/test/test_live.py",
+      "sha256": "21003aeaa5e705a0af4f9ddf893a884fec2969cd2cfa5a0fa0c558438c8a224e"
+    },
+    {
+      "path": "src/rover_perception/test/test_live_backends.py",
+      "sha256": "7b13aa397765ed6029354f226fd586db07d5750b1ac9e9ac3cc72761d9eaf1a8"
+    },
+    {
+      "path": "src/rover_perception/test/test_live_controls.cjs",
+      "sha256": "71bd492b53b8b33ecafa854b0798077157cddd30c196219dd78e07c1b3cf9dad"
+    },
+    {
+      "path": "src/rover_perception/test/test_live_launch.py",
+      "sha256": "84606fdce03f59c5ee7be83fc40f63149c91fec84ea1b149bb69f7216aa30dde"
+    },
+    {
+      "path": "src/rover_perception/test/test_live_web.py",
+      "sha256": "1d87f1a050b1dc0889f99d1e8f9a2b486773a55c08334406841b873daca6c5fd"
+    },
+    {
+      "path": "src/rover_perception/test/test_npu_acceptance.py",
+      "sha256": "4ae6c4823dd94ccd602e12fcd4b002bf228cd24ab4a640a2bcbfd42c75325705"
+    },
+    {
+      "path": "src/rover_perception/test/test_npu_prepare.py",
+      "sha256": "709cfb31d0f2b11fd228e172c68cc4c7cc2eee02911ceddb178fd7842272f7d4"
+    },
+    {
+      "path": "src/rover_perception/test/test_npu_tools.py",
+      "sha256": "014f1e711a2e64c869df9686c3e725dafbffad2d2ee3508e64492a88c66727ee"
+    },
+    {
+      "path": "src/rover_perception/test/test_npu_tune.py",
+      "sha256": "e3393cb9058918bc22fd2c5dca59e76a741973bb5f7c891ca56f69440115c30d"
+    },
+    {
+      "path": "src/rover_training/launch/capture_scene.launch.py",
+      "sha256": "3dd406737811c292de4509cd513d9b5221ea234016adb60ab798e07fba8dc8bd"
+    },
+    {
+      "path": "src/rover_training/launch/rocks_world.launch.py",
+      "sha256": "c4df2492668c9e4a5117880f7a06089f92fce98042c2d0a5aab04031db7d992e"
+    },
+    {
+      "path": "src/rover_training/models/assets.json",
+      "sha256": "5083cc0b659e1883d52719ef682b2f648eeacb3759cc506adb49287dd79f9ee2"
+    },
+    {
+      "path": "src/rover_training/package.xml",
+      "sha256": "d82f450fbb6dbae75447a048418eef09064719d1c4163b2ee6f0ea90366cbb8a"
+    },
+    {
+      "path": "src/rover_training/rover_training/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/rover_training/rover_training/assets.py",
+      "sha256": "74a37891a526b05f0bb8d916627a368cb1bd7c58dcf44a307e22e92dfd40328d"
+    },
+    {
+      "path": "src/rover_training/rover_training/capture_node.py",
+      "sha256": "8d6f18e791f2f218e96d7e5362b045ad94bf5cf097988535c3780b2e1124ac0f"
+    },
+    {
+      "path": "src/rover_training/rover_training/geometry.py",
+      "sha256": "216cd43b032b5a6d9789d07482d90d0b0cd658d13a53ea96ffcae78ef0f58a27"
+    },
+    {
+      "path": "src/rover_training/rover_training/image_io.py",
+      "sha256": "85bf70a770596a418ba4f4dc5635a4e298fe9bcd34adc8bd46beafe2216eb441"
+    },
+    {
+      "path": "src/rover_training/rover_training/preview.py",
+      "sha256": "37e93ce93aaa5a895128ba2c18dc07e06b882b94950501b46d9719d6b53f02db"
+    },
+    {
+      "path": "src/rover_training/rover_training/randomize.py",
+      "sha256": "a77ac331c85bcff3bb76e5f93b2d869912ae6e49b09bb6590c12a0d1cff4f4d2"
+    },
+    {
+      "path": "src/rover_training/rover_training/world_builder.py",
+      "sha256": "19beac343b5b36df21ad94e38714884fe03f6d023226a355b01b5d1d5d3c886e"
+    },
+    {
+      "path": "src/rover_training/rover_training/yolo_export.py",
+      "sha256": "de88e521577018e97fa172e054abd1b6aae20e263b84059e2617ecf4f774a5d1"
+    },
+    {
+      "path": "src/rover_training/setup.py",
+      "sha256": "e1bff2d3e6dcd4cb011fb75b8fab2c44b445935d9c077d56528eff68f335db14"
+    },
+    {
+      "path": "src/rover_training/test/test_pipeline.py",
+      "sha256": "55dbec89c57357fad10d17cf628c539738b9b1dd007c1bb7a497ecf04361d38a"
+    }
+  ],
+  "normalization": "UTF-8 text, CRLF normalized to LF to match Git checkout policy; no other byte changes."
+}

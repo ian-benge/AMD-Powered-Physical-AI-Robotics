@@ -35,9 +35,10 @@ class Terrain(Node):
                                 clear_start_radius_m=1.1, hazard_confirmations=2,
                                 mapping_on_confirm=False, terrain_backend='cpu',
                                 terrain_url='http://127.0.0.1:8782', adaptive_terrain=True,
-                                evidence_output='').items():
+                                evidence_output='', demo_mode=False).items():
             self.declare_parameter(name, value)
         self.mapping_on_confirm = self.get_parameter('mapping_on_confirm').value
+        self.demo_mode = self.get_parameter('demo_mode').value
         backend = self.get_parameter('terrain_backend').value
         if backend == 'rocm_http':
             from .terrain_service import RemoteTerrainCompute
@@ -57,6 +58,11 @@ class Terrain(Node):
         self.global_cloud = None
         self.cached_cloud = None
         self.memory = None  # per-frame classifications in odom coordinates
+        self.measured = None
+        self.measured_status = None
+        self.last_measured_publication = -math.inf
+        self.publication_latencies = deque(maxlen=4096)
+        self.first_publication_monotonic = None
         self.start = None
         self.start_map = None
         self.last_global = -math.inf
@@ -82,6 +88,8 @@ class Terrain(Node):
         self.local_reasons_pub = self.create_publisher(OccupancyGrid, '/navigation/local_ground_reasons', 1)
         self.map_pub = self.create_publisher(OccupancyGrid, '/navigation/terrain_map', durable)
         self.map_reasons_pub = self.create_publisher(OccupancyGrid, '/navigation/terrain_reasons', durable)
+        if self.demo_mode:
+            self.measured_pub = self.create_publisher(OccupancyGrid, '/navigation/measured_ground', durable)
         self.layers_pub = self.create_publisher(GridMap, '/navigation/terrain_layers', durable)
         self.mapping_pub = self.create_publisher(String, '/navigation/mapping_status', durable)
         self.create_service(Trigger, '/navigation/confirm_clear_start', self.confirm)
@@ -115,6 +123,10 @@ class Terrain(Node):
                                    compute=self.compute.metadata, compute_error=self.compute_error,
                                    compute_timings=getattr(self.compute, 'timings', {}),
                                    coverage=getattr(self, 'coverage', None),
+                                   measured_coverage=getattr(self, 'measured_status', None),
+                                   publication_latency_p95_seconds=(float(np.percentile(self.publication_latencies,95)) if len(getattr(self,'publication_latencies',[]))>=30 else None),
+                                   publication_latency_samples=len(getattr(self,'publication_latencies',[])),
+                                   publication_latency_warmup_seconds=10.,
                                    terrain_evidence=(self.evidence.status if self.evidence else
                                        dict(enabled=self.adaptive_enabled, suspended='waiting for measured terrain',
                                             cleared_cells=0, pending_cells=0)),
@@ -261,6 +273,11 @@ class Terrain(Node):
             self.global_cloud, self.start, self.start_map = None, None, None
             self.cached_cloud = self.memory = None
             self.evidence = None
+            self.measured = None
+            self.measured_status = None
+            self.last_measured_publication = -math.inf
+            if hasattr(self,'publication_latencies'):self.publication_latencies.clear()
+            self.first_publication_monotonic=None
             self.localization = ClearanceLocalization()
             self.coverage = None
             self.last_stamp, self.last_global = None, -math.inf
@@ -297,6 +314,11 @@ class Terrain(Node):
                 if getattr(self, 'adaptive_enabled', False):
                     self.evidence = TerrainEvidence(self.memory)
             self.memory.remember(frame, reasons)
+            if getattr(self, 'demo_mode', False):
+                from .demo_coverage import MeasuredCoverage
+                if self.measured is None:
+                    self.measured = MeasuredCoverage(self.get_parameter('map_size_m').value)
+                self.measured.remember(frame, stamp)
             map_tf = inverse = None
             if self.tf.can_transform('map', 'odom', Time()):
                 map_tf = self.tf.lookup_transform('map', 'odom', Time())
@@ -357,10 +379,22 @@ class Terrain(Node):
             self.local_reasons_pub.publish(grid_message(local_reasons, 'odom', depth.header.stamp))
             self.local_pub.publish(grid_message(local, 'odom', depth.header.stamp))
             self.local_publication_monotonic=time.monotonic()
+            if hasattr(self, 'publication_latencies'):
+                if self.first_publication_monotonic is None:
+                    self.first_publication_monotonic=self.local_publication_monotonic
+                if self.local_publication_monotonic-self.first_publication_monotonic>=10.:
+                    self.publication_latencies.append(self.local_publication_monotonic-self.frame_received_monotonic)
             self.record_frame(depth, info, tf, inverse, frame, frame_layers, local,
                               global_grid if map_tf is not None else None)
             self.update_seconds = time.monotonic()-started
             self.compute_error = ''
+            # Diagnostics run AFTER successful safety publication, at most 1 Hz.
+            if getattr(self,'measured',None) is not None and inverse is not None and stamp-self.last_measured_publication >= 1.:
+                from .core import rotation
+                translation, quaternion = self.rigid(inverse)
+                measured, self.measured_status = self.measured.project(global_grid, translation, rotation(quaternion))
+                self.measured_pub.publish(grid_message(measured, 'map', depth.header.stamp))
+                self.last_measured_publication = stamp
         except (TransformException, ValueError, OSError, RuntimeError) as error:
             self.compute_error = str(error)
             self.get_logger().warning(str(error), throttle_duration_sec=5.)

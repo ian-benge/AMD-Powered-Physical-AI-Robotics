@@ -41,6 +41,11 @@ class CancellationTests(unittest.TestCase):
 
 
 class DesktopAuthorityTests(unittest.TestCase):
+    def setUp(self):
+        guard = patch.object(starter, 'require_desktop')
+        self.guard = guard.start()
+        self.addCleanup(guard.stop)
+
     def process(self, display=':0'):
         value=Mock()
         value.read_bytes.return_value=('/usr/bin/Xwayland\0'+display+'\0-auth\0/run/user/1001/authority\0').encode()
@@ -100,6 +105,16 @@ class DesktopAuthorityTests(unittest.TestCase):
                 patch.object(starter.Path,'glob',return_value=[self.process()]), \
                 patch.object(starter.subprocess,'check_output',return_value=b''):
             with self.assertRaisesRegex(ValueError,'authority is unavailable'):starter.desktop_authority()
+
+    def test_reachable_x11_without_active_output_stops_before_cookie_discovery(self):
+        from desktop_render_guard import DesktopUnavailable
+        self.guard.side_effect = DesktopUnavailable('no active desktop output')
+        with patch.dict(starter.os.environ, {'DISPLAY': ':0'}, clear=True), \
+                patch.object(starter.subprocess, 'run', return_value=Mock(returncode=0)), \
+                patch.object(starter.Path, 'glob') as discover:
+            with self.assertRaisesRegex(DesktopUnavailable, 'no active desktop output'):
+                starter.desktop_authority()
+            discover.assert_not_called()
 
 
 if __name__ == '__main__':

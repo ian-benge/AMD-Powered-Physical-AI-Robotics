@@ -1,6 +1,6 @@
 # Build the existing docker/Dockerfile.jazzy as rover-jazzy first.
 FROM rover-jazzy
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get -o APT::Update::Error-Mode=any update && apt-get install -y --no-install-recommends \
     ros-jazzy-navigation2 ros-jazzy-nav2-bringup ros-jazzy-rtabmap-ros \
     ros-jazzy-grid-map-msgs ros-jazzy-sensor-msgs-py ros-jazzy-message-filters \
     ros-jazzy-rviz2 python3-yaml python3-pytest \

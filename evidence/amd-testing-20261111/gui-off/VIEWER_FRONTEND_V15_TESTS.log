@@ -1,0 +1,16 @@
+test_cancel_before_start_launches_nothing (test_demo_exterior_view.ExteriorViewTests.test_cancel_before_start_launches_nothing) ... ok
+test_exec_worker_sources_ros_and_keeps_arguments_separate (test_demo_exterior_view.ExteriorViewTests.test_exec_worker_sources_ros_and_keeps_arguments_separate) ... ok
+test_only_fresh_stopped_disarmed_views_are_allowed (test_demo_exterior_view.ExteriorViewTests.test_only_fresh_stopped_disarmed_views_are_allowed) ... ok
+test_operator_stop_reaps_viewer (test_demo_exterior_view.ExteriorViewTests.test_operator_stop_reaps_viewer) ... Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+KeyboardInterrupt
+ok
+test_timeout_reaps_a_detached_child_without_touching_same_partition_peer (test_demo_exterior_view.ExteriorViewTests.test_timeout_reaps_a_detached_child_without_touching_same_partition_peer) ... Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+KeyboardInterrupt
+ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.685s
+
+OK

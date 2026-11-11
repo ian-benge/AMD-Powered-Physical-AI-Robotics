@@ -8,20 +8,25 @@
 
 **A simulated Mars rover with AMD NPU object detection, GPU terrain processing, RGB-D mapping, and guarded navigation.**
 
-Developed for a Texas A&M engineering capstone. This repository brings together the rover simulation, synthetic-data pipeline, detector deployment, operator dashboard, terrain mapper, and object tracking. November updates add rendering corrections, reachable terrain, adaptive mapping and a resumable 10,000-image collection pipeline. Autonomous sample-site approach remains future work.
+Developed for a Texas A&M engineering capstone. The project combines a reproducible Mars environment, synthetic-data collection, four-class detector training, AMD accelerator deployment, terrain mapping and a browser-controlled rover. An autonomous exploration, simulated sampling and return workflow is implemented as an experimental candidate; end-to-end acceptance remains open.
+
+**For AMD evaluation:** start with the [testing guide](docs/AMD_TESTING_GUIDE.md), which separates clean-checkout tests, retained Halo deployment requirements, measured results and unresolved issues. This is a simulation research prototype; no physical-rover or completed autonomous-mission claim is made.
 
 ![Recorded Halo run: camera detections, terrain map, confirmed rocks, and manual controls](docs/media/rover-dashboard.png)
 
 *Actual scene-50000 simulation on the Halo development machine. Camera boxes are immediate predictions; yellow map markers require independent, depth-supported observations.*
 
-## November 2026 development update
+## Current status — November 11, 2026
 
 - **Rendering and terrain:** corrected opaque-material depth behavior, shared visual/collision surfaces, reproducible reachable layouts and matched RGB/depth calibration. See the [rendering](docs/PHASE1_RENDERING_ACCEPTANCE_20261104.md) and [terrain](docs/PHASE2_TERRAIN_ACCEPTANCE_20261104.md) acceptance records.
 - **Mapping:** CPU/ROCm replay and bounded rendered checks validate measured-ground adaptive clearing while keeping established hazards and latched stops protected. [Mapping acceptance](docs/PHASE3_MAPPING_ACCEPTANCE_20261105.md).
 - **Larger environments:** a versioned 40 x 40 m profile adds a continuous terrain apron, density presets, seeded appearance and larger maps. Its Halo default is **experimental**: live latency and remaining density acceptance checks are still open. [40 m closeout](docs/SIMULATION_ENVIRONMENT_V2_CLOSEOUT.md).
-- **Image collection:** the 200-image pilot passed automated label/cleanup checks. The separate 10,000-image campaign supports immutable attempts, verified resume and automatic monitoring renewal. At the November 8 [depth-cutoff repair](docs/BULK_DEPTH_BOUNDARY_FIX_20261108.md), **2,000 images in ten batches** were verified and collection resumed in batch 11. This is a dated snapshot; image review, four-class export and training approval remain separate. [Collection guide](docs/BULK_CONTINUOUS_COLLECTION_GUIDE.md).
+- **Data and training:** collection was intentionally stopped at **5,000 images / 250 scenes**, including 1,000 background frames. A separate four-class export contains 5,300 training, 100 validation and 100 test images. Training stopped after 28 saved epochs; the validation-selected epoch-22 checkpoint is the assessment candidate. Complete new-image visual review remains outstanding. [Dataset preparation](docs/CAPTURE5000_TRAINING_READINESS_20261108.md).
+- **Detector evaluation:** matched NPU test mAP50–95 improved from **76.67% to 78.90%** on the same 100 legacy test images. Mudstone AP decreased, and unseen 40 m scene evaluation remains pending. The baseline stays available. [Model comparison](docs/CAPTURE5000_MODEL_ASSESSMENT.md).
+- **Autonomous demo:** exploration, return reservation, target preview/approval, simulated collection, route layers and browser-loss stops are implemented with replay and ROS interface checks. The first autonomous return was interrupted by a host freeze; its cause is unresolved. **No complete autonomous cycle has passed acceptance.** [Demo guide](docs/AUTONOMOUS_DEMO_GUIDE.md), [incident report](docs/AUTONOMOUS_DEMO_FREEZE_20261110.md).
+- **Thermal isolation:** the GUI-off browser candidate retains 15 Hz Ogre RGB-D, NPU detection and float64 GPU terrain. A five-minute stationary interval recorded **80.82°C mean / 83.125°C peak**, worst reported rolling mapping p95 **165.65 ms**, and median reported real-time factor **0.996**. The below-80°C target was not met; no matched cooling or endurance claim is made. [Plots and scope](docs/AUTONOMOUS_DEMO_BROWSER_PROFILE.md).
 
-The [development evidence summary](evidence/development-20261107/README.md) separates reproducible source checks from recorded hardware results and incomplete acceptance gates.
+The [AMD handoff evidence](evidence/amd-testing-20261111/README.md) and [earlier development evidence](evidence/development-20261107/README.md) separate fresh source checks from recorded hardware measurements. Raw datasets, model weights, compiled caches and private operator kits are not included in Git.
 
 ## What the system does
 
@@ -31,19 +36,21 @@ The [development evidence summary](evidence/development-20261107/README.md) sepa
 - **Maps and localizes:** RGB-D visual odometry and RTAB-Map SLAM feed terrain-aware Nav2 planning.
 - **Confirms objects over time:** three translated viewpoints, raised-surface evidence, uncertainty-aware association, stable IDs, and contradiction-driven retirement reduce false and duplicate rock markers.
 - **Keeps motion under one guard:** full-footprint terrain checks, command leases, wall-clock watchdogs, explicit mode selection, and latched stops protect the simulated rover.
+- **Implements a bounded mission candidate:** information-gain frontier selection, return budgeting, detected-soil or map-click target selection, approved round trips and ten-second simulated collection. Acceptance gates remain explicit.
 
 ## Measured results
 
 | Measurement | Recorded result | Scope |
 | --- | --- | --- |
-| November 7 source checks | **704 tests; 12 environment/hardware skips** | Fresh Windows CPU checks across six suites; four browser harnesses pass. [Exact results](evidence/development-20261107/source-checks/checks.json) |
-| October 25 source checks | **480 tests; 4 ROCm-only skips** | Historical publication check; [November checks](evidence/development-20261107/source-checks/checks.json) cover the expanded source and collection suites |
-| NPU detector throughput | **38.46 FPS**, mean of three 60 s replays | Batch 1, 576×960 YOLOv8s A16W8; drawing/JPEG included; camera, network and Gazebo excluded |
-| NPU held-out accuracy | **0.76665 mAP50–95** | Four-class synthetic test set, shared evaluator |
+| Current source checks | **805 tests; 16 hardware/OS skips** | Six isolated Python suites and six browser JavaScript harnesses; [fresh results](evidence/amd-testing-20261111/source-checks/checks.json) |
+| Epoch-22 NPU held-out accuracy | **78.90% mAP50–95**; baseline **76.67%** | Same 100 legacy synthetic test images and shared deployment evaluator; not an unseen 40 m or physical-camera test |
+| Epoch-22 NPU execution | **23.46 ms mean / 24.22 ms p95** | 100 test images, 576×960 A16W8; model execution only, excluding rendering, transport and drawing |
+| Historical baseline NPU throughput | **38.46 FPS**, mean of three 60 s replays | Batch 1, 576×960 YOLOv8s A16W8; drawing/JPEG included; camera, network and Gazebo excluded |
 | GPU terrain subsystem | **27.75 → 17.75 ms mean** | Paired CPU vs deployed ROCm/RPC depth/classification + projection; 36% reduction for this subsystem |
-| Integrated stationary run | **30.30 detector FPS**, 600 GPU operations in 60 s | Gazebo, NPU detection and GPU terrain running together; stationary rover |
+| Historical integrated stationary run | **30.30 detector FPS**, 600 GPU operations in 60 s | Earlier Gazebo/NPU/GPU profile; stationary rover; separate from the current 15 Hz browser measurements |
 | Rock revisit acceptance | **3/3 bounded trials passed** | Approximately 0.45 m translation followed by a complete turn and fresh re-sighting under the same ID |
 | Tracking replay | **1,330 frames; zero false/duplicate confirmations** | Recorded evidence in evaluated scene-50000 regions; not a general accuracy guarantee |
+| GUI-off stationary mapping | **165.65 ms worst reported rolling p95; 83.125°C peak Tctl** | Five steady minutes, stopped rover, sparse 40 m scene; no matched baseline, autonomous or endurance acceptance |
 
 See [verification and evidence](docs/VERIFICATION.md) for conditions, source reports, failed experiments, and limits. NPU and GPU detector comparisons use different architectures; the numbers do not isolate quantization effects or establish an energy saving.
 
@@ -110,12 +117,12 @@ The repository's original laptop-webcam application remains available, with its 
 
 **Verified in bounded simulation:** browser manual driving, corrected RGB-D rendering, reachable terrain, adaptive-clearing replay/publication, actual NPU execution, GPU terrain parity, confirmed-rock/revisit trials and the 200-image capture/cleanup pilot.
 
-**Delivered with acceptance still open:** the 40 m environment, additional density/speed conditions, autonomous waypoint/return missions and complete obstacle/contact coverage. The 10,000-image campaign is in progress. Recorded latency, localization and startup limitations remain visible in the reports.
+**Delivered with acceptance still open:** the 40 m environment across all density/speed conditions, the epoch-22 detector on unseen scenes, autonomous exploration/sampling/return, and complete obstacle/contact coverage. The 10,000-image reservation stopped at 5,000; it is not a completed dataset.
 
-**Next:** complete image collection and review, prepare the metadata-based four-class export, then evaluate detector updates and travel to an operator-approved soil site with an explicit return. Arms, sample collection and physical-rover qualification are later milestones. [Roadmap →](docs/ROADMAP.md)
+**Next:** investigate host stability and startup odometry, establish thermal margin, complete diagnostic image review, then qualify fresh autonomous cycles and recording. Sampling in this candidate is a timed stationary event and record; physical collection hardware remains future work. [Roadmap →](docs/ROADMAP.md)
 
 ## Background and attribution
 
-Maintained by [Ian Benge](https://github.com/ian-benge) as a portfolio publication of an ongoing team capstone. The integrated source derives from [agfoti04/AMD-Capstone](https://github.com/agfoti04/AMD-Capstone), base commit `14d616ea1f27f6442223cab8d2b20446e41da3ec`, plus the navigation worktree through October 25, 2026 and subsequent development through November 7, 2026. The original repository and worktrees are preserved.
+Maintained by [Ian Benge](https://github.com/ian-benge) as a portfolio publication of an ongoing team capstone. The integrated source derives from [agfoti04/AMD-Capstone](https://github.com/agfoti04/AMD-Capstone), base commit `14d616ea1f27f6442223cab8d2b20446e41da3ec`, plus the navigation worktree through October 25, 2026 and subsequent development through November 10, 2026. The original repository and worktrees are preserved. This is an independent student project, not an AMD product or endorsement.
 
 Existing authorship, ROS package license declarations, and asset attribution are retained. See [third-party notices](THIRD_PARTY_NOTICES.md), [contributing](CONTRIBUTING.md), and the [documentation index](docs/README.md).

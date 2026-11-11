@@ -2,6 +2,9 @@
 
 Start with [Getting started](GETTING_STARTED.md), [Architecture](ARCHITECTURE.md), and [Verification](VERIFICATION.md). These describe this publication's supported entry points and current acceptance boundaries.
 
+**For AMD evaluation:** [Testing guide, artifact requirements and open issues](AMD_TESTING_GUIDE.md),
+[November 11 evidence and fresh checks](../evidence/amd-testing-20261111/README.md).
+
 | Topic | Guide |
 | --- | --- |
 | Current milestone and planned work | [Roadmap](ROADMAP.md) |
@@ -20,6 +23,12 @@ Start with [Getting started](GETTING_STARTED.md), [Architecture](ARCHITECTURE.md
 | New 200-image pilot | [Pilot guide](PILOT200_COLLECTION_GUIDE.md), [cleanup acceptance](PILOT200_PROCESS_CLEANUP_FIX_20261106.md) |
 | Full image collection and automatic renewal | [Campaign guide](FULL10000_COLLECTION_GUIDE.md), [continuous starter](BULK_CONTINUOUS_COLLECTION_GUIDE.md), [acceptance](BULK_CONTINUOUS_ACCEPTANCE_20261107.md) |
 | Capture recovery at the depth cutoff | [November 8 repair and regression](BULK_DEPTH_BOUNDARY_FIX_20261108.md) |
+| Capture interruption after desktop disconnect | [Active-output guard and verification](BULK_ACTIVE_DISPLAY_FIX_20261108.md) |
+| Training from the stopped 5,000-image campaign | [Preparation evidence and limits](CAPTURE5000_TRAINING_READINESS_20261108.md), [training and monitoring guide](CAPTURE5000_TRAINING_GUIDE.md) |
+| Epoch-22 detector metrics and manual assessment | [Matched GPU/NPU results and browser starter](CAPTURE5000_MODEL_ASSESSMENT.md) |
+| Browser assessment thermal stop | [Repair and bounded live verification](CAPTURE5000_BROWSER_THERMAL_FIX.md) |
+| Autonomous exploration and simulated sampling candidate | [Operator guide and pending acceptance gates](AUTONOMOUS_DEMO_GUIDE.md), [November 10 freeze investigation](AUTONOMOUS_DEMO_FREEZE_20261110.md) |
+| Autonomous browser profile with the Gazebo window disabled | [Bounded inspection viewer, measured temperature/timing and limits](AUTONOMOUS_DEMO_BROWSER_PROFILE.md) |
 | November source and deployment evidence | [Development evidence](../evidence/development-20261107/README.md) |
 | Original laptop webcam prototype | [Webcam example](../examples/webcam/README.md) |
 

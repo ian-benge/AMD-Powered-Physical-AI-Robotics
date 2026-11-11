@@ -1,0 +1,200 @@
+{
+  "publication_date": "2026-11-11",
+  "scope": "Selected recorded detector, incident and GUI-off evidence. Source hashes and transformations recorded; raw artifacts remain private.",
+  "files": [
+    {
+      "source": "navigation_sessions/capture5000-training-20261108/MODEL_METRICS_SUMMARY_V2.json",
+      "source_sha256": "ecc76f0ca36e15f55e881e825a8d003a7ba6854079402c446b7ea6255977d2cd",
+      "source_bytes": 25386,
+      "published": "evidence/amd-testing-20261111/model/MODEL_METRICS_SUMMARY_V2.json",
+      "published_sha256": "14a96edaab9f18f54be6f1b6b26ad8d7b27b3c2fae23ef138c4b2864800db18a",
+      "published_bytes": 25354,
+      "transformation": "JSON reindent and LF normalization only; original metric values and evidence hashes retained."
+    },
+    {
+      "source": "navigation_sessions/autonomous-demo-20261109/freeze-investigation-20261110/analysis-v1/FINDINGS.json",
+      "source_sha256": "d33e3188c01ec128e3da233499e52a3e47fe607b487d5ca6e407d30d44eff053",
+      "source_bytes": 2549002,
+      "published": "evidence/amd-testing-20261111/incident/FINDINGS_SELECTED.json",
+      "published_sha256": "12f9ddaebd84a2e3689b94e2c7a3ce74a80ce0cb287363daede33a67c0bf4795",
+      "published_bytes": 2951,
+      "transformation": "Selected unchanged fields; raw journals, host/boot/session identities, path-keyed integrity details and repeated event arrays omitted. No missing evidence repaired."
+    },
+    {
+      "source": "navigation_sessions/autonomous-demo-20261109/gui-off-20261110/thermal-reconciled-v13/SUMMARY.json",
+      "source_sha256": "12c0541ac7678a23ffa7bdc3c9855432c0a9915a8404ea3392953775e90be9a4",
+      "source_bytes": 2351,
+      "published": "evidence/amd-testing-20261111/thermal/STATIONARY_INTERVAL.json",
+      "published_sha256": "cb7c4274702d680dfe86c559a93b6adffa05ebc83c4608433d2365212dd47f74",
+      "published_bytes": 2035,
+      "transformation": "Selected unchanged measurement/gate fields and snapshot hashes; private session/boot IDs and source paths omitted."
+    },
+    {
+      "source": "navigation_sessions/autonomous-demo-20261109/gui-off-20261110/thermal-v13-20261110T220910619Z/SUMMARY.json",
+      "source_sha256": "36008f78e63d3d4026571bcf8065880ab82f3390609487c3f8b8b0493d7c1de2",
+      "source_bytes": 1880,
+      "published": "evidence/amd-testing-20261111/thermal/ORIGINAL_SINGLE_INPUT_RESULT.json",
+      "published_sha256": "0a1e8a978c59e80b71dbb0ac516e249e8d33afa3bc26bd209f31fd411f1d6750",
+      "published_bytes": 1612,
+      "transformation": "Selected unchanged original failure fields; private input/output/session paths omitted. Later reconciliation is separate."
+    },
+    {
+      "source": "navigation_sessions/autonomous-demo-20261109/gui-off-20261110/thermal-reconciled-v13/NATIVE_HEALTH_SUMMARY.json",
+      "source_sha256": "137ecf2a33660f9e5f6dde29bc310522907c0b706b428c2f583c61086d538b95",
+      "source_bytes": 1728,
+      "published": "evidence/amd-testing-20261111/thermal/NATIVE_HEALTH_SELECTED.json",
+      "published_sha256": "a269b681beefead1703de0e5db2c7986bb2e19d7808032d6b8e9957d7abe4de9",
+      "published_bytes": 978,
+      "transformation": "Selected health metrics; duplicate PPT field count omitted and explained. No raw host metrics or estimated pose identities published."
+    },
+    {
+      "source": "navigation_sessions/autonomous-demo-20261109/gui-off-20261110/GUI_OFF_HALO_OFFHOST_VERIFICATION.json",
+      "source_sha256": "7a752049c052532db0d3a9ce5ddc9e9cf9c93830ffba358316547e8404ac485d",
+      "source_bytes": 413,
+      "published": "evidence/amd-testing-20261111/archives/GUI_OFF_HALO_OFFHOST_VERIFICATION.json",
+      "published_sha256": "6ac562544b0a5b3b78be47a4b386d8a024a79c947f0811381017a731ead757d8",
+      "published_bytes": 261,
+      "transformation": "Archive path replaced by basename; hashes, verification counts and outcome unchanged. Raw archive excluded."
+    },
+    {
+      "source": "navigation_sessions/autonomous-demo-20261109/gui-off-20261110/GUI_OFF_EVIDENCE_V1.verification.json",
+      "source_sha256": "b9de78da6e8314a88d29b235c0710e503247500f961021fb6dcaaf8c8c0c631e",
+      "source_bytes": 456,
+      "published": "evidence/amd-testing-20261111/archives/GUI_OFF_EVIDENCE_V1.verification.json",
+      "published_sha256": "e8a76a4dfddf07e67e168585e756f38a3892f51b955c75db3dcd9afcebcc812c",
+      "published_bytes": 304,
+      "transformation": "Archive path replaced by basename; hashes, verification counts and outcome unchanged. Raw archive excluded."
+    },
+    {
+      "source": "navigation_sessions/autonomous-demo-20261109/gui-off-20261110/GUI_OFF_HALO_EVIDENCE_V1.manifest.json",
+      "source_sha256": "30dd48debb00767b8a5d0b60c5038957474148ccec162d18dcf257c5ff9290f0",
+      "source_bytes": 65716,
+      "published": "evidence/amd-testing-20261111/gui-off/RELEASE_IDENTITIES.json",
+      "published_sha256": "7d415b5f6e1d3c3a1e9b852c5d6624643b57433818a2aa3949546ab4523894a1",
+      "published_bytes": 845,
+      "transformation": "Selected existing archive member identities; private source paths and unrelated manifest entries omitted."
+    },
+    {
+      "source": "audit:curated-inputs/gui-off/gui-tools.log",
+      "source_sha256": "9b24fbc4851b215b8e4fc533e9f14494f8098533a8168ba48102e1053559b444",
+      "source_bytes": 1678,
+      "published": "evidence/amd-testing-20261111/gui-off/gui-tools.log",
+      "published_sha256": "9b24fbc4851b215b8e4fc533e9f14494f8098533a8168ba48102e1053559b444",
+      "published_bytes": 1678,
+      "transformation": "Exact selected GUI_OFF_HALO_EVIDENCE_V1.zip member, with CRLF-to-LF normalization only."
+    },
+    {
+      "source": "audit:curated-inputs/gui-off/scene-control.log",
+      "source_sha256": "76d1a02b7c3d9ab65989c1b21e35e10cbcaddfc597637d8402313c4a5c83fef9",
+      "source_bytes": 2421,
+      "published": "evidence/amd-testing-20261111/gui-off/scene-control.log",
+      "published_sha256": "76d1a02b7c3d9ab65989c1b21e35e10cbcaddfc597637d8402313c4a5c83fef9",
+      "published_bytes": 2421,
+      "transformation": "Exact selected GUI_OFF_HALO_EVIDENCE_V1.zip member, with CRLF-to-LF normalization only."
+    },
+    {
+      "source": "audit:curated-inputs/gui-off/actual-ros.log",
+      "source_sha256": "b4975438d1e4c485ec4512c2eb83d7bf98611841eb1b93b3e782181b3986e6b1",
+      "source_bytes": 109,
+      "published": "evidence/amd-testing-20261111/gui-off/actual-ros.log",
+      "published_sha256": "b4975438d1e4c485ec4512c2eb83d7bf98611841eb1b93b3e782181b3986e6b1",
+      "published_bytes": 109,
+      "transformation": "Exact selected GUI_OFF_HALO_EVIDENCE_V1.zip member, with CRLF-to-LF normalization only."
+    },
+    {
+      "source": "audit:curated-inputs/gui-off/transport.json",
+      "source_sha256": "a7ff91f8b9b8c32635268a29a935a018d9927bf0102089a0f7e41938ef8367e9",
+      "source_bytes": 336,
+      "published": "evidence/amd-testing-20261111/gui-off/transport.json",
+      "published_sha256": "a7ff91f8b9b8c32635268a29a935a018d9927bf0102089a0f7e41938ef8367e9",
+      "published_bytes": 336,
+      "transformation": "Exact selected GUI_OFF_HALO_EVIDENCE_V1.zip member, with CRLF-to-LF normalization only."
+    },
+    {
+      "source": "audit:curated-inputs/gui-off/VIEWER_FRONTEND_V15_TESTS.log",
+      "source_sha256": "d27f234452ab327f57ae45bbe4fd8074432b59fe6ecb9c338dd11fcca157aa28",
+      "source_bytes": 1049,
+      "published": "evidence/amd-testing-20261111/gui-off/VIEWER_FRONTEND_V15_TESTS.log",
+      "published_sha256": "d27f234452ab327f57ae45bbe4fd8074432b59fe6ecb9c338dd11fcca157aa28",
+      "published_bytes": 1049,
+      "transformation": "Exact selected GUI_OFF_HALO_EVIDENCE_V1.zip member, with CRLF-to-LF normalization only."
+    },
+    {
+      "source": "audit:curated-inputs/gui-off/MANUAL_SESSION_FINAL.json",
+      "source_sha256": "fef929b1ef7b10520ff5dbb3b2d45c6ae4c468964a961c89edf409f4e6ae6994",
+      "source_bytes": 421,
+      "published": "evidence/amd-testing-20261111/gui-off/MANUAL_SESSION_FINAL.json",
+      "published_sha256": "0ff97fa037a9c3d6297b2e061559910439d90594df0429b836b14bdbc3ae7477",
+      "published_bytes": 271,
+      "transformation": "Selected archive member; private case path omitted, all result and limitation fields retained."
+    },
+    {
+      "source": "audit:source-checks/navigation.txt",
+      "source_sha256": "736b090e19f580e2b50325b6d8ede73c97dfbb7f9dbb88626b9b1e6b46364680",
+      "source_bytes": 606,
+      "published": "evidence/amd-testing-20261111/source-checks/navigation.txt",
+      "published_sha256": "955c8361083595e638f774db23938cdb42ef82592fe7bf2d0f1ebb7ddec0e45d",
+      "published_bytes": 558,
+      "transformation": "CRLF-to-LF; repository and developer TEMP prefixes replaced by explicit placeholders. Test outcomes unchanged."
+    },
+    {
+      "source": "audit:source-checks/perception.txt",
+      "source_sha256": "fe72539b7e26dd262e63a8fc1de57ade652b768cc3d089b16f652e31522d899b",
+      "source_bytes": 395,
+      "published": "evidence/amd-testing-20261111/source-checks/perception.txt",
+      "published_sha256": "6efa7124003f42334dc66d756f251589a009ef31b31a2ca6b30a2a1027aacd90",
+      "published_bytes": 387,
+      "transformation": "CRLF-to-LF; repository and developer TEMP prefixes replaced by explicit placeholders. Test outcomes unchanged. Trailing whitespace removed."
+    },
+    {
+      "source": "audit:source-checks/environment.txt",
+      "source_sha256": "058da4c315226dfcdfb41456b62e7e51a868f64bb20207ff01862ed27d0ef067",
+      "source_bytes": 1140,
+      "published": "evidence/amd-testing-20261111/source-checks/environment.txt",
+      "published_sha256": "fd67562371a994b4cfa491597e80da2b6c192f864f063d9119f6ed4b66494df4",
+      "published_bytes": 1123,
+      "transformation": "CRLF-to-LF; repository and developer TEMP prefixes replaced by explicit placeholders. Test outcomes unchanged."
+    },
+    {
+      "source": "audit:source-checks/training.txt",
+      "source_sha256": "22c59ab3dff81c39464f80d4d79c9d1f1aa31ec213c0eb1971b3809c0528fd2b",
+      "source_bytes": 128,
+      "published": "evidence/amd-testing-20261111/source-checks/training.txt",
+      "published_sha256": "d7d52190669de464b2383f33dc0df4c3189377d02159a1230c6861d9fd5fdcde",
+      "published_bytes": 123,
+      "transformation": "CRLF-to-LF; repository and developer TEMP prefixes replaced by explicit placeholders. Test outcomes unchanged."
+    },
+    {
+      "source": "audit:source-checks/collection.txt",
+      "source_sha256": "3ae1cc8da710f17df34418f1ebf38d93abf060f35ce3d1edb64a7c4d60778a0b",
+      "source_bytes": 728,
+      "published": "evidence/amd-testing-20261111/source-checks/collection.txt",
+      "published_sha256": "3d314987e933645743ef9a1f49a92af4f6dc83688a625e1b68d9eb3d7a02e6fa",
+      "published_bytes": 702,
+      "transformation": "CRLF-to-LF; repository and developer TEMP prefixes replaced by explicit placeholders. Test outcomes unchanged."
+    },
+    {
+      "source": "audit:source-checks/webcam.txt",
+      "source_sha256": "4a203f958ef9d765ff1f89816631e1bdf553b4acf1d56449f1d10ad92bb46ff3",
+      "source_bytes": 107,
+      "published": "evidence/amd-testing-20261111/source-checks/webcam.txt",
+      "published_sha256": "feabb4add9e2ca3374e538560634d1ec97dc4f4ce89aab12f3d726e36ea9b2f6",
+      "published_bytes": 102,
+      "transformation": "CRLF-to-LF; repository and developer TEMP prefixes replaced by explicit placeholders. Test outcomes unchanged."
+    },
+    {
+      "source": "Fresh publication check generated on Windows",
+      "published": "evidence/amd-testing-20261111/source-checks/source-snapshot.json",
+      "published_sha256": "cb8d5742a3f3c5bf9a7bddecdcc2d35be5ecac82bf0f94b9e2cbcd7859e728a6",
+      "published_bytes": 49043,
+      "transformation": "Generated result/index, not a copied historical hardware measurement."
+    },
+    {
+      "source": "Fresh publication check generated on Windows",
+      "published": "evidence/amd-testing-20261111/source-checks/checks.json",
+      "published_sha256": "87b8fdb4f12216b45067f7604196c21d977e8b8ac17098ab911ad4f20da60295",
+      "published_bytes": 3308,
+      "transformation": "Generated result/index, not a copied historical hardware measurement."
+    }
+  ]
+}

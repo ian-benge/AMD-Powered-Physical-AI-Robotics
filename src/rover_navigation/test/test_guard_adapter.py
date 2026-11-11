@@ -15,9 +15,16 @@ from rover_navigation.safety import SafetyGate
 
 class NodeDouble:
     def __init__(self, name):
+        self.parameters={}
         for method in ('create_publisher', 'create_client', 'create_subscription',
                        'create_service', 'create_timer'):
             setattr(self, method, MagicMock())
+
+    def declare_parameter(self,name,value):
+        self.parameters[name]=value
+
+    def get_parameter(self,name):
+        return types.SimpleNamespace(value=self.parameters[name])
 
 
 class GuardAdapterTests(unittest.TestCase):

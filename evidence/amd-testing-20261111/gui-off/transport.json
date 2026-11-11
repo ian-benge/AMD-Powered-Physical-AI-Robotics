@@ -1,0 +1,17 @@
+{
+  "fixture_only": true,
+  "motion_requested": false,
+  "streams": {
+    "rgb": {
+      "count": 90,
+      "wall_hz": 15.005829414028991,
+      "max_gap_seconds": 0.06741492799983462
+    },
+    "depth": {
+      "count": 90,
+      "wall_hz": 15.005258083528679,
+      "max_gap_seconds": 0.0676371240001572
+    }
+  },
+  "passed": true
+}

@@ -1,0 +1,8 @@
+{
+  "status": "OFFHOST_ALL_FILES_VERIFIED",
+  "utc": "2026-11-10T22:22:49.7542726Z",
+  "archive": "GUI_OFF_HALO_EVIDENCE_V1.zip",
+  "sha256": "b95d733831ef67c5d320c19b5285df38bb4934fc14a6dbe7c2b14e2e38f81960",
+  "verified_files": 183,
+  "expected_files": 183
+}

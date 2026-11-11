@@ -33,7 +33,9 @@ change no kernel, firmware, driver, power, fan or remote-desktop settings.
 
 ## Start the retained baseline
 
-Follow the current [default-stack commands](../../halo-crash-logs/amd-support-email-20261104/mitigation-update-20261104/package/default-stack/COMMANDS.md).
+The retained `default-stack/COMMANDS.md` belongs to the private AMD support
+package and is not shipped in this checkout. For clean-checkout setup and current
+artifact requirements, use the [AMD testing guide](AMD_TESTING_GUIDE.md).
 Inspect `~/bin/halo-rover status` first. In separate terminals, start `capture`,
 `temps`, `npu`, and `terrain`, waiting for each readiness gate. Inside the Halo
 graphical desktop, run `~/bin/halo-rover sim`. After visually inspecting launch

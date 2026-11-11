@@ -23,10 +23,17 @@ def setup(context):
     from rover_navigation.fixtures import fixture_world
     from rover_navigation.coverage import ground_view
     source = Path(LaunchConfiguration('scene').perform(context)).resolve()
+    try:
+        demo_mode = LaunchConfiguration('demo_mode').perform(context) == 'true'
+    except KeyError:  # historical source-only launch fixtures
+        demo_mode = False
     speed = float(LaunchConfiguration('navigation_speed').perform(context))
     pitch = float(LaunchConfiguration('camera_pitch').perform(context))
     engine = LaunchConfiguration('sensor_render_engine').perform(context)
     rgb_far = float(LaunchConfiguration('camera_rgb_far').perform(context))
+    camera_rate = float(LaunchConfiguration('camera_rate_hz').perform(context))
+    if not math.isfinite(camera_rate) or not 10 <= camera_rate <= 30:
+        raise ValueError('camera_rate_hz must be finite and in [10, 30] Hz')
     if not math.isfinite(rgb_far) or not 8 <= rgb_far <= 20:
         raise ValueError('camera_rgb_far must be finite and in [8, 20] metres')
     if engine not in ('ogre2', 'ogre'):
@@ -37,6 +44,8 @@ def setup(context):
         raise ValueError('camera_pitch must be finite and in [0, pi/2) radians')
     if not math.isfinite(speed) or not 0 < speed <= .2:
         raise ValueError('navigation_speed must be in (0, 0.20] m/s')
+    if demo_mode and (speed>.10 or camera_rate!=15 or LaunchConfiguration('database').perform(context)):
+        raise ValueError('Demo requires a fresh map, 15 Hz RGB-D and speed <=0.10 m/s')
     from rover_navigation.manual_input import ManualInput
     initial=float(LaunchConfiguration('manual_initial_linear_speed').perform(context))
     ManualInput(max_linear=float(LaunchConfiguration('manual_max_linear_speed').perform(context)),
@@ -53,6 +62,7 @@ def setup(context):
     from mars_training_environment.environment_v2 import operating_map_size
     scene['operating_map_size_m']=operating_map_size(scene,LaunchConfiguration('map_size_m').perform(context))
     scene['config'] = live_camera_config(scene['config'], 960)
+    scene['config']['camera']['rate_hz'] = camera_rate
     # A navigation-only pitch closes the near-ground gap from the original
     # high/mildly tilted camera. Capture/live profiles and the source scene stay intact.
     scene['config']['camera']['tilt_rad'] = pitch
@@ -91,6 +101,9 @@ def build_nodes(context, scene, run, source, database):
     from rover_navigation.core import DRIVE_CENTER_X, FOOTPRINT
     from rover_navigation.coverage import ground_view
     camera = scene['config']['camera']
+    try: demo_mode = LaunchConfiguration('demo_mode').perform(context) == 'true'
+    except KeyError: demo_mode = False
+    demo_profile = LaunchConfiguration('demo_profile').perform(context) if demo_mode else 'full'
     description = robot_description(scene['config'], navigation=True, drive_center_x=DRIVE_CENTER_X)
     (run/'robot.urdf').write_text(description)
     (run/'session.json').write_text(json.dumps(dict(scene=str(source), camera=camera, database=database,
@@ -110,6 +123,7 @@ def build_nodes(context, scene, run, source, database):
                                                    manual_max_angular_speed=float(LaunchConfiguration('manual_max_angular_speed').perform(context)),
                                                    manual_initial_linear_speed=float(LaunchConfiguration('manual_initial_linear_speed').perform(context)),
                                                    map_size_m=scene['operating_map_size_m'],
+                                                   demo_mode=demo_mode,demo_profile=demo_profile,
                                                    gui=LaunchConfiguration('gui').perform(context),
                                                    rviz=LaunchConfiguration('rviz').perform(context),
                                                    mission_controls=LaunchConfiguration('mission_controls').perform(context),
@@ -188,13 +202,19 @@ def build_nodes(context, scene, run, source, database):
                    'navigation_speed': float(LaunchConfiguration('navigation_speed').perform(context)),
                    'waypoints': LaunchConfiguration('waypoints').perform(context)} if name == 'mission' else {}
         if name == 'terrain':
+            options['demo_mode']=demo_mode
             options['map_size_m']=scene['operating_map_size_m']
             options['mapping_on_confirm'] = LaunchConfiguration('mapping_on_confirm').perform(context) == 'true'
             options['terrain_backend'] = LaunchConfiguration('terrain_backend').perform(context)
             options['terrain_url'] = LaunchConfiguration('terrain_url').perform(context)
             options['adaptive_terrain'] = LaunchConfiguration('adaptive_terrain').perform(context) == 'true'
             options['evidence_output'] = str(run/'terrain-evidence-events.jsonl')
-        nodes.append(Node(package='rover_navigation', executable=name, output='screen', parameters=[sim, options]))
+        if name=='motion_guard' and demo_mode:
+            options.update(max_linear_speed=.1,max_angular_speed=.3)
+        if name=='mission' and demo_mode:
+            options.update(session=str(run),demo_output=str(run/'demo-events.jsonl'),demo_profile=demo_profile)
+        nodes.append(Node(package='rover_navigation', executable='demo_mission' if name=='mission' and demo_mode else name,
+                          output='screen', parameters=[sim, options]))
     if LaunchConfiguration('rviz').perform(context) == 'true':
         nodes.append(Node(package='rviz2', executable='rviz2', name='navigation_rviz',
                           arguments=['-d', str(share/'config/navigation.rviz')], parameters=[sim],
@@ -202,6 +222,8 @@ def build_nodes(context, scene, run, source, database):
     if LaunchConfiguration('mission_controls').perform(context) == 'true':
         nodes.append(Node(package='rover_navigation', executable='mission_controls', output='screen',
                           parameters=[{'session': str(run), 'port': int(LaunchConfiguration('controls_port').perform(context)),
+                                       'demo_mode':demo_mode,
+                                       'platform_temperature_file':str(run.parent/'demo-platform-temperature.json') if demo_mode else '',
                                        'max_linear_speed':float(LaunchConfiguration('manual_max_linear_speed').perform(context)),
                                        'initial_linear_speed':float(LaunchConfiguration('manual_initial_linear_speed').perform(context)),
                                        'max_angular_speed':float(LaunchConfiguration('manual_max_angular_speed').perform(context))}]))
@@ -223,7 +245,7 @@ def build_nodes(context, scene, run, source, database):
                                             'model_path': detector_model,
                                             'detector_url': LaunchConfiguration('detector_url').perform(context)}]))
         nodes.append(Node(package='rover_navigation', executable='sample_sites', output='screen',
-                          parameters=[sim, {'output': str(run/'sample-sites.json')}]))
+                          parameters=[sim, {'output': str(run/'sample-sites.json'),'demo_mode':demo_mode}]))
     lifecycle_nodes = ['planner_server', 'controller_server', 'bt_navigator']
     for name in lifecycle_nodes:
         nodes.append(Node(package='nav2_'+{'planner_server': 'planner', 'controller_server': 'controller', 'bt_navigator': 'bt_navigator'}[name],
@@ -244,6 +266,7 @@ def generate_launch_description():
         DeclareLaunchArgument('adaptive_terrain', default_value='true'),
         DeclareLaunchArgument('camera_pitch', default_value='0.4'),
         DeclareLaunchArgument('camera_rgb_far', default_value='8'),
+        DeclareLaunchArgument('camera_rate_hz', default_value='30'),
         DeclareLaunchArgument('fixture', default_value=''),
         DeclareLaunchArgument('terrain_collision', default_value='visual'),
         DeclareLaunchArgument('preview', default_value='false'),
@@ -263,4 +286,6 @@ def generate_launch_description():
         DeclareLaunchArgument('detector_backend', default_value='remote_http'),
         DeclareLaunchArgument('detector_url', default_value='http://127.0.0.1:8775'),
         DeclareLaunchArgument('waypoints', default_value=''),
+        DeclareLaunchArgument('demo_mode', default_value='false'),
+        DeclareLaunchArgument('demo_profile', default_value='full'),
         DeclareLaunchArgument('budget_seconds', default_value='600.0'), OpaqueFunction(function=setup)])

@@ -57,6 +57,12 @@ class CampaignRotation(unittest.TestCase):
         self.assertEqual(engine.events[-1], ('close', 1, 'failure'))
         self.assertEqual(len(engine.events), 3)
 
+    def test_display_loss_closes_monitoring_and_requires_reconnection_without_retry(self):
+        engine = FakeEngine([progress(21), progress(21, 'DESKTOP_RECONNECT_REQUIRED')], [1])
+        with self.assertRaisesRegex(RuntimeError, 'DESKTOP_RECONNECT_REQUIRED.*no automatic retry'):
+            continuous.run_campaign(engine)
+        self.assertEqual(engine.events, [('open', 1), ('collect', 1), ('close', 1, 'failure')])
+
     def test_keyboard_interrupt_keeps_monitors_until_close_and_never_renews(self):
         engine = FakeEngine([progress(9)], failure=KeyboardInterrupt())
         with self.assertRaises(KeyboardInterrupt):

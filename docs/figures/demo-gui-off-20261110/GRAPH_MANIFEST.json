@@ -1,0 +1,27 @@
+{
+  "source": "Saved November 10 stationary status observations; private reconciled raw snapshots identified in selected evidence.",
+  "script": "scripts/plot_demo_gui_off_thermal.py",
+  "script_sha256": "0e7c8b388dd91e8259485c6a98330eb24608a686b9bf6479e95120de56aef39a",
+  "files": [
+    {
+      "path": "readings.csv",
+      "bytes": 48340,
+      "sha256": "f67b5164325569ddcd260b696c5836aeccaf7866d4f95b3c32fb2d3c1d9124b9"
+    },
+    {
+      "path": "stationary-gui-off.png",
+      "bytes": 214838,
+      "sha256": "0b23e266612faca04db8523aac246d28feea35eaac7c04ab48f10a79df1422df"
+    },
+    {
+      "path": "stationary-gui-off.svg",
+      "bytes": 104208,
+      "sha256": "f290f70a124ace5061cb7570e6cf1271c92e8fb2966d7dbbfce0d0b5a64b6d63"
+    },
+    {
+      "path": "stationary-gui-off.pdf",
+      "bytes": 37141,
+      "sha256": "15749aecd53f29050ce7c9d3261bd4ab677de5f26cc543a50bd8f0bad74cfc0d"
+    }
+  ]
+}

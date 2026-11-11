@@ -1,0 +1,73 @@
+<section id="demo-panel" aria-label="Autonomous exploration and simulated sampling">
+<style>
+#demo-panel{border:1px solid #426079;margin:0 0 22px;padding:20px;border-radius:14px;background:#142737}#demo-panel h2{margin:0 0 8px}#demo-phase{font-size:1.35rem;color:#70e4c2;font-weight:700}.demo-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin:15px 0}.demo-metrics div{background:#203649;border-radius:8px;padding:10px}.demo-metrics dt{color:#a8c2d8;font-size:.85rem}.demo-metrics dd{margin:4px 0 0;font-variant-numeric:tabular-nums}#demo-message{color:#ffd273;min-height:1.5em}.demo-buttons{display:flex;flex-wrap:wrap;gap:8px}#soil-sites button{font-size:.9rem;padding:7px;margin:5px}#map.demo-selecting{cursor:crosshair}#demo-panel small{display:block;margin-top:10px}#demo-state-log{white-space:pre-wrap;overflow-wrap:anywhere}
+</style>
+<h2>Explore, simulate a sample, and return</h2><p id="demo-phase">Waiting for the demo service</p>
+<p id="demo-message" role="status">Inspect launch clearance before authorizing autonomy.</p>
+<div class="demo-buttons"><button id="demo-explore" disabled>Start autonomous exploration</button><button id="demo-return" disabled>Return now</button><button id="demo-point" disabled>Select location on map</button><button id="demo-preview" disabled>Preview sample round trip</button><button id="demo-approve" disabled>Approve sample trip & automatic return</button><button id="demo-takeover">Stop & take manual control</button></div>
+<div class="demo-metrics"><div><dt>Mission time</dt><dd id="demo-time">—</dd></div><div><dt>Measured ground / 1,600 m²</dt><dd id="demo-area">—</dd></div><div><dt>Return reserve</dt><dd id="demo-reserve">—</dd></div><div><dt>Traveled distance</dt><dd id="demo-distance">—</dd></div><div><dt>Selected target</dt><dd id="demo-target">None</dd></div><div><dt>Simulated sample</dt><dd id="demo-sample">Not collected</dd></div><div><dt>Tctl temperature</dt><dd id="demo-temperature">Use the native temperature terminal</dd></div><div><dt>Map publication p95</dt><dd id="demo-latency">Waiting for timing samples</dd></div></div>
+<div id="soil-sites"></div><label><input id="demo-full-map" type="checkbox" checked> Show full 40 m map</label>
+<small>Solid trails: exploration cyan, first return blue, sample trip amber, final return purple. Dashed lines: currently planned outward/return routes. H: starting point; diamond: selected site; ring: uncertainty-expanded envelope. Sample collection is a timed simulation, without an arm or physical material transfer.</small>
+<details><summary>Mission identities and diagnostics</summary><pre id="demo-state-log"></pre></details>
+</section>
+<script>
+(()=>{
+const panel=document.getElementById('demo-panel');document.querySelector('h1').before(panel);
+const $=id=>document.getElementById(id),client=crypto.randomUUID?.()??Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('');
+let owner=false,heartbeatBusy=false,heartbeatSequence=0,actionBusy=false,selecting=false,session=null;
+const active=new Set(['sweeping','exploring','exploration_return','sample_outbound','collecting','sample_return']);
+const labels={ready:'Ready for autonomous exploration',sweeping:'Observing the launch area',exploring:'Exploring and mapping',exploration_return:'Returning from exploration',awaiting_target:'Exploration complete—select a sample location',preview_ready:'Review the sample round trip, then approve',sample_outbound:'Traveling to the sample site',collecting:'Simulated collection—rover held stationary',sample_return:'Returning with the simulated sample',complete:'Complete—simulated sample delivered home',stopped:'Stopped—review the recorded reason'};
+function envelope(extra={}){const d=state.demo_status;if(!d||d.age_seconds>1||performance.now()-lastStatus>600)throw Error('Demo status is unavailable or stale');return {session_id:d.session_id,mission_id:d.mission_id,client_token:client,epoch:d.epoch,...extra};}
+async function command(action,extra={}){return post('demo/'+action,envelope(extra));}
+async function actDemo(action,extra={}){if(actionBusy)return;actionBusy=true;try{if(action==='start-exploration')owner=true;await command(action,extra);$('demo-message').textContent='Command accepted';}catch(e){$('demo-message').textContent=e.message;if(action==='start-exploration')owner=false;}finally{actionBusy=false;refresh();}}
+$('demo-explore').onclick=()=>actDemo('start-exploration');$('demo-return').onclick=()=>actDemo('return-now');
+$('demo-preview').onclick=()=>actDemo('preview-sample');$('demo-approve').onclick=()=>actDemo('start-sample',{preview_id:state.demo_status?.preview?.id||''});
+$('demo-point').onclick=()=>{selecting=!selecting;$('map').classList.toggle('demo-selecting',selecting);$('demo-message').textContent=selecting?'Click measured traversable ground on the map. Selection does not move the rover.':'';};
+$('demo-takeover').onclick=async()=>{owner=false;await act('stop');await act('manual');};
+// An observer page never sends heartbeats. Ownership is acquired only by an
+// explicit Start in THIS page; it is neither stored nor exposed in status.
+setInterval(async()=>{if(!owner||heartbeatBusy||!state.demo_status||!active.has(state.demo_status.phase))return;heartbeatBusy=true;try{await command('heartbeat',{sequence:++heartbeatSequence});}catch(e){$('demo-message').textContent=e.message;}finally{heartbeatBusy=false;}},200);
+window.addEventListener('pagehide',()=>{owner=false;});
+$('map').addEventListener('click',event=>{if(!selecting)return;const m=state.map;if(!m)return;const svg=$('map'),p=svg.createSVGPoint();p.x=event.clientX;p.y=event.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());selecting=false;svg.classList.remove('demo-selecting');actDemo('select-target',{x:m.origin[0]+q.x*m.resolution,y:m.origin[1]+(m.height-q.y)*m.resolution});});
+window.demoUpdate=data=>{
+ const d=data.demo_status;if(!d)return;if(session!==d.session_id){if(session!==null)owner=false;session=d.session_id;selecting=false;}
+ const fresh=d.age_seconds<1&&data.status?.age_seconds<.6,phase=d.phase;
+ $('demo-phase').textContent=labels[phase]||phase;
+ if(d.reason)$('demo-message').textContent=d.reason;
+ const health=d.navigation_health;
+ if(phase==='ready'&&health&&!health.healthy)$('demo-message').textContent='Autonomy waiting: '+health.missing.join(', ');
+ else if(phase==='ready'&&health?.healthy&&$('demo-message').textContent?.startsWith('Autonomy waiting:'))$('demo-message').textContent='Navigation inputs ready. Start exploration explicitly.';
+ const available=fresh&&!actionBusy;
+ $('demo-explore').disabled=!available||phase!=='ready'||!data.status?.ready||!data.mapping?.clearance_confirmed||!health?.healthy;
+ $('demo-return').disabled=!available||!owner||!['sweeping','exploring'].includes(phase);
+ $('demo-point').disabled=!available||!owner||!['awaiting_target','preview_ready'].includes(phase);
+ $('demo-preview').disabled=!available||!owner||!d.target||!['awaiting_target','preview_ready'].includes(phase);
+ $('demo-approve').disabled=!available||!owner||phase!=='preview_ready'||d.preview_remaining_seconds<=0;
+ $('demo-time').textContent=`${Math.floor(d.elapsed_seconds)} s elapsed · ${Math.floor(d.remaining_seconds)} s left`;
+ const c=d.coverage;$('demo-area').textContent=c?`${c.measured_area_m2.toFixed(1)} m² (${c.measured_percent.toFixed(1)}%)`:'Waiting for measured ground';
+ $('demo-reserve').textContent=Number.isFinite(d.return_reserve_seconds)?`${Math.ceil(d.return_reserve_seconds)} s`:'Not yet planned';
+ $('demo-distance').textContent=`${d.actual_distance_m.toFixed(2)} m`;
+ $('demo-target').textContent=d.target?d.target.source==='detected_soil'?`Detected soil · ${d.target.track_id}`:'Operator-selected map location':'None';
+ $('demo-sample').textContent=d.sample?d.sample.delivered?'Simulated · delivered home':'Simulated · collected, not delivered':phase==='collecting'?`Simulating collection · ${Math.min(10,d.collection_elapsed_seconds).toFixed(1)} / 10 s`:'Not collected';
+ const t=data.platform_temperature;$('demo-temperature').textContent=t&&Number.isFinite(t.tctl_c)?`${t.tctl_c.toFixed(1)}°C · qualification stop 87°C · native stop 90°C`:'Use the native temperature terminal';
+ const latency=data.mapping?.publication_latency_p95_seconds;$('demo-latency').textContent=Number.isFinite(latency)?`${(latency*1000).toFixed(1)} ms · target ≤200 ms`:'Waiting for timing samples';
+ $('demo-state-log').textContent=JSON.stringify({session:d.session_id,mission:d.mission_id,phase,reason:d.reason,navigation_health:health,rtf:d.real_time_factor,coverage:c,frontier_visits:d.frontier_visits,preview_valid_seconds:d.preview_remaining_seconds,model:data.detector?.model?.model_sha256,simulation_only:true},null,2);
+ const soils=data.soil_sites;$('soil-sites').replaceChildren(...(soils?.ready&&soils.age_seconds<1?soils.sites.filter(s=>s.state==='confirmed'):[]).map(s=>{const b=document.createElement('button');b.textContent=`Select soil ${s.track_id} · ${s.confirmation_view_count} views · last seen ${Math.max(0,soils.stamp-s.last_stamp).toFixed(1)} s ago · evidence ${s.evidence_score.toFixed(2)}`;b.disabled=!available||!owner||!['awaiting_target','preview_ready'].includes(phase);b.onclick=()=>actDemo('select-target',{target_id:s.track_id});return b;}));
+ if(['complete','stopped'].includes(phase))owner=false;
+};
+window.demoMap=data=>{
+ const d=data.demo_status,m=data.map;if(!d||!m)return;
+ const svg=$('map'),layer=$('markers'),ns='http://www.w3.org/2000/svg';
+ if($('demo-full-map').checked)svg.setAttribute('viewBox',`0 0 ${m.width} ${m.height}`);
+ const xy=p=>[(p[0]-m.origin[0])/m.resolution,m.height-(p[1]-m.origin[1])/m.resolution];
+ function line(points,color,dashed=false){if(!points?.length)return;const p=document.createElementNS(ns,'polyline');p.setAttribute('points',points.map(p=>xy(p).join(',')).join(' '));p.setAttribute('fill','none');p.setAttribute('stroke',color);p.setAttribute('stroke-width',1.7);if(dashed)p.setAttribute('stroke-dasharray','4 3');p.setAttribute('data-demo-route',dashed?'planned':'executed');layer.append(p);}
+ const colors={exploring:'#32d7d7',exploration_return:'#549aff',sample_outbound:'#ffb83e',sample_return:'#cf89ff'};
+ for(const [phase,color]of Object.entries(colors))line(d.trails.filter(p=>p.phase===phase).map(p=>p.pose),color);
+ line(d.outward_path,'#ffb83e',true);line(d.return_path,'#cf89ff',true);
+ function marker(point,text,color){if(!point)return;const [x,y]=xy(point),g=document.createElementNS(ns,'g');const c=document.createElementNS(ns,'circle');for(const[k,v]of Object.entries({cx:x,cy:y,r:4,fill:color,stroke:'#fff','stroke-width':1}))c.setAttribute(k,v);const label=document.createElementNS(ns,'text');label.setAttribute('x',x+6);label.setAttribute('y',y-5);label.setAttribute('font-size',10);label.setAttribute('fill','#fff');label.textContent=text;g.append(c,label);layer.append(g);return [x,y];}
+ marker(d.home,'H','#56e38f');marker(d.frontier,'F','#32d7d7');
+ if(d.target_map){const p=marker(d.target_map,d.sample?'Simulated sample':'Target','#ffb83e');const radius=(d.target?.envelope_radius_m||0)+2*Math.sqrt(Math.max(0,((d.target?.covariance?.[0]?.[0]||0)+(d.target?.covariance?.[1]?.[1]||0)+Math.hypot((d.target?.covariance?.[0]?.[0]||0)-(d.target?.covariance?.[1]?.[1]||0),2*(d.target?.covariance?.[0]?.[1]||0)))/2));if(radius>0){const ring=document.createElementNS(ns,'circle');for(const[k,v]of Object.entries({cx:p[0],cy:p[1],r:radius/m.resolution,fill:'none',stroke:'#ffb83e','stroke-width':1}))ring.setAttribute(k,v);layer.append(ring);}}
+ marker(d.preview?.stopping_pose,'Stop here','#70e4c2');
+};
+})();
+</script>

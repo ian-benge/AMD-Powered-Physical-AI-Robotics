@@ -9,7 +9,31 @@ python -m pip install -r requirements-test.txt
 python scripts/run_checks.py --output-dir outputs/source-checks
 ```
 
-Suites run in separate Python processes to isolate ROS test doubles. GitHub Actions runs the CPU suites on Linux and Windows. Real ROCm execution tests skip without compatible hardware; the ROS build workflow compiles the five integrated packages in Docker and does not drive a simulator.
+Suites run in separate Python processes to isolate ROS test doubles. GitHub Actions runs the CPU suites on Linux and Windows plus six JavaScript browser harnesses. Real ROCm execution tests skip without compatible hardware; the ROS build workflow compiles six integrated packages in Docker, including the typed demo interface, and checks the real HTTP/ROS service and best-effort odometry without a simulator.
+
+## November 11 AMD handoff
+
+The [testing guide](AMD_TESTING_GUIDE.md) is the current reproduction entry point.
+[Fresh source checks](../evidence/amd-testing-20261111/source-checks/checks.json)
+and [selected recorded evidence](../evidence/amd-testing-20261111/README.md)
+cover the newer training, detector assessment, mission and thermal work.
+The Windows Python 3.12.10 run completed **805 tests with 16 hardware/OS skips**;
+all six JavaScript harnesses passed. The publication itself does not start a new
+hardware trial.
+
+Capture stopped at 5,000 new images. A separate 5,300/100/100 train/validation/test
+export was prepared, and the epoch-22 checkpoint was selected from 28 saved
+training epochs. Same-set NPU test mAP50–95 improved from 76.67% to 78.90%, with
+a mudstone regression and no completed new-scene manual diagnostic review.
+[Metrics and scope](CAPTURE5000_MODEL_ASSESSMENT.md).
+
+The autonomous rehearsal froze during its first return; no complete cycle was
+accepted. The [incident review](AUTONOMOUS_DEMO_FREEZE_20261110.md) leaves the
+initiating cause unresolved. A later [GUI-off stationary check](AUTONOMOUS_DEMO_BROWSER_PROFILE.md)
+recorded peak 83.125°C, worst rolling publication p95 165.65 ms and median reported
+RTF 0.996, followed by clean protected closeout. This does not close moving-load,
+matched-baseline, below-80°C, localization-drift or endurance gates. Historical
+results below remain scoped to their original configurations and dates.
 
 The October 25 publication check ran **480 tests on Windows**, with four actual-ROCm cases skipped: 166 navigation, 157 perception, 129 environment, 24 training/geometry and four webcam-contract tests. The browser-control JavaScript harness also passed, and the offline procedural profile generated one scene with four planned views. See [the publication summary](../evidence/publication-20261025/checks.json) and its accompanying logs. These were fresh checks for the October publication; the November check summary above is separate from the historical Halo measurements.
 

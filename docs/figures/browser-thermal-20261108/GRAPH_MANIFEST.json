@@ -1,0 +1,32 @@
+{
+  "measurements_sha256": "3e3e7d73281738d9a7602c17c70623daf75371fdd599930314caec59d5eabbd1",
+  "matplotlib_version": "3.11.2",
+  "files": {
+    "01_temperature_checks.pdf": "429a1a3ddaf74738e25631bc0bec63fd5e0f142bcc25b7bb4b7d04ea0ac3a848",
+    "01_temperature_checks.png": "22f644b458dae78ccdede773ff87765f49b70d2c2b3e48cf1e18f34d07b41ce2",
+    "01_temperature_checks.svg": "44b69e9bf59add8ebf2d925332d7a2843052bf4d07affbb5e3471fae3605da16",
+    "02_repair_iterations.pdf": "7ba95b6cc06b6f29e424efb5f07f36428e9784114e3f9e1baf9559f5f291e68a",
+    "02_repair_iterations.png": "773f539385c0c7515413519b9a3729afc31b9d9081c39bfaf59d6d30f2172cae",
+    "02_repair_iterations.svg": "ff711edd2b0335da16e6da4cd5eef961d0e305e055f348261528d0957ae2e3a9",
+    "03_what_changed.pdf": "b631eab00154630c29f34a2533ff1891886611319b3594c1a2adeb95cbeb9360",
+    "03_what_changed.png": "d19c4390429355e7b84d23c816b2f2293566110132916a321c59ffabb67edeae",
+    "03_what_changed.svg": "da6ce80c7741fd8bbbd3c7a9c212df574b0c2c5d5c4f6a88931270cf499a55a8",
+    "thermal_readings.csv": "25714e53664d47a2159dbeb35750f0adda93a10ea353e271e865042361508fec"
+  },
+  "publication_normalization": {
+    "date": "2026-11-11",
+    "transformation": "CRLF-to-LF for JSON/CSV to match Git policy; values and plotted graphics unchanged.",
+    "files": [
+      {
+        "file": "measurements.json",
+        "original_sha256": "36c3d643123d92ac85330272b7fd98ed99d3a598aeb820a735ac8cc89106fd26",
+        "published_sha256": "3e3e7d73281738d9a7602c17c70623daf75371fdd599930314caec59d5eabbd1"
+      },
+      {
+        "file": "thermal_readings.csv",
+        "original_sha256": "b9c32ca66a5ad4664339c32a9e467932b34ace9b42ec5601c8edb53720a5fbf2",
+        "published_sha256": "25714e53664d47a2159dbeb35750f0adda93a10ea353e271e865042361508fec"
+      }
+    ]
+  }
+}

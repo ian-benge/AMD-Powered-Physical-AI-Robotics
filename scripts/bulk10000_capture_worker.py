@@ -12,6 +12,7 @@ from mars_training_environment.planning import class_coverage
 from mars_training_environment.validate import validate_scene
 from mars_training_environment import capture_attempts
 from process_cleanup import verify_runtime_qualification
+from desktop_render_guard import require_desktop, stop_path
 
 ROOT = Path('/collection')
 
@@ -24,6 +25,8 @@ def write_json(path, value):
 
 
 def bundle_for(profile, batch, reservation_sha256):
+    desktop_stop = stop_path(ROOT, Path('/invocation/INVOCATION.json'))
+    require_desktop(desktop_stop)
     bundle = ROOT/'bundle'
     marker = ROOT/'BUNDLE_PINS.json'
     if marker.exists():
@@ -53,6 +56,7 @@ def bundle_for(profile, batch, reservation_sha256):
     checkpoints.mkdir(exist_ok=True)
     scenes = []
     for index, entry in enumerate(batch['scenes'], 1):
+        require_desktop(desktop_stop)
         config = policy.scene_configuration(profile, batch, entry)
         folder = bundle/'scenes'/entry['id']
         checkpoint = checkpoints/(entry['id']+'.json')
@@ -117,6 +121,7 @@ def main():
     profile = read_config(invocation/'pilot200_environment_v2.json')
     pilot.check_profile(profile)
     bundle = bundle_for(profile, batch, plan_sha)
+    require_desktop(stop_path(ROOT, invocation/'INVOCATION.json'))
     # Require the scoped renderer/cleanup evidence before canonical commit,
     # including when recovering a completed attempt after an interruption.
     original_commit = capture_attempts.commit_attempt

@@ -1,0 +1,26 @@
+{
+  "recorded_utc": "2026-11-10T22:21:31.121352+00:00",
+  "archive_sha256": "b95d733831ef67c5d320c19b5285df38bb4934fc14a6dbe7c2b14e2e38f81960",
+  "artifacts": [
+    {
+      "path": "staging/source-v13.tar.gz",
+      "bytes": 8335526,
+      "sha256": "1441bc1735cf0af3c91f989128cc0f0053f22bcc5060b9962a4f137a2e285266"
+    },
+    {
+      "path": "application-v13/DEMO_CONFIGURATION.json",
+      "bytes": 138206,
+      "sha256": "72945c6701adb730e22f95f477430bf4f0c54fb687e24d319ade1598bbce9044"
+    },
+    {
+      "path": "runtime-v15/ASSESSMENT_RELEASE.json",
+      "bytes": 17353,
+      "sha256": "0017414bee09e4d2d0199d75609f246820cba9d2a58d05dc7c3896a0f7faaac5"
+    },
+    {
+      "path": "runtime-v15/demo_exterior_view.py",
+      "bytes": 10831,
+      "sha256": "9de6e437d1cb46e8b3860a3264d3b7dfbf2975ece76154af43fb7140aaaba94f"
+    }
+  ]
+}

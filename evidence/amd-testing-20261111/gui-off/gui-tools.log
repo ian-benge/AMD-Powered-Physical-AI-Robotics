@@ -1,0 +1,19 @@
+test_browser_demo_disables_only_display_windows_and_keeps_sensor_contract (test_autonomous_demo_tools.DemoToolTests.test_browser_demo_disables_only_display_windows_and_keeps_sensor_contract) ... ok
+test_contact_fixture_cannot_start_an_autonomous_mission_or_change_sensor_profile (test_autonomous_demo_tools.DemoToolTests.test_contact_fixture_cannot_start_an_autonomous_mission_or_change_sensor_profile) ... ok
+test_reservation_is_deterministic_and_does_not_generate_training_images (test_autonomous_demo_tools.DemoToolTests.test_reservation_is_deterministic_and_does_not_generate_training_images) ... ok
+test_single_accepted_original_can_produce_a_captioned_four_minute_edit (test_autonomous_demo_tools.DemoToolTests.test_single_accepted_original_can_produce_a_captioned_four_minute_edit) ... ok
+test_cancel_before_start_launches_nothing (test_demo_exterior_view.ExteriorViewTests.test_cancel_before_start_launches_nothing) ... ok
+test_only_fresh_stopped_disarmed_views_are_allowed (test_demo_exterior_view.ExteriorViewTests.test_only_fresh_stopped_disarmed_views_are_allowed) ... ok
+test_operator_stop_reaps_viewer (test_demo_exterior_view.ExteriorViewTests.test_operator_stop_reaps_viewer) ... Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+KeyboardInterrupt
+ok
+test_timeout_reaps_a_detached_child_without_touching_same_partition_peer (test_demo_exterior_view.ExteriorViewTests.test_timeout_reaps_a_detached_child_without_touching_same_partition_peer) ... Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+KeyboardInterrupt
+ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.649s
+
+OK

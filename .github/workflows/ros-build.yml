@@ -1,12 +1,16 @@
 name: ROS build
 on:
   push:
+    branches: [main]
     paths: ['src/**', 'docker/**', '.github/workflows/ros-build.yml']
   pull_request:
     paths: ['src/**', 'docker/**', '.github/workflows/ros-build.yml']
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   jazzy:
     runs-on: ubuntu-24.04
@@ -15,8 +19,17 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - name: Build Jazzy and navigation images
         run: |
-          docker build -f docker/Dockerfile.jazzy -t rover-jazzy .
-          docker build -f docker/Dockerfile.navigation -t rover-navigation .
+          set -euo pipefail
+          # Independent mirror avoids a Canonical DNS outage; apt still checks
+          # Ubuntu signatures. Fail before a long build if indexes are unreachable.
+          mirror=https://mirrors.edge.kernel.org/ubuntu
+          for suite in noble noble-security; do
+            curl --fail --silent --show-error --head --retry 2 \
+              --connect-timeout 5 --max-time 20 "$mirror/dists/$suite/InRelease"
+          done
+          docker build --network host --build-arg UBUNTU_MIRROR="$mirror" \
+            -f docker/Dockerfile.jazzy -t rover-jazzy .
+          docker build --network host -f docker/Dockerfile.navigation -t rover-navigation .
       - name: Build ROS packages
         run: |
           docker run --rm -v "$PWD:/work" -w /work rover-navigation bash -c '
@@ -26,3 +39,21 @@ jobs:
               --build-base build_navigation --install-base install_navigation \
               --packages-up-to rover_navigation
           '
+      - name: Check installed demo service and best-effort odometry
+        run: |
+          set -euo pipefail
+          mkdir -p outputs/ros-checks
+          docker run --rm --network none \
+            -e ROS_DOMAIN_ID=88 -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
+            -v "$PWD:/work" -w /work rover-navigation bash -c '
+              set -e
+              source /opt/ros/jazzy/setup.bash
+              source /work/install_navigation/setup.bash
+              python3 scripts/probe_autonomous_demo.py
+            ' 2>&1 | tee outputs/ros-checks/demo-service.txt
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: ros-checks
+          path: outputs/ros-checks/
+          retention-days: 14

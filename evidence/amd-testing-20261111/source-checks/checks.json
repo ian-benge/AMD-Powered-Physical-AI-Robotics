@@ -1,0 +1,90 @@
+{
+  "checked_utc": "2026-11-11T15:37:20.717Z",
+  "platform": "Windows, Python 3.12.10; isolated CPU environment",
+  "dependency_spec": "requirements-test.txt",
+  "scope": "Fresh CPU source and browser harnesses. No new GPU/NPU workload, simulator driving or endurance acceptance. ROS build/service results are reported separately by GitHub Actions.",
+  "source_revision_base": "ae0a8d5695a75553f4f7c18c8177ad3803e15e39",
+  "source_snapshot": "source-snapshot.json",
+  "source_snapshot_sha256": "cb8d5742a3f3c5bf9a7bddecdcc2d35be5ecac82bf0f94b9e2cbcd7859e728a6",
+  "suites": {
+    "navigation": {
+      "tests": 254,
+      "skipped": 4,
+      "seconds": 18.046,
+      "log": "navigation.txt",
+      "result": "PASS"
+    },
+    "perception": {
+      "tests": 157,
+      "skipped": 0,
+      "seconds": 31.307,
+      "log": "perception.txt",
+      "result": "PASS"
+    },
+    "environment": {
+      "tests": 240,
+      "skipped": 5,
+      "seconds": 396.993,
+      "log": "environment.txt",
+      "result": "PASS"
+    },
+    "training": {
+      "tests": 24,
+      "skipped": 0,
+      "seconds": 0.63,
+      "log": "training.txt",
+      "result": "PASS"
+    },
+    "collection": {
+      "tests": 126,
+      "skipped": 7,
+      "seconds": 1.93,
+      "log": "collection.txt",
+      "result": "PASS"
+    },
+    "webcam": {
+      "tests": 4,
+      "skipped": 0,
+      "seconds": 0.001,
+      "log": "webcam.txt",
+      "result": "PASS"
+    }
+  },
+  "total_tests": 805,
+  "total_skipped": 16,
+  "browser_harnesses": [
+    {
+      "test": "src/rover_perception/test/test_live_controls.cjs",
+      "result": "PASS",
+      "output": "PASS: held WASD/arrows, live speed sliders, release before ACK, Space/blur/hidden stops, pointer cancellation, stale views, reconnect and bounded frame delivery"
+    },
+    {
+      "test": "src/rover_navigation/test/test_manual_speed_controls.cjs",
+      "result": "PASS",
+      "output": "Manual speed controls passed: defaults, limits, held-input release, fresh press, focus, Stop, restart."
+    },
+    {
+      "test": "src/rover_navigation/test/test_camera_recovery.cjs",
+      "result": "PASS",
+      "output": "Camera recovery passed: retain last frame, label stale, decode failure, retry, restart fence, no motion."
+    },
+    {
+      "test": "src/rover_navigation/test/test_control_lifecycle.cjs",
+      "result": "PASS",
+      "output": "Control lifecycle passed: delayed status/error, response order, current fault, late Enable, camera expansion."
+    },
+    {
+      "test": "src/rover_navigation/test/test_demo_controls.cjs",
+      "result": "PASS",
+      "output": "Demo panel passed: observer isolation, explicit owner, increasing heartbeat, stale status, target wait, expired approval, Stop."
+    },
+    {
+      "test": "src/rover_navigation/test/test_demo_page_integration.cjs",
+      "result": "PASS",
+      "output": "Integrated demo page passed: shared status, enabled Start, real POST helper, secure/insecure context, explicit heartbeat, visible rejection."
+    }
+  ],
+  "hardware_or_os_skips": "4 actual ROCm navigation cases; 5 Linux process-cleanup environment cases; 7 native/Linux collection/training/viewer cases.",
+  "result": "PASS",
+  "source_snapshot_normalization": "UTF-8 text, CRLF normalized to LF to match Git checkout policy; no other byte changes."
+}

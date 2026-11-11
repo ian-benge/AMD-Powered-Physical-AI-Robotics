@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-10T22:17:16.846891+00:00",
+  "condition": "interactive manual use",
+  "post_teardown_clean": true,
+  "timed_hour_completed": false,
+  "result": "MANUAL_SESSION_CLOSED_CLEANLY",
+  "limitation": "No endurance/stability or autonomous navigation claim"
+}
