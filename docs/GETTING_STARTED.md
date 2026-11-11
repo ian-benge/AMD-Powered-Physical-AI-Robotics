@@ -2,6 +2,10 @@
 
 Run commands from the repository root. The CPU checks are the shortest reproducible entry point. The AMD deployment needs separately prepared runtimes and model artifacts; it is not installed by the test requirements.
 
+For the November evaluation snapshot, known issues and artifact requirements,
+see the [AMD testing guide](AMD_TESTING_GUIDE.md). The autonomous demo and its
+Halo-specific wrappers are separate from the portable example below.
+
 ## 1. CPU checks on Windows or Linux
 
 Use Python 3.12 and a fresh virtual environment:

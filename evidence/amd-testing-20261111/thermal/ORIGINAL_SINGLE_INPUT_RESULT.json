@@ -1,0 +1,65 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "failure": "Off-host status gap exceeds three seconds",
+  "warmup_seconds": 30,
+  "requested_steady_seconds": 300,
+  "observed_wall_seconds": 331.13652609998826,
+  "records": 327,
+  "steady_records": 297,
+  "temperature_c": {
+    "n": 297,
+    "min": 78.5,
+    "max": 83.125,
+    "median": 80.875,
+    "mean": 80.81649831649831
+  },
+  "rolling_publication_p95_ms": {
+    "n": 297,
+    "min": 157.99871305005126,
+    "max": 165.64243499997247,
+    "median": 162.13804304989023,
+    "mean": 161.9171768284372
+  },
+  "reported_rtf": {
+    "n": 297,
+    "min": 0.9932853020963759,
+    "max": 0.9975171236041598,
+    "median": 0.9960381971648599,
+    "mean": 0.9958840259340733
+  },
+  "historical_guard_faults": [
+    {
+      "reason": "invalid_odometry",
+      "sim_time": 0.026,
+      "detail": {
+        "depth_age_seconds": null,
+        "pose_age_seconds": null,
+        "clock_age_seconds": 0.0008141560001604375,
+        "last_valid_pose": null,
+        "pose_stamp": null,
+        "odometry": {
+          "stamp": 0.004,
+          "frame": "odom",
+          "child_frame": "base_link",
+          "covariance_diagonal": [
+            19998,
+            19998,
+            19998,
+            19998,
+            19998,
+            19998
+          ]
+        }
+      }
+    }
+  ],
+  "motion_requested": false,
+  "qualification_stop_c": 87,
+  "temperature_target_c": 80,
+  "below_80_steady": false,
+  "latency_target_met": true,
+  "no_new_recorded_faults": false,
+  "matched_baseline": false,
+  "autonomous_or_endurance_qualification": false,
+  "utc": "2026-11-10T22:14:42.286Z"
+}

@@ -10,7 +10,7 @@ This repository is a portfolio publication of an ongoing Texas A&M team capstone
 
 ## Licensing declarations
 
-`rover_navigation`, `rover_perception`, `rover_training` and `mars_training_environment` declare **Apache-2.0** in their ROS package metadata. Those declarations remain in place. The inherited `four_wheel_sim` package still contains its original unresolved `TODO: License declaration`; this publication does not assign it a new license or assert a blanket repository license. Existing third-party file notices continue to apply.
+`rover_navigation`, `rover_navigation_interfaces`, `rover_perception`, `rover_training` and `mars_training_environment` declare **Apache-2.0** in their ROS package metadata. Those declarations remain in place. The inherited `four_wheel_sim` package still contains its original unresolved `TODO: License declaration`; this publication does not assign it a new license or assert a blanket repository license. Existing third-party file notices continue to apply.
 
 ## Assets and dependencies
 

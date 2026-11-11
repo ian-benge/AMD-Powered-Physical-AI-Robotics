@@ -44,12 +44,14 @@ class SceneControl:
                    'bash', 'scripts/halo_navigation.sh', str(bundle or self.bundle), scene or self.scene, session]
         for key in ('gui', 'rviz', 'fixture', 'terrain_collision', 'navigation_speed',
                     'detector_model', 'detector_backend', 'detector_url', 'terrain_backend', 'terrain_url',
-                    'adaptive_terrain', 'sensor_headless', 'sensor_render_engine',
-                    'manual_max_linear_speed', 'manual_max_angular_speed', 'manual_initial_linear_speed', 'map_size_m'):
+                    'adaptive_terrain', 'sensor_headless', 'sensor_render_engine', 'camera_rate_hz',
+                    'manual_max_linear_speed', 'manual_max_angular_speed', 'manual_initial_linear_speed', 'map_size_m',
+                    'demo_mode','demo_profile'):
             if key == 'fixture' and generated:
                 continue
             if key in self.config and str(self.config[key]):
-                command.append(f'{key}:={self.config[key]}')
+                value=self.config[key]
+                command.append(f'{key}:={str(value).lower() if isinstance(value,bool) else value}')
         command.extend(['preview:=true', 'mission_controls:=true', 'controls_port:=8777', 'mapping_on_confirm:=true'])
         command.append(f"camera_pitch:={self.config['camera'].get('tilt_rad', .4)}")
         command.append(f"camera_rgb_far:={self.config['camera'].get('rgb_far_m', self.config['camera'].get('far_m', 8))}")
@@ -248,7 +250,7 @@ def gateway_handler(manager):
             headers = {'Content-Type': self.headers.get('Content-Type', 'application/octet-stream')}
             request = Request('http://127.0.0.1:8777'+route, data=data, headers=headers)
             try:
-                response = urlopen(request, timeout=30. if route == '/start' else 4.)
+                response = urlopen(request, timeout=30. if route in ('/start','/demo/preview-sample') else 6. if route.startswith('/demo/') else 4.)
             except HTTPError as error:
                 response = error
             with response:
@@ -261,7 +263,10 @@ def gateway_handler(manager):
                 return self.reply(403, dict(message='Use the local rover page'))
             route = urlsplit(self.path).path
             if route == '/':
-                return self.reply(200, files('rover_navigation').joinpath('mission_controls.html').read_bytes(), 'text/html; charset=utf-8')
+                page=files('rover_navigation').joinpath('mission_controls.html').read_bytes()
+                if str(manager.config.get('demo_mode','false')).lower()=='true':
+                    page=page.replace(b'</script></html>',b'</script>'+files('rover_navigation').joinpath('demo_panel.html').read_bytes()+b'</html>')
+                return self.reply(200,page,'text/html; charset=utf-8')
             if route not in ('/status', '/camera.jpg', '/map.png', '/diagnostics.png'):
                 return self.reply(404, dict(message='Not found'))
             try:
@@ -269,6 +274,14 @@ def gateway_handler(manager):
                 if route == '/status':
                     payload = json.loads(body)
                     payload['scene'] = dict(available=True, **manager.status())
+                    if 'demo_status' in payload and 'platform_temperature' not in payload:
+                        for label in Path('/sys/class/hwmon').glob('hwmon*/temp*_label'):
+                            try:
+                                if label.read_text().strip()=='Tctl':
+                                    value=float(label.with_name(label.name.replace('_label','_input')).read_text())/1000
+                                    payload['platform_temperature']=dict(tctl_c=value,sensor='AMD Tctl',native_stop_c=90.)
+                                    break
+                            except (OSError,ValueError):continue
                     return self.reply(status, payload)
                 return self.reply(status, body, content, extra)
             except (OSError, ValueError):
@@ -284,11 +297,13 @@ def gateway_handler(manager):
                     return self.reply(400, dict(success=False, message='Restart takes no request body'))
                 result = manager.restart(new_scene=self.path == '/new-scene')
                 return self.reply(202 if result['success'] else 409, result)
-            if self.path not in ('/drive', '/release', '/stop', '/start', '/manual', '/confirm'):
+            demo_routes=('/demo/start-exploration','/demo/return-now','/demo/select-target',
+                         '/demo/preview-sample','/demo/start-sample','/demo/heartbeat')
+            if self.path not in ('/drive', '/release', '/stop', '/start', '/manual', '/confirm')+demo_routes:
                 return self.reply(404, dict(success=False, message='Not found'))
             try:
                 size = int(self.headers.get('Content-Length', '0'))
-                if not 0 <= size <= 1024 or (self.path not in ('/drive', '/release') and size):
+                if not 0 <= size <= (2048 if self.path in demo_routes else 1024) or (self.path not in ('/drive', '/release')+demo_routes and size):
                     raise ValueError('Invalid control body')
                 self.connection.settimeout(3.)
                 body = self.rfile.read(size)

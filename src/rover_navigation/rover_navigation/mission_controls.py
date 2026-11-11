@@ -34,6 +34,14 @@ class Controls(Node):
         super().__init__('navigation_mission_controls')
         self.declare_parameter('session', '')
         self.session = Path(self.get_parameter('session').value).name
+        self.declare_parameter('demo_mode',False)
+        self.demo_mode=self.get_parameter('demo_mode').value
+        self.declare_parameter('platform_temperature_file', '')
+        self.platform_temperature_file = self.get_parameter('platform_temperature_file').value
+        if self.demo_mode:
+            from rover_navigation_interfaces.srv import DemoCommand
+            self.demo_type=DemoCommand
+            self.demo_client=self.create_client(DemoCommand,'/navigation/demo_command')
         self.lock = threading.Lock()
         self.latest = {}
         self.sim_clock = None
@@ -45,6 +53,9 @@ class Controls(Node):
                                         max_angular=self.get_parameter('max_angular_speed').value,
                                         initial_linear=None if initial==-1. else initial)
         self.manual_pub = None
+        if self.demo_mode:
+            self.create_subscription(String,'/navigation/demo_status',lambda msg:self.receive('demo_status',msg),1)
+            self.create_subscription(String,'/navigation/soil_sites',lambda msg:self.receive('soil_sites',msg),1)
         self.camera = self.annotated = self.map_image = None
         self.reason_image = None
         self.tf = Buffer()
@@ -148,6 +159,13 @@ class Controls(Node):
             clock = self.sim_clock
         result['session'] = self.session
         result['manual_speed_limits'] = self.manual_input.limits
+        if self.demo_mode and self.platform_temperature_file:
+            from .platform_telemetry import read_temperature
+            try:
+                boot_id = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+                result['platform_temperature'] = read_temperature(self.platform_temperature_file, boot_id)
+            except OSError:
+                result['platform_temperature'] = None
         try:
             with urlopen('http://127.0.0.1:8776/status', timeout=.2) as response:
                 result['scene'] = dict(available=True, **json.load(response))
@@ -193,6 +211,39 @@ class Controls(Node):
         self.manual_pub.publish(msg)
         return dict(success=True, command=[v, w])
 
+    def demo_command(self,command,data):
+        if not getattr(self,'demo_mode',False):raise ValueError('Demo workflow is not enabled')
+        allowed={'start-exploration':'start_exploration','return-now':'return_now','select-target':'select_target',
+                 'preview-sample':'preview_sample','start-sample':'start_sample','heartbeat':'heartbeat'}
+        if command not in allowed:raise ValueError('Unknown demo action')
+        fields={'session_id','mission_id','client_token','target_id','preview_id','epoch','sequence','x','y'}
+        if not isinstance(data,dict) or set(data)-fields:raise ValueError('Invalid demo request fields')
+        if data.get('session_id')!=self.session:raise ValueError('Stale scene session')
+        req=self.demo_type.Request();req.command=allowed[command]
+        for key in ('session_id','mission_id','client_token','target_id','preview_id'):
+            value=data.get(key,'')
+            if not isinstance(value,str) or len(value)>128:raise ValueError('Invalid command identity')
+            setattr(req,key,value)
+        import math
+        for key in ('epoch','sequence'):
+            value=data.get(key,0)
+            if type(value) is not int or not 0<=value<(2**32 if key=='epoch' else 2**64):
+                raise ValueError('Invalid command generation')
+            setattr(req,key,value)
+        for key in ('x','y'):
+            value=data.get(key,0.)
+            if type(value) not in (float,int) or not math.isfinite(value):raise ValueError('Invalid target coordinate')
+            setattr(req,key,float(value))
+        if not self.demo_client.service_is_ready():raise ValueError('Demo command service unavailable')
+        done=threading.Event();future=self.demo_client.call_async(req)
+        future.add_done_callback(lambda _:done.set())
+        if not done.wait(28. if command=='preview-sample' else 5.):
+            if command!='heartbeat':self.service_clients['stop'].call_async(Trigger.Request())
+            raise ValueError('Demo request timed out; motion actions require a new explicit review')
+        response=future.result()
+        return dict(success=response.success,message=response.message,
+                    mission_id=response.mission_id,preview_id=response.preview_id)
+
     def call(self, name):
         if name in ('restart', 'new-scene'):
             stopped = self.call('stop')
@@ -236,6 +287,8 @@ class Controls(Node):
 
 def handler(node):
     page = files('rover_navigation').joinpath('mission_controls.html').read_bytes()
+    if getattr(node,'demo_mode',False):
+        page=page.replace(b'</script></html>',b'</script>'+files('rover_navigation').joinpath('demo_panel.html').read_bytes()+b'</html>')
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
@@ -291,6 +344,19 @@ def handler(node):
         def do_POST(self):
             if not self.local_request():
                 return self.reply(403, dict(message='Use the local mission page'))
+            if self.path.startswith('/demo/'):
+                try:
+                    size=int(self.headers.get('Content-Length','0'))
+                    if not 0<size<=2048 or self.headers.get('Content-Type')!='application/json':
+                        raise ValueError('Expected bounded demo JSON')
+                    self.connection.settimeout(3.)
+                    body=self.rfile.read(size)
+                    if len(body)!=size:raise ValueError('Truncated request')
+                    result=node.demo_command(self.path[6:],json.loads(body))
+                    return self.reply(200 if result['success'] else 409,result)
+                except (ValueError,TypeError,OSError) as error:
+                    self.close_connection=True
+                    return self.reply(400,dict(success=False,message=str(error)))
             if self.path in ('/drive', '/release'):
                 try:
                     size = int(self.headers.get('Content-Length', '0'))

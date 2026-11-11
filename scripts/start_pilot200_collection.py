@@ -11,6 +11,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+from desktop_render_guard import require_desktop
 
 BASE = Path('/home/ian/capstone-training/rover-navigation/navigation_sessions')
 FIX = BASE/'capture-ogre-fix-20261106T140200Z'
@@ -121,6 +122,7 @@ def desktop_authority():
         raise ValueError('Desktop X11 query failed; keep the Halo desktop connected') from error
     if probe.returncode:
         raise ValueError('Desktop X11 display is unavailable; keep the Halo desktop connected')
+    require_desktop()
     found = []
     for proc in Path('/proc').glob('[0-9]*/cmdline'):
         try:
@@ -193,9 +195,11 @@ def main():
     shutil.copy2(worker, run/worker.name)
     cleanup = Path(__file__).resolve().with_name('process_cleanup.py')
     shutil.copy2(cleanup, run/cleanup.name)
+    desktop_guard = Path(__file__).resolve().with_name('desktop_render_guard.py')
+    shutil.copy2(desktop_guard, run/desktop_guard.name)
     save(run/'INVOCATION.json', dict(case=str(case), kit=str(kit), resume=bool(args.resume),
                                    worker_sha256=sha(worker), cleanup_sha256=sha(cleanup),
-                                   runtime_version=2, utc=trial.utc()))
+                                   desktop_guard_sha256=sha(desktop_guard), runtime_version=2, utc=trial.utc()))
     display, authority = desktop_authority()
     name = 'rover-pilot200-'+stamp.lower()
     command = ['docker', 'run', '--rm', '--init', '--name', name, '--network', 'host',

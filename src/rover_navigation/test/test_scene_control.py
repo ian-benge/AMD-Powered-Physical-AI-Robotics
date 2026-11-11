@@ -56,13 +56,31 @@ class SceneControlTests(unittest.TestCase):
 
     def test_v2_restart_and_generation_keep_map_extent_and_conservative_initial_speed(self):
         self.manager.config.update(map_size_m=40.,manual_max_linear_speed=.2,
-                                   manual_initial_linear_speed=.05,manual_max_angular_speed=.3)
+                                   manual_initial_linear_speed=.05,manual_max_angular_speed=.3,camera_rate_hz=15)
         for generated in (False,True):
             command=self.manager.launch_command('new-session',generated=generated)
             self.assertIn('map_size_m:=40.0',command)
             self.assertIn('manual_initial_linear_speed:=0.05',command)
             self.assertIn('manual_max_linear_speed:=0.2',command)
+            self.assertIn('camera_rate_hz:=15',command)
             self.assertNotIn('database:=/previous/map.db',command)
+
+    def test_demo_restart_preserves_profile_and_invalidates_runtime_session(self):
+        self.manager.config.update(demo_mode=True,demo_profile='rehearsal',camera_rate_hz=15)
+        command=self.manager.launch_command('fresh-demo')
+        self.assertIn('demo_mode:=true',command);self.assertIn('demo_profile:=rehearsal',command)
+        with patch('rover_navigation.scene_control.threading.Thread'):result=self.manager.restart()
+        self.assertNotEqual(result['session'],'old')
+
+    def test_browser_profile_stays_gui_free_after_restart_and_generation(self):
+        self.manager.config.update(gui='false',rviz='false',sensor_headless='false',sensor_render_engine='ogre',
+                                   camera_rate_hz=15,map_size_m=40.,demo_mode=True,demo_profile='rehearsal')
+        for generated in (False,True):
+            command=self.manager.launch_command('browser-demo',generated=generated)
+            for value in ('gui:=false','rviz:=false','sensor_headless:=false','sensor_render_engine:=ogre',
+                          'camera_rate_hz:=15','map_size_m:=40.0','demo_mode:=true'):
+                self.assertIn(value,command)
+            self.assertFalse(any(arg.startswith('database:=') for arg in command))
 
     def test_supervisor_refuses_to_stop_a_container_from_another_checkout(self):
         inspected = SimpleNamespace(returncode=0, stdout=json.dumps([

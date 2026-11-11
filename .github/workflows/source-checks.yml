@@ -26,6 +26,8 @@ jobs:
       - run: node src/rover_navigation/test/test_manual_speed_controls.cjs
       - run: node src/rover_navigation/test/test_camera_recovery.cjs
       - run: node src/rover_navigation/test/test_control_lifecycle.cjs
+      - run: node src/rover_navigation/test/test_demo_controls.cjs
+      - run: node src/rover_navigation/test/test_demo_page_integration.cjs
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:

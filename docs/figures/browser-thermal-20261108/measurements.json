@@ -1,0 +1,976 @@
+﻿{
+  "schema_version": 1,
+  "display_date": "November 8, 2026",
+  "display_timezone": "America/Chicago",
+  "temperature_sensor": "AMD Tctl",
+  "native_stop_c": 90.0,
+  "runs": {
+    "rviz_off": {
+      "source_folder": "thermal-v3-observation-20261109T010648Z",
+      "source_sha256": {
+        "samples.jsonl": "462b3faafcdfbea2b8925ed67055abc4932a98bb6dc909d414259fc43af4d79b",
+        "RESULT.json": "0335eb07a5c00c13cc530b72b95f642cdaefa65043e9a30d9d15dc7519148441"
+      },
+      "samples": [
+        {
+          "utc": "2026-11-09T01:07:06.679269+00:00",
+          "seconds": 0.006530379003379494,
+          "tctl_c": 82.125,
+          "ppt_w": 84.065,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.3520554010174237,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:07:16.716455+00:00",
+          "seconds": 10.04371977999108,
+          "tctl_c": 83.125,
+          "ppt_w": 84.007,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4108737809874583,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:07:26.724399+00:00",
+          "seconds": 20.051659473014297,
+          "tctl_c": 82.25,
+          "ppt_w": 86.02,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.49812722599017434,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:07:36.733353+00:00",
+          "seconds": 30.06061032001162,
+          "tctl_c": 84.125,
+          "ppt_w": 84.098,
+          "command": [
+            0.05,
+            -0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.07710406498517841,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:07:46.767584+00:00",
+          "seconds": 40.09484185700421,
+          "tctl_c": 82.0,
+          "ppt_w": 84.075,
+          "command": [
+            0.05,
+            -0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.15098773001227528,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:07:56.780749+00:00",
+          "seconds": 50.10801108801388,
+          "tctl_c": 84.875,
+          "ppt_w": 85.01,
+          "command": [
+            0.0,
+            0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.2524159930180758,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:08:06.791605+00:00",
+          "seconds": 60.11886266901274,
+          "tctl_c": 84.125,
+          "ppt_w": 85.064,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.2668012469948735,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:08:16.832698+00:00",
+          "seconds": 70.15995865300647,
+          "tctl_c": 81.625,
+          "ppt_w": 84.091,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4059520379814785,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:08:26.841929+00:00",
+          "seconds": 80.16918801900465,
+          "tctl_c": 87.125,
+          "ppt_w": 85.077,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4419833100109827,
+          "localization_healthy": true
+        }
+      ],
+      "result": {
+        "samples": 9,
+        "active_mapping_seconds": 80.16918801900465,
+        "max_tctl_c": 87.125,
+        "mean_ppt_w": 84.61188888888888,
+        "last_tctl_c": 87.125,
+        "no_rviz_observed": true,
+        "measurements_only": true,
+        "endurance_claim": false,
+        "stopped_early": true
+      }
+    },
+    "thread_caps": {
+      "source_folder": "thermal-v4-observation-20261109T011952Z",
+      "source_sha256": {
+        "samples.jsonl": "9bf9d5f0d1430817d46b746b522e679496d54f82c6b7893d3d4a14900f7d4641",
+        "RESULT.json": "5c0edcb5ca2740a2bdacc350b3638e916bbbb33e5c761b9d834c2810109654e7"
+      },
+      "samples": [
+        {
+          "utc": "2026-11-09T01:19:58.203060+00:00",
+          "seconds": 0.02518003500881605,
+          "tctl_c": 81.875,
+          "ppt_w": 83.037,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.230476042983355,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:20:08.244451+00:00",
+          "seconds": 10.06657376998919,
+          "tctl_c": 86.0,
+          "ppt_w": 85.062,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4433418879925739,
+          "localization_healthy": true
+        }
+      ],
+      "result": {
+        "samples": 2,
+        "active_mapping_seconds": 10.06657376998919,
+        "max_tctl_c": 86.0,
+        "mean_ppt_w": 84.0495,
+        "last_tctl_c": 86.0,
+        "mean_final_minute_tctl_c": 83.9375,
+        "no_rviz_observed": true,
+        "camera_fresh_samples": 2,
+        "localization_healthy_samples": 2,
+        "detector_frames_delta": 262,
+        "measurements_only": true,
+        "endurance_claim": false,
+        "stopped_early": true
+      }
+    },
+    "stationary_15hz": {
+      "source_folder": "thermal-v6-live-20261109T013601Z",
+      "source_sha256": {
+        "samples.jsonl": "097f4a9176dc80b832be0e6aad0ff39717e20e71df55fb796222a032dbc2cc96",
+        "RESULT.json": "35f4940fc7d545981e78ab062967184037fa91e82986bae36dc53f0a6d93e060"
+      },
+      "samples": [
+        {
+          "utc": "2026-11-09T01:36:01.791729+00:00",
+          "seconds": 0.028345336992060766,
+          "tctl_c": 80.875,
+          "ppt_w": 71.09,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.2923952279961668,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:36:11.829017+00:00",
+          "seconds": 10.065641233988572,
+          "tctl_c": 81.5,
+          "ppt_w": 69.044,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.25224632798926905,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:36:21.836884+00:00",
+          "seconds": 20.073509910987923,
+          "tctl_c": 82.375,
+          "ppt_w": 70.094,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.16604793100850657,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:36:31.844936+00:00",
+          "seconds": 30.08155533199897,
+          "tctl_c": 83.0,
+          "ppt_w": 71.061,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.12420188100077212,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:36:41.882042+00:00",
+          "seconds": 40.11866271699546,
+          "tctl_c": 82.5,
+          "ppt_w": 70.057,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.1027733700175304,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:36:51.890068+00:00",
+          "seconds": 50.126688540010946,
+          "tctl_c": 82.625,
+          "ppt_w": 70.051,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.031009169993922114,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:37:01.898053+00:00",
+          "seconds": 60.134672855987446,
+          "tctl_c": 83.0,
+          "ppt_w": 69.072,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4944231809931807,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:37:11.936181+00:00",
+          "seconds": 70.17281375199673,
+          "tctl_c": 81.875,
+          "ppt_w": 69.035,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.44950810601585545,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:37:21.943105+00:00",
+          "seconds": 80.1797199040011,
+          "tctl_c": 82.125,
+          "ppt_w": 70.005,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.37189453101018444,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:37:31.950215+00:00",
+          "seconds": 90.18683279500692,
+          "tctl_c": 83.375,
+          "ppt_w": 71.08,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.29704098400543444,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:37:41.985565+00:00",
+          "seconds": 100.22218957298901,
+          "tctl_c": 83.125,
+          "ppt_w": 70.023,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.25462256401078776,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:37:51.992488+00:00",
+          "seconds": 110.22911616001511,
+          "tctl_c": 82.375,
+          "ppt_w": 70.032,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.1869876800046768,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:38:01.999459+00:00",
+          "seconds": 120.23608000899549,
+          "tctl_c": 81.75,
+          "ppt_w": 71.028,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.11930408698390238,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:38:12.038423+00:00",
+          "seconds": 130.27503798500402,
+          "tctl_c": 82.125,
+          "ppt_w": 73.01,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.08807453501503915,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:38:22.047876+00:00",
+          "seconds": 140.28449657501187,
+          "tctl_c": 81.875,
+          "ppt_w": 72.005,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.005388902005506679,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:38:32.054788+00:00",
+          "seconds": 150.29140331898816,
+          "tctl_c": 83.0,
+          "ppt_w": 69.077,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4919068680028431,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:38:42.089562+00:00",
+          "seconds": 160.32618284900673,
+          "tctl_c": 82.375,
+          "ppt_w": 70.073,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.454357679001987,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:38:52.098668+00:00",
+          "seconds": 170.33529120899038,
+          "tctl_c": 82.125,
+          "ppt_w": 72.073,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.3921007559983991,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:39:02.105661+00:00",
+          "seconds": 180.34228291601175,
+          "tctl_c": 82.875,
+          "ppt_w": 70.005,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.3023667219968047,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:39:12.147892+00:00",
+          "seconds": 190.38451304400223,
+          "tctl_c": 83.625,
+          "ppt_w": 71.041,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.28468841197900474,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:39:22.156805+00:00",
+          "seconds": 200.39342581000528,
+          "tctl_c": 83.75,
+          "ppt_w": 72.043,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.20311866601696238,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:39:32.163896+00:00",
+          "seconds": 210.40051236801082,
+          "tctl_c": 83.0,
+          "ppt_w": 69.098,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.152734375995351,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:39:42.201042+00:00",
+          "seconds": 220.4376626170124,
+          "tctl_c": 82.75,
+          "ppt_w": 71.008,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.12355995699181221,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:39:52.208916+00:00",
+          "seconds": 230.44553597300546,
+          "tctl_c": 83.875,
+          "ppt_w": 71.037,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.0369187259930186,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:40:02.220963+00:00",
+          "seconds": 240.45758243798628,
+          "tctl_c": 83.5,
+          "ppt_w": 71.062,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.5203591239987873,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:40:12.258829+00:00",
+          "seconds": 250.49545088599552,
+          "tctl_c": 82.625,
+          "ppt_w": 72.049,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4911532379919663,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:40:22.266418+00:00",
+          "seconds": 260.5030351669993,
+          "tctl_c": 83.25,
+          "ppt_w": 69.06,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4220748329826165,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:40:32.276091+00:00",
+          "seconds": 270.5127065599954,
+          "tctl_c": 83.375,
+          "ppt_w": 70.034,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.3642129660001956,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:40:42.311120+00:00",
+          "seconds": 280.54773985099746,
+          "tctl_c": 84.75,
+          "ppt_w": 72.017,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.33512561398674734,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:40:52.319188+00:00",
+          "seconds": 290.55581249899114,
+          "tctl_c": 83.75,
+          "ppt_w": 72.021,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.26073055100278,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:41:02.327142+00:00",
+          "seconds": 300.56376035901485,
+          "tctl_c": 83.75,
+          "ppt_w": 70.079,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.21431352398940362,
+          "localization_healthy": true
+        }
+      ],
+      "result": {
+        "samples": 31,
+        "seconds": 300.56376035901485,
+        "max_tctl_c": 84.75,
+        "last_tctl_c": 83.75,
+        "mean_ppt_w": 70.5956129032258,
+        "camera_fresh": 31,
+        "localization_healthy": 31,
+        "detector_frames_delta": 4535,
+        "observation_only": true,
+        "endurance_claim": false,
+        "stopped_early": false
+      }
+    },
+    "drive_15hz": {
+      "source_folder": "thermal-drive-check-20261109T014223Z",
+      "source_sha256": {
+        "samples.jsonl": "f2c8a7775abd69fe9608c14d9e330cc205337878cab2865a8d380fd1ae694e63",
+        "RESULT.json": "097b745015379bab6c5dfad983e78e675be181517a916b014e4d037e1c4642d9"
+      },
+      "samples": [
+        {
+          "utc": "2026-11-09T01:42:23.197211+00:00",
+          "seconds": 0.020152011973550543,
+          "tctl_c": 84.25,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4553069730172865,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:42:28.204269+00:00",
+          "seconds": 5.027203918987652,
+          "tctl_c": 81.75,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.16818235997925512,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:42:33.212020+00:00",
+          "seconds": 10.034965398983331,
+          "tctl_c": 82.625,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.3973626770020928,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:42:38.219976+00:00",
+          "seconds": 15.042910468997434,
+          "tctl_c": 83.25,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.10670864200801589,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:42:43.227130+00:00",
+          "seconds": 20.050066964991856,
+          "tctl_c": 83.125,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.34134698897833005,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:42:48.232979+00:00",
+          "seconds": 25.055915195989655,
+          "tctl_c": 82.625,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.04953057601233013,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:42:53.239633+00:00",
+          "seconds": 30.062568645982537,
+          "tctl_c": 83.5,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.2748193769948557,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:42:58.247847+00:00",
+          "seconds": 35.07078348498908,
+          "tctl_c": 84.5,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.0035654100065585226,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:03.255671+00:00",
+          "seconds": 40.0786087460001,
+          "tctl_c": 84.0,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.24402011500205845,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:08.263686+00:00",
+          "seconds": 45.086628967983415,
+          "tctl_c": 83.625,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.47619694500463083,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:13.271095+00:00",
+          "seconds": 50.094033208995825,
+          "tctl_c": 84.375,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.17348750800010748,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:18.278906+00:00",
+          "seconds": 55.101845301978756,
+          "tctl_c": 83.125,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.40991644299356267,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:23.287177+00:00",
+          "seconds": 60.110120455996366,
+          "tctl_c": 84.0,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.11878136100131087,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:28.294756+00:00",
+          "seconds": 65.11769415199524,
+          "tctl_c": 83.25,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.35254599299514666,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:33.302313+00:00",
+          "seconds": 70.12723326298874,
+          "tctl_c": 83.125,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.05413653899449855,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:38.313356+00:00",
+          "seconds": 75.1362936089863,
+          "tctl_c": 83.0,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.2822260090033524,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:43.319909+00:00",
+          "seconds": 80.14284943198436,
+          "tctl_c": 84.625,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.5016211880138144,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:48.326877+00:00",
+          "seconds": 85.14981887798058,
+          "tctl_c": 83.0,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.19642803000169806,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:53.333264+00:00",
+          "seconds": 90.15619865999906,
+          "tctl_c": 85.0,
+          "ppt_w": null,
+          "command": [
+            0.0,
+            0.0
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.4264621410111431,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:43:58.340862+00:00",
+          "seconds": 95.1638002859836,
+          "tctl_c": 84.125,
+          "ppt_w": null,
+          "command": [
+            0.05,
+            0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.1309214479988441,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:44:03.348014+00:00",
+          "seconds": 100.1709523339814,
+          "tctl_c": 85.875,
+          "ppt_w": null,
+          "command": [
+            0.05,
+            -0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.359170265001012,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:44:08.357239+00:00",
+          "seconds": 105.18017692197463,
+          "tctl_c": 84.25,
+          "ppt_w": null,
+          "command": [
+            0.05,
+            -0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.0522721070155967,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:44:13.367129+00:00",
+          "seconds": 110.19006603298476,
+          "tctl_c": 84.125,
+          "ppt_w": null,
+          "command": [
+            0.05,
+            -0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.281833735993132,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:44:18.378117+00:00",
+          "seconds": 115.20105401898036,
+          "tctl_c": 84.5,
+          "ppt_w": null,
+          "command": [
+            0.05,
+            -0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.5023469669977203,
+          "localization_healthy": true
+        },
+        {
+          "utc": "2026-11-09T01:44:23.392033+00:00",
+          "seconds": 120.21497624498443,
+          "tctl_c": 84.125,
+          "ppt_w": null,
+          "command": [
+            0.05,
+            0.3
+          ],
+          "camera_available": true,
+          "camera_age_seconds": 0.20924806297989562,
+          "localization_healthy": true
+        }
+      ],
+      "result": {
+        "seconds": 120.21510731999297,
+        "samples": 25,
+        "temperature_samples": 121,
+        "max_tctl_c": 86.125,
+        "motion_samples": 6,
+        "camera_fresh_samples": 25,
+        "healthy_localization_samples": 25,
+        "final_guard": {
+          "mode": "manual",
+          "ready": true,
+          "reason": "",
+          "command": [
+            0.05,
+            0.3
+          ]
+        },
+        "operator_report_required": true,
+        "endurance_claim": false,
+        "stopped_early": false
+      }
+    }
+  }
+}

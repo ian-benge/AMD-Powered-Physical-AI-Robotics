@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "utc": "2026-11-10T21:19:46.741174+00:00",
+  "conclusion": "Unclean host interruption; initiating cause undetermined from surviving evidence",
+  "source_v11_sha256": "ea24f6246dfa7089e519ec644b9015acbe589ab91c75b5e2cc3bfa3a4eb570d7",
+  "capture_event_counts": {
+    "capture_started": 1,
+    "health": 858,
+    "journal": 3374
+  },
+  "last_capture_utc": "2026-11-10T03:34:03.313224+00:00",
+  "last_temperature_utc": "2026-11-10T03:34:04.334848+00:00",
+  "last_supervisor_health": {
+    "utc": "2026-11-10T03:34:05.104497+00:00",
+    "tctl_c": 85.125,
+    "capture_utc": "2026-11-10T03:34:03.313224+00:00"
+  },
+  "max_capture_temperature": {
+    "utc": "2026-11-10T02:28:19.429227+00:00",
+    "tctl_c": 85.375
+  },
+  "max_rehearsal_temperature_monitor": {
+    "utc": "2026-11-10T03:33:36.094848+00:00",
+    "tctl_c": 84.875
+  },
+  "rehearsal_supervisor_peak_tctl_c": 85.125,
+  "last_memory_available_gib": 48.74650573730469,
+  "last_swap_free_gib": 7.999996185302734,
+  "last_persisted_demo": {
+    "phase": "exploration_return",
+    "reason": "No feasible budgeted frontier",
+    "elapsed_seconds": 141.82708398600153,
+    "actual_distance_m": 3.443298107414935,
+    "coverage": {
+      "measured_area_m2": 93.97000000000001,
+      "operating_area_m2": 1600.0000000000002,
+      "measured_percent": 5.873125,
+      "measured_safe_m2": 92.09000000000002,
+      "measured_hazard_m2": 1.8800000000000003,
+      "seeded_only_m2": 2.4500000000000006,
+      "unknown_m2": 1503.5800000000004,
+      "provenance": "accepted_depth_supported_cells_only"
+    },
+    "navigation_health": {
+      "healthy": true,
+      "checks": {
+        "terrain_map": true,
+        "estimated_odometry": true,
+        "motion_guard": true,
+        "accepted_depth": true,
+        "detector": true
+      },
+      "missing": [],
+      "odometry_error": ""
+    },
+    "frontier_visits": [
+      {
+        "pose": [
+          -3.0265840081517745,
+          -0.0642801331264852,
+          2.9203983874972863
+        ],
+        "gain_m2": 21.33
+      }
+    ],
+    "sample": null
+  },
+  "last_observed_guard": {
+    "mode": "autonomous",
+    "fault": null,
+    "command": [
+      0,
+      -0.04876430595759303
+    ],
+    "ready": true
+  },
+  "active_observed_worst_rolling_publication_p95_ms": 177.97063560137758,
+  "active_observed_unhealthy_mission_inputs": 0,
+  "final_evidence_present": {
+    "POST_TEARDOWN.json": false,
+    "MANUAL_SESSION_FINAL.json": false,
+    "INCIDENT_DETECTED.txt": false,
+    "CONTROL_STOP_REQUIRED.txt": false
+  },
+  "limits": [
+    "Absence of a persisted fault does not exclude a hard lockup, GPU/firmware fault or power interruption.",
+    "Last saved state is not an exact freeze timestamp; buffered records were lost.",
+    "No successful home arrival, sample collection, delivery, or accepted autonomous cycle.",
+    "This diagnostic snapshot does not authorize another hardware workload or fabricate protected teardown."
+  ]
+}

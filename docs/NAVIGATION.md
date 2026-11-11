@@ -326,10 +326,11 @@ Acceptance remains pending until all of the following are measured on the Halo:
    localization loss, clock pause/reset, stale commands and manual takeover.
 5. Frontier exploration/return and full-stack timing/resource measurements.
 
-The scene generator uses finer visual terrain than physical collision terrain;
-compare both when interpreting traversability and contact behavior. Do not feed
-either mesh or object locations to navigation. NPU replay/accuracy acceptance is
-separate and does not establish any of these navigation outcomes.
+The current `mixed_reachable` version 1 and 2 profiles use shared visual/collision
+surfaces. Legacy scenes can retain different mesh resolutions; inspect the saved
+scene/session configuration when interpreting older results. Do not feed either
+mesh or object locations to navigation. NPU replay/accuracy acceptance is separate
+and does not establish any of these navigation outcomes.
 
 Dedicated deterministic worlds are available with `fixture:=flat`, `slope`,
 `step`, `dropoff`, `narrow_gap` or `blocked_return` appended to the launcher.
@@ -344,3 +345,30 @@ verification on the actual Gazebo runtime.
 Hardware trials require measured camera/footprint calibration, visibility and
 stopping-distance checks, wheel/IMU validation and a hardware clock/control
 adapter. This simulation launcher is intentionally not a physical-rover launcher.
+
+## Experimental exploration and sampling interfaces
+
+The separate demo launch (`demo_mode:=true`) uses the typed
+[`DemoCommand`](../src/rover_navigation_interfaces/srv/DemoCommand.srv) service at
+`/navigation/demo_command`, with status published at `/navigation/demo_status`.
+The existing loopback HTTP gateway exposes POST operations:
+
+| HTTP operation | Typed command |
+|---|---|
+| `/demo/start-exploration` | `start_exploration` |
+| `/demo/return-now` | `return_now` |
+| `/demo/select-target` | `select_target` |
+| `/demo/preview-sample` | `preview_sample` |
+| `/demo/start-sample` | `start_sample` |
+| `/demo/heartbeat` | `heartbeat` |
+
+Requests carry session/mission identity, operator token, odometry epoch and an
+increasing sequence. Target/preview identities bind approval to the reviewed
+round trip; previews expire after thirty seconds. The controlling browser sends
+200 ms heartbeats, with Stop requested after one second without renewal. Recording
+clients do not renew that lease. Existing Stop/manual takeover interfaces remain
+available, and restart invalidates active approvals.
+
+The [mission guide](AUTONOMOUS_DEMO_GUIDE.md) defines budgets, soil evidence,
+simulated collection and pending qualification. The implemented interfaces do not
+establish a successful autonomous mission; see [current AMD evaluation status](AMD_TESTING_GUIDE.md).

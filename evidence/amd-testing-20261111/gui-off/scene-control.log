@@ -1,0 +1,18 @@
+test_browser_profile_stays_gui_free_after_restart_and_generation (test_scene_control.SceneControlTests.test_browser_profile_stays_gui_free_after_restart_and_generation) ... ok
+test_demo_restart_preserves_profile_and_invalidates_runtime_session (test_scene_control.SceneControlTests.test_demo_restart_preserves_profile_and_invalidates_runtime_session) ... ok
+test_gateway_new_scene_is_local_and_accepts_no_parameters (test_scene_control.SceneControlTests.test_gateway_new_scene_is_local_and_accepts_no_parameters) ... ok
+test_gateway_reuses_control_connection_and_closes_rejected_unread_body (test_scene_control.SceneControlTests.test_gateway_reuses_control_connection_and_closes_rejected_unread_body) ... ok
+test_generation_isolated_from_source_assets_and_fresh_launch_keeps_renderer (test_scene_control.SceneControlTests.test_generation_isolated_from_source_assets_and_fresh_launch_keeps_renderer) ... ok
+test_new_scene_requires_assets_and_serializes_requests (test_scene_control.SceneControlTests.test_new_scene_requires_assets_and_serializes_requests) ... ok
+test_restart_is_local_and_takes_no_browser_supplied_command (test_scene_control.SceneControlTests.test_restart_is_local_and_takes_no_browser_supplied_command) ... ok
+test_restart_page_and_error_remain_available_when_ros_is_down (test_scene_control.SceneControlTests.test_restart_page_and_error_remain_available_when_ros_is_down) ... ok
+test_restart_preserves_candidate_image_and_separate_camera_range (test_scene_control.SceneControlTests.test_restart_preserves_candidate_image_and_separate_camera_range) ... ok
+test_restart_uses_new_session_without_reusing_the_previous_database (test_scene_control.SceneControlTests.test_restart_uses_new_session_without_reusing_the_previous_database) ... ok
+test_supervisor_refuses_to_stop_a_container_from_another_checkout (test_scene_control.SceneControlTests.test_supervisor_refuses_to_stop_a_container_from_another_checkout) ... ok
+test_v2_generator_uses_separate_source_tree_and_bounded_material_time (test_scene_control.SceneControlTests.test_v2_generator_uses_separate_source_tree_and_bounded_material_time) ... ok
+test_v2_restart_and_generation_keep_map_extent_and_conservative_initial_speed (test_scene_control.SceneControlTests.test_v2_restart_and_generation_keep_map_extent_and_conservative_initial_speed) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 2.043s
+
+OK

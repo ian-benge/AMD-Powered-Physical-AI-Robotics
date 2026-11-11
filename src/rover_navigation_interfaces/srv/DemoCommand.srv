@@ -1,0 +1,15 @@
+string command
+string session_id
+string mission_id
+string client_token
+string target_id
+string preview_id
+uint32 epoch
+uint64 sequence
+float64 x
+float64 y
+---
+bool success
+string message
+string mission_id
+string preview_id

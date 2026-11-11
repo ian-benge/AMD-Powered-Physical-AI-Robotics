@@ -12,6 +12,7 @@ import time
 
 from mars_training_environment import dataset
 from mars_training_environment.capture_attempts import verify_completed
+from mars_training_environment.capture_attempts import FatalRendererError
 from mars_training_environment.common import digest, read_config, write_json
 from mars_training_environment.generate import make_scene
 from mars_training_environment.planning import class_coverage
@@ -19,6 +20,7 @@ from mars_training_environment.validate import validate_scene
 from rover_training.geometry import CLASS_NAMES
 from process_cleanup import (CaptureProcessScope, verify_scene_renderer,
                              prepare_dataset_output, verify_runtime_qualification)
+from desktop_render_guard import DesktopUnavailable, require_desktop, stop_path, watch_desktop
 
 ROOT = Path('/collection')
 PROFILE = Path('/work/source/src/mars_training_environment/config/pilot200_environment_v2.json')
@@ -84,17 +86,17 @@ def plan_bundle(config, resume):
     return bundle
 
 
-def capture(bundle, resume):
-    original = dataset.simulator_process
-    invocation = Path('/invocation/INVOCATION.json')
+def qualified_process(original, root, invocation):
+    """Keep desktop lifetime, renderer provenance and owned cleanup in one scope."""
     run = json.loads(invocation.read_text())['utc'].replace(':', '').replace('+', '-')
+    desktop_stop = stop_path(root, invocation)
     counter = 0
 
     @contextmanager
     def checked_process(command, log, qualified_desktop=False):
         nonlocal counter
         counter += 1
-        proof = ROOT/'renderer-provenance'/run/f'launch-{counter:03d}'; proof.mkdir(parents=True)
+        proof = root/'renderer-provenance'/run/f'launch-{counter:03d}'; proof.mkdir(parents=True)
         finished = threading.Event(); success = []
         world = Path(next(arg[7:] for arg in command if arg.startswith('scene:='))).with_name('world.sdf')
         scope = None
@@ -132,10 +134,27 @@ def capture(bundle, resume):
             if scope is not None:
                 write_json(proof/'CLEANUP.json', scope.cleanup())
         write_json(Path(log.name).parent/'RUNTIME_QUALIFICATION.json', dict(version=2,
-            world=str(world), proof=str(proof.relative_to(ROOT)),
+            world=str(world), proof=str(proof.relative_to(root)),
             scene_sha256=json.loads(world.with_name('scene.json').read_text())['content_sha256'],
             proof_sha256=sha(proof/'PASS.json'), cleanup_sha256=sha(proof/'CLEANUP.json')))
-    dataset.simulator_process = checked_process
+    @contextmanager
+    def guarded_process(command, log, qualified_desktop=False):
+        try:
+            require_desktop(desktop_stop)
+            with checked_process(command, log, qualified_desktop=qualified_desktop) as process:
+                with watch_desktop(process, desktop_stop):
+                    yield process
+        except DesktopUnavailable as error:
+            # Use the existing fatal-attempt path: preserve this attempt and stop
+            # the campaign, rather than starting three renderers on a lost output.
+            raise FatalRendererError(str(error)) from error
+
+    return guarded_process
+
+
+def capture(bundle, resume):
+    dataset.simulator_process = qualified_process(dataset.simulator_process, ROOT,
+        Path('/invocation/INVOCATION.json'))
     output = prepare_dataset_output(ROOT)
     print('Using generated scenes with scene-bound proof. Any legacy capture is preserved separately.', flush=True)
     for report_path in (output/'reports').glob('scene_*.json'):

@@ -6,9 +6,10 @@ saved campaign. Use [Getting started](GETTING_STARTED.md) for portable source
 checks and the CPU simulation; deployment paths below are machine-specific.
 
 The [November 8 depth-boundary repair](BULK_DEPTH_BOUNDARY_FIX_20261108.md)
-updates the checked capture runtime to v10. The supervisor program and commands
-below are unchanged; all 2,000 accepted images and prior failed attempts were
-verified before the update.
+updates the checked capture runtime to v10. The later
+[active-desktop repair](BULK_ACTIVE_DISPLAY_FIX_20261108.md) adds controller
+checks for a desktop output before rendering and throughout each scene.
+The launch commands below remain the same.
 
 The separate supervisor resumes the existing 10,000-image campaign and renews
 monitoring automatically between batches. One initial local sudo launch allows
@@ -27,7 +28,7 @@ Use a connected Halo graphical-desktop terminal and leave the supervisor visible
 sudo /usr/bin/python3 -I /home/ian/capstone-training/rover-navigation/navigation_sessions/bulk10000-continuous-20261107/start_bulk10000_continuous.py --run
 ```
 
-It verifies the pinned v9 controller/camera candidate, prepares a fresh native
+It verifies the pinned controller and capture runtime, prepares a fresh native
 kit and capture case, starts the unchanged 7,200-second recorder, waits for two
 health events, verifies native module/fan gates and starts temperature logging.
 The supervisor prints temperatures and fan speeds every two seconds and image
@@ -54,6 +55,16 @@ final journal capture to finish. Avoid closing the terminal or stopping its
 monitoring children during this sequence. Keep the graphical desktop/RDP
 connection active throughout collection. Automatic window renewal does not
 establish unattended endurance stability or detector-training approval.
+
+An Xwayland process and a reachable X11 socket can remain after RDP removes its
+virtual monitor. The controller also requires an active RandR monitor before
+planning, between scene layouts, after planning and before each renderer launch.
+A bounded output monitor remains active throughout capture, including after
+renderer provenance passes. On output loss it interrupts the held launch process
+and lets the existing owned-process cleanup run. `DESKTOP_RECONNECT_REQUIRED`
+means reconnect the Halo desktop, wait for protected closeout to finish, then use
+the same `--run` command. Saved scenes and failed attempts remain available for
+verified resume. A native renderer crash still stops for review.
 
 Read live status from another terminal:
 

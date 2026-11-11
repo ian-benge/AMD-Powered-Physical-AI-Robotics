@@ -47,6 +47,11 @@ outputs/
 *.key
 *.pfx
 *.p12
+*.xauth
+*.rdp
 .DS_Store
 Thumbs.db
 .idea/
+
+# Internal session handoffs stay local; public status lives in the testing guide.
+docs/HANDOFF_*.md

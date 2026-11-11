@@ -5,3 +5,6 @@
 *.jpeg binary
 *.gif binary
 *.pgm binary
+# Preserve generated Matplotlib SVG bytes and provenance hashes. Path-coordinate
+# whitespace is generator output, not source formatting to rewrite.
+docs/figures/**/*.svg -diff -whitespace

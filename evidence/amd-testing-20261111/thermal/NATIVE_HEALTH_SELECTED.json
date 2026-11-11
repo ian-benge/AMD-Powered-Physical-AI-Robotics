@@ -1,0 +1,36 @@
+{
+  "native_steady_health_records": 58,
+  "ppt_w": {
+    "min": 68,
+    "max": 74.033,
+    "mean": 70.42598275862072
+  },
+  "available_memory_gib": {
+    "n": 58,
+    "min": 49.78356170654297,
+    "max": 51.83039474487305,
+    "mean": 50.96300532900054
+  },
+  "sensor_ages_seconds": {
+    "depth_age_seconds": {
+      "n": 330,
+      "min": 0.0003242859993406455,
+      "max": 0.15160637700000734,
+      "mean": 0.05678280741210597
+    },
+    "pose_age_seconds": {
+      "n": 330,
+      "min": 0.0002026269994530594,
+      "max": 0.07449436700017031,
+      "mean": 0.03597792094543696
+    }
+  },
+  "camera_age_seconds": {
+    "n": 330,
+    "min": 0.002675063999959093,
+    "max": 0.5443175590003193,
+    "mean": 0.2620858998787987
+  },
+  "limitation": "Stationary estimated pose only; no independent localization drift measurement.",
+  "publication_note": "PPT average/input expose the same samples; report 58 native health snapshots, not 116 independent power measurements."
+}

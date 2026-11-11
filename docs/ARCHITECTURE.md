@@ -27,6 +27,12 @@ guard-enforced caps of 0.50 m/s and 0.60 rad/s. Changing a requested speed
 releases held movement without deselecting manual mode. The autonomous launch
 speed remains 0.10 m/s. [Controls verification](HALO_DASHBOARD_CONTROLS_20261027.md)
 
+Those are legacy defaults. The separate assessment and autonomous-demo launchers
+override them conservatively: initial manual speed 0.05 m/s, demo maximum
+0.10 m/s and turn cap 0.30 rad/s, with qualification gates retained. The current
+GUI-off browser profile keeps 15 Hz Ogre sensors while disabling Gazebo GUI/RViz;
+it does not replace the underlying renderer with software rendering.
+
 Depth geometry marks terrain unsafe above a 12° slope or 3 cm per-cell height span. Unknown terrain is blocked. An operator can confirm the inspected 1.1 m launch disk once per session; this is an explicit clearance assumption, not camera-observed terrain. Measured hazards override launch seeding.
 
 The initial [adaptive terrain policy](ADAPTIVE_TERRAIN.md) can reconsider weak
@@ -43,6 +49,15 @@ Immediate camera boxes and confirmed map objects have different responsibilities
 The automatic classes are `rock` and `yellow_crystal_rock`. Soil patches and slabs remain tentative. Healthy, fully visible contradictory observations can demote/retire a track; occlusion or leaving view cannot. An existence score is engineering evidence, not calibrated detection accuracy.
 
 Tracking does not turn semantic labels into traversability or clear terrain hazards. All states and decisions are persisted for audit. [Tracking policy →](NAVIGATION_PHASE_THREE.md)
+
+The experimental demo adds a **separate ground-surface soil store** for
+`pale_soil_patch`, using translated viewpoints, class support and ground-plane
+evidence instead of the raised-rock test. It does not alter the legacy rock
+eligibility policy. A clicked point remains operator-selected without a material
+claim. The mission controller captures home in the odometry epoch, reprojects
+through map corrections, reserves return time, and fences previews/approvals to
+the session and current mission. Browser lease loss, Stop and takeover invalidate
+ongoing work. [Mission behavior and pending acceptance](AUTONOMOUS_DEMO_GUIDE.md).
 
 ## Failure isolation and deployment
 

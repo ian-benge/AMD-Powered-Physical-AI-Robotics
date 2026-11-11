@@ -102,7 +102,7 @@ def supporting_plane(points):
     return normal, offset, fraction
 
 
-def measure(depth, k, box, translation, quaternion, localization_covariance):
+def measure(depth, k, box, translation, quaternion, localization_covariance, surface=False):
     """Return odom measurement, conservative covariance and independent relief test."""
     k, box = np.asarray(k, float), np.asarray(box, float)
     h, w = depth.shape
@@ -120,7 +120,27 @@ def measure(depth, k, box, translation, quaternion, localization_covariance):
     plane = supporting_plane(world[~inside])
     evidence = dict(supported=False, contradiction=False, reason='insufficient surrounding ground geometry')
     selected = core
-    if plane is not None:
+    envelope = None
+    if surface:
+        if plane is None or len(core) < .8*total or min(box[0], box[1], w-box[2], h-box[3]) < 3:
+            raise ValueError('Soil boundary is clipped or lacks dense ground support')
+        normal, offset, fraction = plane
+        flat = np.abs(world[inside] @ normal+offset) <= .015
+        if normal[2] < math.cos(math.radians(8)) or flat.mean() < .8:
+            raise ValueError('Soil requires near-planar ground below 8 degrees')
+        rays = np.array([[(u-k[2])/k[0], (v-k[5])/k[4], 1.]
+                         for u,v in ((box[0],box[1]),(box[2],box[1]),(box[2],box[3]),(box[0],box[3]))]) @ camera_rotation.T
+        denominator = rays @ normal
+        if np.any(np.abs(denominator) < 1e-8):
+            raise ValueError('Soil boundary has an unbounded ground projection')
+        distances = -(normal @ translation+offset)/denominator
+        if np.any((distances < .3) | (distances > 8.)):
+            raise ValueError('Soil boundary outside usable depth')
+        envelope = (translation+rays*distances[:,None])[:,:2].tolist()
+        evidence.update(supported=True, contradiction=False, plane_inlier_fraction=fraction,
+                        flat_fraction=float(flat.mean()), reason='multi-view ground-surface support')
+        selected = core[flat]
+    elif plane is not None:
         normal, offset, fraction = plane
         heights = world[inside] @ normal+offset
         raised = heights >= .03
@@ -147,8 +167,12 @@ def measure(depth, k, box, translation, quaternion, localization_covariance):
     pose_jacobian = np.column_stack((np.eye(3), -skew))
     cov = camera_rotation @ optical_cov @ camera_rotation.T+pose_jacobian @ c @ pose_jacobian.T
     extent = np.maximum(.03, np.percentile(selected, 95, axis=0)-np.percentile(selected, 5, axis=0))
-    return dict(odom_position=point.tolist(), covariance=covariance_floor(cov).tolist(),
-                extent=extent.tolist(), geometry=evidence)
+    result = dict(odom_position=point.tolist(), covariance=covariance_floor(cov).tolist(),
+                  extent=extent.tolist(), geometry=evidence)
+    if envelope is not None:
+        result['envelope_odom'] = envelope
+        result['envelope_radius_m'] = max(np.linalg.norm(np.asarray(envelope)-point[:2],axis=1))
+    return result
 
 
 def visible_region(item, depth, k, translation, quaternion):

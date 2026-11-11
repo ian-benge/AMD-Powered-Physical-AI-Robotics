@@ -1,6 +1,6 @@
 # Roadmap
 
-## Delivered through November 7, 2026
+## Delivered through November 10, 2026
 
 - Guarded browser manual driving, RGB-D mapping, actual four-class NPU inference, float64 GPU terrain processing and confirmed-rock/revisit tracking have bounded deployment evidence.
 - The November rendering phase corrects opaque-material depth behavior and verifies the deployed Ogre camera/material path. [Rendering acceptance](PHASE1_RENDERING_ACCEPTANCE_20261104.md).
@@ -10,14 +10,14 @@
 
 The November rendering/terrain/mapping phases are a separate sequence from the older navigation Phase Two/Three reports. Their scoped acceptance does not resolve every historical localization, contact or autonomous-mission failure.
 
-## Current work: collection, review and export
+## Detector candidate: trained and evaluated, further review pending
 
-At the November 8 [depth-cutoff repair](BULK_DEPTH_BOUNDARY_FIX_20261108.md), ten batches and **2,000 accepted images** were verified; batch 11 resumed with v10 and passed its formerly blocking scene. This dated count is not a completion claim. The campaign targets 8,000 training, 1,000 validation and 1,000 test images, including 20% backgrounds with reserved scene/asset splits.
+The operator stopped further capture on November 8 after **5,000 accepted images in 25 batches**, including 1,000 background frames. Both monitoring windows of the last invocation closed cleanly. All new captures belong to the training split; the original 10,000-image reservation remains incomplete. A separate snapshot now contains **5,300 training, 100 validation and 100 test images**, with the original evaluation labels and source split assignments preserved. Image decoding, export hashes, split isolation, Linux checks and a four-class ROCm training/NMS probe passed. The owner requested experimental candidate training while complete new-image visual review remains outstanding. See the [preparation evidence](CAPTURE5000_TRAINING_READINESS_20261108.md) and [training guide](CAPTURE5000_TRAINING_GUIDE.md).
 
-1. Complete the remaining batches with the existing renderer, geometry labels and quality checks. Investigate genuine faults rather than bypassing them.
+1. Preserve the completed batches, partial batch 26 and failed attempts; keep further capture stopped for this training candidate.
 2. Review images and labels, class/view coverage, backgrounds and rejected attempts. Preserve raw captures and audit reversible edits.
-3. Produce the metadata-based four-class export, including `mudstone_slab`, while preserving legacy three-class source IDs. Verify split isolation and export hashes before approving training.
-4. Evaluate a detector update on held-out scenes and hard negatives, then separately qualify ONNX/quantized NPU deployment. Collection completion alone does not approve a model.
+3. The separately pinned YOLOv8s candidate trained for 28 saved epochs before the operator chose to assess its validation-selected epoch-22 checkpoint. Matched GPU and NPU comparisons are complete: NPU test mAP50-95 increased from 76.67% to 78.90%, while mudstone test AP decreased. Export/quantization parity, learned-compute NPU offload, matched validation accuracy gates and a guarded HTTP inference check passed. [Metrics and assessment starter](CAPTURE5000_MODEL_ASSESSMENT.md).
+4. Assess the separately pinned candidate through the guarded browser simulator, then review held-out new scenes and hard negatives before global model promotion. Retain the legacy source IDs and unchanged baseline detector. Collection completion alone does not approve a model.
 
 ## Environment v2: implemented, experimental acceptance
 
@@ -25,11 +25,33 @@ The versioned 40 x 40 m environment adds a continuous 20 m apron, larger maps, s
 
 Offline geometry, compatibility, texture allocation and actual CPU/ROCm mapping checks passed. The recorded sparse run reached 13.109 m along an axis and returned within 0.677 m of launch, with reviewed ground error below the retained 15 mm bound. Its p95 local-publication latency was **267.73 ms**, above the **200 ms** target. The subsequent live optimization, remaining standard/cluttered drives and recorded progressive speed stages remain unqualified. Smooth operator observation does not close those gates. Historical cooldown-monitoring gaps remain documented.
 
-## Next navigation milestone: reviewed soil-site approach
+## Autonomous demonstration: implemented, not accepted
 
-The intended workflow is manual mapping, soil-patch detection and evidence checks, operator approval of an outward/return preview, an approach beside the patch, stopped waiting, and explicit Return home.
+The separate candidate implements fresh-map autonomous exploration, a budgeted
+first return, detected-soil or map-click target selection, preview/approval,
+travel, ten seconds of simulated collection, and automatic return with a sample
+record. It adds route/trail layers, mission status and a typed command service.
+Replay, browser and real ROS interface checks support the implementation; they
+do not establish successful end-to-end operation. [Mission guide](AUTONOMOUS_DEMO_GUIDE.md).
 
-Required work includes soil-specific repeated observations and identity uncertainty, a full-footprint approach/return through known ground, a stopping pose outside the patch, and retained Stop/takeover/late-response protections. A flat soil patch cannot use a raised-rock geometry test; visual class does not establish material composition. Qualify launch clearance, localization, contact wiring, blocked routes and repeated bounded missions before accepting autonomous approach. Existing waypoint/exploration APIs do not establish that acceptance.
+The first real autonomous rehearsal froze during the first return after 3.443 m
+of estimated travel. The protected logs establish an unclean interruption but no
+initiating cause. There is no successful home return, sample delivery or accepted
+cycle. [Freeze investigation](AUTONOMOUS_DEMO_FREEZE_20261110.md).
+
+The later GUI-off candidate removes continuous exterior-window rendering while
+retaining 15 Hz Ogre RGB-D. Its five-minute stationary check recorded mean Tctl
+80.82°C, peak 83.125°C, worst reported rolling publication p95 165.65 ms and
+reported median RTF 0.996. It did not meet the sustained-below-80°C target or
+establish a matched cooling benefit. An initial odometry-fault latch was retained.
+[Thermal results and plots](AUTONOMOUS_DEMO_BROWSER_PROFILE.md).
+
+Next steps are platform stability and startup investigation, thermal margin,
+unseen-scene detector review, then fresh bounded exploration/return and sampling
+cycles. Complete the mission guide's speed, drift, contact, recording and variation
+gates before acceptance. Simulated collection remains a timed event; there is no
+physical arm or material-transfer claim. The [AMD testing guide](AMD_TESTING_GUIDE.md)
+provides the current reproduction and issue matrix.
 
 ## Later milestones
 

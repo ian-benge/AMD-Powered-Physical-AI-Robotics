@@ -66,12 +66,23 @@ class LaunchTests(unittest.TestCase):
                            terrain_url='http://127.0.0.1:8782')
             context.update(adaptive_terrain='true', sensor_headless='true', sensor_render_engine='ogre2', camera_rgb_far='8')
             context.update(manual_max_linear_speed='0.50',manual_max_angular_speed='0.60')
-            context.update(map_size_m='auto',manual_initial_linear_speed='-1')
+            context.update(map_size_m='auto',manual_initial_linear_speed='-1',camera_rate_hz='30')
             spec = importlib.util.spec_from_file_location('tested_navigation', ROOT/'src/rover_navigation/launch/navigation.launch.py')
             launch = importlib.util.module_from_spec(spec)
             with patch.dict(sys.modules, self.stubs(folder)):
                 spec.loader.exec_module(launch)
                 nodes = launch.setup(context)
+                reduced = launch.setup(dict(context,camera_rate_hz='15',session=str(folder/'reduced-rate')))
+                rate_sensor = ET.parse(folder/'reduced-rate/robot.urdf').find('.//sensor')
+                self.assertEqual(float(rate_sensor.findtext('update_rate')),15.)
+                saved_camera=json.loads((folder/'reduced-rate/session.json').read_text())['camera']
+                self.assertEqual(saved_camera['rate_hz'],15.)
+                self.assertEqual((saved_camera['width'],saved_camera['height']),(960,540))
+                self.assertEqual(json.loads((folder/'run/session.json').read_text())['camera']['rate_hz'],30.)
+                for invalid_rate in ('nan','inf','0','9','31'):
+                    with self.assertRaises(ValueError):
+                        launch.setup(dict(context,camera_rate_hz=invalid_rate,session=str(folder/'invalid-rate')))
+                    self.assertFalse((folder/'invalid-rate').exists())
                 for invalid in ('other', 'ogre'):
                     with self.assertRaises(ValueError):
                         launch.setup(dict(context, sensor_render_engine=invalid, session=str(folder/'invalid-renderer')))
@@ -102,6 +113,15 @@ class LaunchTests(unittest.TestCase):
                                     gui='true', rviz='true', mission_controls='true', terrain_collision='scene', detector_model='/trained.pt',
                                     mapping_on_confirm='true')
                 localized_nodes = launch.setup(localization)
+                demo=launch.setup(dict(localization,demo_mode='true',demo_profile='rehearsal',
+                    database='',camera_rate_hz='15',session=str(folder/'demo')))
+                demo_mission=next(n for n in demo if n.get('executable')=='demo_mission')
+                self.assertEqual(demo_mission['parameters'][1]['demo_profile'],'rehearsal')
+                self.assertEqual(demo_mission['parameters'][1]['session'],str(folder/'demo'))
+                for executable in ('terrain','sample_sites','mission_controls'):
+                    node=next(n for n in demo if n.get('executable')==executable)
+                    self.assertTrue(any(p.get('demo_mode') is True for p in node['parameters'] if isinstance(p,dict)))
+                with self.assertRaises(ValueError):launch.setup(dict(localization,demo_mode='true',demo_profile='full',camera_rate_hz='15',session=str(folder/'demo-invalid')))
                 with self.assertRaises(ValueError):
                     launch.setup(context)
                 capture = ET.fromstring(robot_description(read_config()))

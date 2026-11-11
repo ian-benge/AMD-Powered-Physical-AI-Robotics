@@ -26,3 +26,21 @@ jobs:
               --build-base build_navigation --install-base install_navigation \
               --packages-up-to rover_navigation
           '
+      - name: Check installed demo service and best-effort odometry
+        run: |
+          set -euo pipefail
+          mkdir -p outputs/ros-checks
+          docker run --rm --network none \
+            -e ROS_DOMAIN_ID=236 -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
+            -v "$PWD:/work" -w /work rover-navigation bash -c '
+              set -e
+              source /opt/ros/jazzy/setup.bash
+              source /work/install_navigation/setup.bash
+              python3 scripts/probe_autonomous_demo.py
+            ' 2>&1 | tee outputs/ros-checks/demo-service.txt
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: ros-checks
+          path: outputs/ros-checks/
+          retention-days: 14

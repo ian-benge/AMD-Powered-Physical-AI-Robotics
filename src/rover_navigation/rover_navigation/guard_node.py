@@ -26,6 +26,13 @@ class Guard(Node):
     def __init__(self):
         super().__init__('navigation_motion_guard')
         self.gate = SafetyGate()
+        self.declare_parameter('max_linear_speed', .5)
+        self.declare_parameter('max_angular_speed', .6)
+        linear,angular=(self.get_parameter(k).value for k in ('max_linear_speed','max_angular_speed'))
+        if not (math.isfinite(linear) and math.isfinite(angular) and 0<linear<=.5 and 0<angular<=.6):
+            raise ValueError('Guard speed limits may only restrict the existing envelope')
+        self.gate.MAX_LINEAR_SPEED=linear
+        self.gate.MAX_ANGULAR_SPEED=angular
         self.grid = None
         self.reason_grids = {}
         self.in_contact = False

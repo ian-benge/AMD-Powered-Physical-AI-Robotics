@@ -38,6 +38,11 @@ class SampleSites(Node):
     def __init__(self):
         super().__init__('navigation_sample_sites')
         self.declare_parameter('output', '')
+        self.declare_parameter('demo_mode', False)
+        self.soil_store = None
+        if self.get_parameter('demo_mode').value:
+            from .soil_sites import SoilStore
+            self.soil_store = SoilStore()
         self.output = Path(self.get_parameter('output').value)
         if not self.get_parameter('output').value or self.output.exists():
             raise ValueError('Specify a new sample-site output path; historical tracks are never restored')
@@ -62,6 +67,8 @@ class SampleSites(Node):
         self.marker_pub = self.create_publisher(MarkerArray, '/navigation/sample_site_markers', durable)
         self.tentative_pub = self.create_publisher(MarkerArray, '/navigation/tentative_site_markers', durable)
         self.pub = self.create_publisher(String, '/navigation/sample_sites', durable)
+        if self.soil_store is not None:
+            self.soil_pub = self.create_publisher(String, '/navigation/soil_sites', durable)
         for topic, cache in (('/oak/depth/image_raw', self.depths), ('/oak/image_raw', self.images),
                              ('/oak/camera_info', self.infos)):
             self.create_subscription(CameraInfo if cache is self.infos else Image, topic,
@@ -111,6 +118,9 @@ class SampleSites(Node):
             self.archived.append(dict(epoch=self.store.epoch, reason='odometry_reset',
                                       objects=[self.store.export(x) for x in self.store.objects]))
             self.store = SiteStore(epoch=self.store.epoch+1)
+            if getattr(self,'soil_store',None) is not None:
+                from .soil_sites import SoilStore
+                self.soil_store = SoilStore(epoch=self.store.epoch)
             for collection in (self.pending, self.depths, self.infos, self.images, self.seen, self.odometry):
                 collection.clear()
             self.last_processed = -math.inf
@@ -197,7 +207,8 @@ class SampleSites(Node):
             distances = depth_image(depth.data, depth.encoding, depth.width, depth.height,
                                     depth.step, depth.is_bigendian)
             bgr = image_to_bgr(rgb)
-            rows = []
+            rows, soil_rows = [], []
+            soil_projection_failed=False
             for detection in msg.detections:
                 if not detection.results:
                     continue
@@ -206,6 +217,14 @@ class SampleSites(Node):
                 center = box.center.position if hasattr(box.center, 'position') else box.center
                 xyxy = [center.x-box.size_x/2, center.y-box.size_y/2, center.x+box.size_x/2, center.y+box.size_y/2]
                 try:
+                    if getattr(self,'soil_store',None) is not None and hypothesis.class_id=='pale_soil_patch':
+                        try:
+                            soil_measurement = measure(distances, info.k, xyxy, sensor[:3], sensor[3:], covariance, surface=True)
+                            soil_rows.append(dict(soil_measurement, class_name=hypothesis.class_id, confidence=hypothesis.score,
+                                                  appearance=color_histogram(bgr,xyxy),box=xyxy))
+                        except (ValueError,np.linalg.LinAlgError) as error:
+                            soil_projection_failed=True
+                            self.soil_store.event('surface_rejected',stamp,reason=str(error))
                     measurement = measure(distances, info.k, xyxy, sensor[:3], sensor[3:], covariance)
                     rows.append(dict(measurement, class_name=hypothesis.class_id, confidence=hypothesis.score,
                                      appearance=color_histogram(bgr, xyxy), box=xyxy))
@@ -220,6 +239,17 @@ class SampleSites(Node):
                     if item['state'] != 'retired' and visible_region(item, distances, info.k, sensor[:3], sensor[3:])[0]:
                         visible.append(item['track_id'])
             decisions = self.store.update(rows, stamp, observer, sensor[:3], visible)
+            if getattr(self,'soil_store',None) is not None:
+                # Missing/occluded soil boxes are not proof of absence. Updates
+                # require the same synchronized healthy frame as rock evidence.
+                soil_visible=[]
+                if not soil_projection_failed and len(rows)==sum(bool(d.results) for d in msg.detections):
+                    soil_visible=[item['track_id'] for item in self.soil_store.objects if item['state']!='retired'
+                                  and visible_region(item,distances,info.k,sensor[:3],sensor[3:])[0]]
+                from .soil_sites import surface_observer
+                self.soil_store.update(soil_rows,stamp,surface_observer(observer),sensor[:3],soil_visible)
+                while self.soil_store.events:
+                    self.event_stream.write(json.dumps(dict(stream='soil',**self.soil_store.events.popleft()),allow_nan=False)+'\n')
             self.counts['observations'] += len(rows)
             self.counts['processed_frames'] += 1
             self.store.event('frame', stamp, observations=rows, decisions=decisions,
@@ -301,6 +331,19 @@ class SampleSites(Node):
                        map_transform_age_seconds=transform_age,
                        processing_ms=self.processing_ms, defaults=DEFAULTS)
         if emit:
+            if getattr(self,'soil_store',None) is not None:
+                sites=[]
+                if not detail:
+                    for item in self.soil_store.objects:
+                        if item['state'] != 'retired':
+                            sites.append(dict(self.soil_store.export(item),
+                                map_position=apply_tf([item['odom_position']],correction)[0].tolist(),
+                                map_covariance=(r @ np.asarray(item['covariance']) @ r.T).tolist()))
+                soil=String();soil.data=json.dumps(dict(schema_version=1,epoch=self.soil_store.epoch,
+                    ready=not bool(detail),error=detail,sites=sites,
+                    ambiguous_track_ids=[s['track_id'] for s in self.soil_store.ambiguous],
+                    stamp=self.last_processed if math.isfinite(self.last_processed) else None),allow_nan=False)
+                self.soil_pub.publish(soil)
             self.marker_pub.publish(self.marker_array(objects))
             self.tentative_pub.publish(self.marker_array(tentative, True))
             message = String()
