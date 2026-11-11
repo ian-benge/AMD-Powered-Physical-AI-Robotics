@@ -70,7 +70,7 @@ docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
       --packages-up-to rover_navigation
   '
 docker run --rm --network none \
-  -e ROS_DOMAIN_ID=236 -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
+  -e ROS_DOMAIN_ID=88 -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
   -v "$PWD:/work" -w /work rover-navigation bash -c '
     set -e
     source /opt/ros/jazzy/setup.bash
