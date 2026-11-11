@@ -47,7 +47,7 @@ The [AMD handoff evidence](evidence/amd-testing-20261111/README.md) and [earlier
 | Epoch-22 NPU execution | **23.46 ms mean / 24.22 ms p95** | 100 test images, 576×960 A16W8; model execution only, excluding rendering, transport and drawing |
 | Historical baseline NPU throughput | **38.46 FPS**, mean of three 60 s replays | Batch 1, 576×960 YOLOv8s A16W8; drawing/JPEG included; camera, network and Gazebo excluded |
 | GPU terrain subsystem | **27.75 → 17.75 ms mean** | Paired CPU vs deployed ROCm/RPC depth/classification + projection; 36% reduction for this subsystem |
-| Integrated stationary run | **30.30 detector FPS**, 600 GPU operations in 60 s | Gazebo, NPU detection and GPU terrain running together; stationary rover |
+| Historical integrated stationary run | **30.30 detector FPS**, 600 GPU operations in 60 s | Earlier Gazebo/NPU/GPU profile; stationary rover; separate from the current 15 Hz browser measurements |
 | Rock revisit acceptance | **3/3 bounded trials passed** | Approximately 0.45 m translation followed by a complete turn and fresh re-sighting under the same ID |
 | Tracking replay | **1,330 frames; zero false/duplicate confirmations** | Recorded evidence in evaluated scene-50000 regions; not a general accuracy guarantee |
 | GUI-off stationary mapping | **165.65 ms worst reported rolling p95; 83.125°C peak Tctl** | Five steady minutes, stopped rover, sparse 40 m scene; no matched baseline, autonomous or endurance acceptance |

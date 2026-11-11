@@ -19,8 +19,16 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - name: Build Jazzy and navigation images
         run: |
-          # Keep apt on the Linux runner's DNS/network path during image builds.
-          docker build --network host -f docker/Dockerfile.jazzy -t rover-jazzy .
+          set -euo pipefail
+          # Independent mirror avoids a Canonical DNS outage; apt still checks
+          # Ubuntu signatures. Fail before a long build if indexes are unreachable.
+          mirror=https://mirrors.edge.kernel.org/ubuntu
+          for suite in noble noble-security; do
+            curl --fail --silent --show-error --head --retry 2 \
+              --connect-timeout 5 --max-time 20 "$mirror/dists/$suite/InRelease"
+          done
+          docker build --network host --build-arg UBUNTU_MIRROR="$mirror" \
+            -f docker/Dockerfile.jazzy -t rover-jazzy .
           docker build --network host -f docker/Dockerfile.navigation -t rover-navigation .
       - name: Build ROS packages
         run: |
