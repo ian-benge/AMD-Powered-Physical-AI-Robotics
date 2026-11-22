@@ -27,6 +27,17 @@ def confirmed():
 
 
 class TrackTests(unittest.TestCase):
+    def test_demo_confirms_with_three_slightly_closer_views(self):
+        from rover_navigation.sample_sites import DEMO_BASELINE_M
+        demo = SiteStore(min_baseline_m=DEMO_BASELINE_M)
+        standard = SiteStore()
+        for stamp, x in [(1., 0.), (2., .19), (3., .38)]:
+            update(demo, stamp, x)
+            update(standard, stamp, x)
+        self.assertEqual(demo.objects[0]['state'], 'confirmed')
+        self.assertEqual(demo.objects[0]['confirmation_view_count'], 3)
+        self.assertEqual(standard.objects[0]['state'], 'tentative')
+
     def test_single_detection_is_tentative(self):
         store = SiteStore()
         update(store, 1., 0.)

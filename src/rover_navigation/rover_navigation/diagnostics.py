@@ -48,4 +48,5 @@ def reason_colors(data):
     colors[(data > 0) & ((data & 4) != 0)] = (220, 95, 185)
     colors[(data > 0) & ((data & 6) == 6)] = (125, 70, 255)
     colors[(data > 0) & ((data & 8) != 0)] = (70, 75, 225)
+    colors[(data > 0) & ((data & 16) != 0)] = (194, 124, 236)
     return colors

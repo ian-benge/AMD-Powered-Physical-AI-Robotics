@@ -26,16 +26,18 @@ class SoilStore(SiteStore):
 
     def _hit(self,item,obs,stamp,camera,observer):
         import numpy as np
-        previous=np.asarray(item['odom_position'][:2],float)
-        previous_radius=item.get('envelope_radius_m',0.)
+        independent=item['independent_view_count']
         super()._hit(item,obs,stamp,camera,observer)
         item['last_confidence']=obs['confidence']
+        boundary=item.setdefault('_measured_boundary',[])
+        latest=[]
         if obs['geometry'].get('supported') and obs['confidence']>=.50:
-            item['last_supported_stamp']=stamp
-        shift=float(np.linalg.norm(previous-np.asarray(item['odom_position'][:2])))
-        item['envelope_radius_m']=previous_radius+shift
-        if obs['geometry'].get('supported') and obs.get('envelope_odom'):
-            # A conservative circle encloses every supporting view; it never
-            # shrinks to a partially visible new box during approach.
-            radius=max(np.linalg.norm(np.asarray(obs['envelope_odom'])-item['odom_position'][:2],axis=1))
-            item['envelope_radius_m']=max(item.get('envelope_radius_m',0.),float(radius))
+            latest=obs.get('envelope_odom') or []
+            if item['independent_view_count']>independent:
+                boundary.extend(latest)
+        # Keep independent boundary measurements in odom. Recentring the
+        # circle on a revised estimate must not add the full history of shifts.
+        points=[*boundary,*latest]
+        if points:
+            distance=np.linalg.norm(np.asarray(points)-item['odom_position'][:2],axis=1)
+            item['envelope_radius_m']=float(distance.max())

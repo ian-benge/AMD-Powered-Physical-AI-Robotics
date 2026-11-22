@@ -12,27 +12,61 @@ button:disabled{opacity:.35;cursor:default}button:focus-visible{outline:3px soli
 <style>
 .speed-controls{display:grid;gap:16px;margin:16px 0}.speed-controls label{display:flex;justify-content:space-between;gap:12px}.speed-controls output{font-variant-numeric:tabular-nums;color:#65ddb1}.speed-adjust{display:grid;grid-template-columns:44px 1fr 44px;gap:12px;align-items:center;margin-top:8px}.speed-adjust button{padding:8px;background:#2b455e;color:#fff;font-size:22px}.speed-adjust input{width:100%;min-width:0;accent-color:#65ddb1}.speed-controls input:focus-visible{outline:2px solid #fff;outline-offset:4px}#speed-reset{padding:7px 12px;font-size:14px;background:#2b455e;color:#fff;justify-self:start}
 </style>
-<h1>Rover mapping and sample sites</h1>
-<p>Inspect the launch pad in Gazebo, confirm it is clear, then enable manual control. Hold W / Up to move; A / Left and D / Right turn. Space stops.</p>
-<div class="bar"><button id="confirm">Confirm clear launch area</button><button id="manual" disabled>Enable manual drive</button><button id="stop">Stop</button><button id="restart" disabled>Restart scene</button><button id="new-scene" disabled>Generate new scene</button></div>
+<style>
+:root{--canvas:#101419;--surface:#191f26;--raised:#222b34;--border:#333d48;--text:#f1f4f7;--muted:#b3beca;--accent:#77dfc4}
+body{background:var(--canvas);color:var(--text);max-width:1500px;margin:0 auto;padding:0 clamp(14px,3vw,38px) 32px}
+h1{font-size:clamp(25px,3.8vw,36px);letter-spacing:-.035em;margin:0}h2{font-size:17px;letter-spacing:-.012em}
+header{padding:24px 0 12px}p,small{color:var(--muted)}section,details{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin:12px 0}
+button{background:var(--raised);color:var(--text);border:1px solid var(--border);padding:9px 14px;border-radius:7px;touch-action:manipulation}
+button:hover:not(:disabled){border-color:var(--accent)}button:disabled{opacity:.48}button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.operator-bar{position:sticky;top:0;z-index:30;background:var(--canvas);border-bottom:1px solid var(--border);padding:10px 0;align-items:center}
+#confirm,#demo-explore{background:var(--accent);color:#09251f;font-weight:650}
+#stop{margin-left:auto;background:#a7353b;color:#fff;border:1px solid #e87e85;min-width:84px}
+#reply{min-height:0;margin:7px 0}#reply:empty{display:none}
+.grid{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:start}
+.grid>div{min-width:0}.grid>div:first-child{order:2}.grid>div:last-child{order:1}
+#map{display:block;max-height:min(64vh,660px);min-height:260px;border:1px solid var(--border);background:#111820}
+.map-frame{position:relative}.map-options,.map-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;font-size:13px;margin:10px 0;color:var(--muted)}
+.terrain-raster{pointer-events:none}.terrain-raster canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+.map-legend span{display:inline-flex;align-items:center;gap:6px}.map-legend i{width:10px;height:10px;border-radius:50%;background:var(--swatch);box-shadow:0 0 0 1px #111}
+.map-tooltip{position:absolute;left:12px;top:12px;max-width:calc(100% - 24px);padding:8px 12px;background:#111820f2;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;pointer-events:none}
+.map-object{cursor:help;outline:none}.map-object circle{stroke-width:2;vector-effect:non-scaling-stroke}
+.map-object:hover circle,.map-object:focus-visible circle{stroke:#fff;stroke-width:3}.map-object[data-selectable="true"]{cursor:pointer}
+.object-list{font-size:13px}.object-list li{margin:6px 0}.map-caption{font-size:13px;margin:8px 0}
+#camera-panel.expanded{top:74px}
+@media(max-width:850px){.grid{grid-template-columns:1fr;gap:0}#map{max-height:57vh}.operator-bar{gap:6px}#stop{margin-left:0}}
+</style>
+<header><h1>Rover operations</h1></header>
+<div class="bar operator-bar" aria-label="Rover controls"><button id="confirm">Confirm clear launch area</button><button id="manual" disabled>Enable manual drive</button><button id="restart" disabled>Restart scene</button><button id="new-scene" disabled>Generate new scene</button><button id="stop">Stop</button></div>
 <div id="reply" role="status" aria-live="polite"></div>
-<section aria-label="Mapping diagnostics"><h2>Mapping health</h2><div class="bar"><span id="depth-health">Depth: waiting</span><span id="pose-health">Localization: waiting</span><span id="map-health">Mapped area: waiting</span></div><p id="coverage-health">Fresh camera coverage: waiting</p><p id="camera-detail-health">Camera detail: waiting</p><p id="terrain-evidence-health">Terrain reconsideration: waiting</p><p id="rejection" role="status">No rejected motion in this control selection.</p><small>Unknown means insufficient measured ground, including missing depth. Red cells are geometry hazards from depth, independent of the object detector. The launch disk is operator-confirmed clearance.</small></section>
+<div id="mission-slot"></div>
 <div class="grid"><div><section id="camera-panel"><div class="camera-heading"><h2>Rover camera</h2><button type="button" id="camera-expand" aria-controls="camera-panel" aria-expanded="false">Expand camera</button></div><img id="camera" alt="Live rover camera with detections when the trained model is ready"><p id="camera-state">Waiting for camera</p><small id="detector">No trained detector configured</small></section>
-<section><h2>Manual mapping</h2><strong id="guard">Waiting for rover status</strong>
+<section><h2>Drive status</h2><strong id="guard">Waiting for rover status</strong>
+<p id="command">Command: 0.00 m/s, 0.00 rad/s</p><p id="fault" role="status"></p></section>
+<details><summary>Manual drive controls</summary>
 <div class="speed-controls" aria-label="Manual speed settings">
 <div><label for="linear-speed">Drive speed <output id="linear-speed-value" for="linear-speed">0.20 m/s</output></label><div class="speed-adjust"><button type="button" id="linear-speed-down" aria-label="Decrease drive speed">&#8722;</button><input type="range" id="linear-speed" min="0.01" max="0.50" step="0.01" value="0.20" aria-label="Drive speed in metres per second"><button type="button" id="linear-speed-up" aria-label="Increase drive speed">+</button></div></div>
 <div><label for="angular-speed">Turn speed <output id="angular-speed-value" for="angular-speed">0.30 rad/s</output></label><div class="speed-adjust"><button type="button" id="angular-speed-down" aria-label="Decrease turn speed">&#8722;</button><input type="range" id="angular-speed" min="0.05" max="0.60" step="0.05" value="0.30" aria-label="Turn speed in radians per second"><button type="button" id="angular-speed-up" aria-label="Increase turn speed">+</button></div></div>
 <button type="button" id="speed-reset">Reset speeds</button>
 </div>
 <div class="pad" aria-label="Hold to drive"><span></span><button data-key="ArrowUp" aria-label="Hold to move forward">&#8593;</button><span></span><button data-key="ArrowLeft" aria-label="Hold to turn left">&#8630;</button><span></span><button data-key="ArrowRight" aria-label="Hold to turn right">&#8631;</button></div>
-<small>Forward only. Changing a speed releases held movement; press a direction again to move. Release stops movement; manual mode stays selected between commands. Stop or a safety fault ends manual mode. Leaving this page releases control.</small><p id="command">Command: 0.00 m/s, 0.00 rad/s</p><p id="fault"></p></section></div>
-<div><section><h2>Terrain and confirmed rocks</h2><label><input type="checkbox" id="diagnostic-toggle"> Show terrain causes</label> <label><input type="checkbox" id="coverage-toggle"> Show fresh camera coverage</label> <label><input type="checkbox" id="tentative-toggle"> Show tentative candidates</label><p id="coverage-legend" hidden>Forward corridor: teal strips have fresh clear depth; red strips contain a measured hazard; hatched strips contain unobserved ground. This uses the current depth frame, including inside the launch disk. The guard checks retained terrain and the full motion sweep separately.</p><p id="diagnostic-legend" hidden>Gray: unknown; orange: slope; purple: height change; pink: both; red: hazard with unavailable evidence. Cyan outline: padded footprint; cyan sweep: next second; dashed orange sweep and white cell: last rejected motion.</p><svg id="map" viewBox="0 0 400 400" role="img" aria-label="Mapped terrain, rover, and confirmed rocks"><defs><pattern id="unseen" width="2" height="2" patternUnits="userSpaceOnUse"><path d="M 0 0 L 2 2" stroke="#fff" stroke-opacity=".6" stroke-width=".3"/></pattern></defs><image id="terrain" width="400" height="400" style="image-rendering:pixelated"/><g id="markers"></g></svg>
-<small>Gray: unknown &#183; pale: known ground &#183; red: depth hazard &#183; blue: rover &#183; solid yellow: confirmed rock &#183; hollow yellow: tentative/unverified. Camera boxes are raw detections; confirmation requires translated viewpoints and raised depth geometry. Evidence scores are not calibrated accuracy.</small><p id="mapping">Waiting for map</p><ul id="sites"></ul></section></div></div>
+<small>Hold W or ↑ to drive, and A/D or ←/→ to turn. Release the key to pause. Space stops and disarms.</small></details></div>
+<div><section><h2>Terrain and objects</h2>
+<div class="map-options"><label><input type="checkbox" id="tentative-toggle"> Tentative objects</label><label><input type="checkbox" id="diagnostic-toggle"> Terrain causes</label><label><input type="checkbox" id="coverage-toggle"> Camera coverage</label><span id="map-view-options"></span></div>
+<div class="map-legend" aria-label="Object classes"><span><i style="--swatch:#60a5fa"></i>Rock</span><span><i style="--swatch:#facc63"></i>Yellow crystal rock</span><span><i style="--swatch:#c4a4ff"></i>Mudstone slab</span><span><i style="--swatch:#e8ba94"></i>Pale soil patch</span><span>Hollow marker: tentative</span></div>
+<div class="map-frame"><svg id="map" viewBox="0 0 400 400" role="group" aria-label="Terrain map and detected objects"><defs><pattern id="unseen" width="2" height="2" patternUnits="userSpaceOnUse"><path d="M 0 0 L 2 2" stroke="#fff" stroke-opacity=".6" stroke-width=".3"/></pattern></defs><foreignObject id="terrain-frame" width="400" height="400" class="terrain-raster"><canvas id="terrain" width="400" height="400"></canvas></foreignObject><g id="markers"></g><g id="object-markers"></g></svg><div id="map-tooltip" class="map-tooltip" hidden></div></div>
+<p id="coverage-legend" hidden>Fresh clear depth in teal, hazards in red, unknown ground hatched.</p><p id="diagnostic-legend" hidden>Orange: slope. Purple: height change. Pink: both. Rose: tracked object. Cyan: predicted rover sweep.</p>
+<p id="mapping" class="map-caption">Waiting for map</p><details class="object-list"><summary>Object list</summary><ul id="sites"></ul></details></section></div></div>
+<details aria-label="Mapping diagnostics"><summary>Mapping health and diagnostics</summary><div class="bar"><span id="depth-health">Depth: waiting</span><span id="pose-health">Localization: waiting</span><span id="map-health">Mapped area: waiting</span></div><p id="coverage-health">Fresh camera coverage: waiting</p><p id="camera-detail-health">Camera detail: waiting</p><p id="terrain-evidence-health">Terrain reconsideration: waiting</p><p id="rejection" role="status">Waiting for motion status.</p></details>
 <details><summary>Waypoint and return controls</summary><p>Select a destination and heading in RViz. Review both preview paths before starting.</p><button id="start" disabled>Start and return</button><dl><dt>Destination</dt><dd id="goal">Choose in RViz</dd><dt>Path check</dt><dd id="check">Waiting</dd><dt>Mission</dt><dd id="mission">Idle</dd><dt>Home</dt><dd id="home">Set at first Start</dd></dl></details>
 <p><a href="http://127.0.0.1:8773/frame.png" target="_blank" rel="noopener">Open raw camera viewer</a></p>
 <script>
-const el=id=>document.getElementById(id),keys=new Set(),allowed=new Set(['ArrowUp','ArrowLeft','ArrowRight']);let token=null,sequence=0,sending=false,busy=false,state={},lastStatus=0,cameraUrl=null,mapTime=0,restarting=false,expectedSession=null,actionGeneration=0;
+const el=id=>document.getElementById(id),keys=new Set(),allowed=new Set(['ArrowUp','ArrowLeft','ArrowRight']);let token=null,sequence=0,sending=false,busy=false,state={},lastStatus=0,cameraUrl=null,restarting=false,expectedSession=null,actionGeneration=0;
 let cameraGeneration=0,lastCameraAt=null,statusRequest=0,statusApplied=0,cameraExpanded=false,lastDriveAt=null;
+const terrainCanvas=el('terrain');
+let displayedRaster='', pendingRaster=null, rasterRevision=0;
+let rasterRequestedAt=-Infinity, rasterRoute='';
+let mapGeometry='', mapViewport=null, visibleViewBox='';
 function setCameraExpanded(expanded){cameraExpanded=expanded;el('camera-panel').classList.toggle('expanded',expanded);el('camera-expand').setAttribute('aria-expanded',String(expanded));el('camera-expand').textContent=expanded?'Restore layout':'Expand camera';release();}
 el('camera-expand').onclick=()=>setCameraExpanded(!cameraExpanded);
 const pose=p=>p?`${p[0].toFixed(2)}, ${p[1].toFixed(2)} m \xb7 ${(p[2]*180/Math.PI).toFixed(0)}\xb0`:'Set at first Start';
@@ -45,12 +79,181 @@ function resetSpeeds(){for(const axis of ['linear','angular']){const input=el(ax
 function speedLimits(limits){if(!limits)return;const signature=JSON.stringify(limits),changed=signature!==speedProfile;for(const axis of ['linear','angular']){const rule=limits[axis],input=el(axis+'-speed');if(!rule||![rule.min,rule.max,rule.step].every(Number.isFinite)||rule.min<=0||rule.step<=0||rule.max<rule.min||rule.max>(axis==='linear'?.5:.6))continue;input.min=rule.min;input.max=rule.max;input.step=rule.step;initialSpeed[axis]=Number.isFinite(rule.default)&&rule.default>=rule.min&&rule.default<=rule.max?rule.default:Math.min(rule.max,Math.max(rule.min,initialSpeed[axis]));if(changed)setSpeed(axis,initialSpeed[axis]);else if(requestedSpeed[axis]<rule.min||requestedSpeed[axis]>rule.max)setSpeed(axis,requestedSpeed[axis]);}speedProfile=signature;showSpeeds();}
 for(const axis of ['linear','angular']){el(axis+'-speed').oninput=()=>setSpeed(axis,el(axis+'-speed').value);for(const [suffix,sign] of [['down',-1],['up',1]])el(axis+'-speed-'+suffix).onclick=()=>setSpeed(axis,requestedSpeed[axis]+sign*Number(el(axis+'-speed').step));}
 el('speed-reset').onclick=()=>{resetSpeeds();release();};showSpeeds();
-el('diagnostic-toggle').onchange=()=>{el('diagnostic-legend').hidden=!el('diagnostic-toggle').checked;mapTime=0;refresh();};
+el('diagnostic-toggle').onchange=()=>{el('diagnostic-legend').hidden=!el('diagnostic-toggle').checked;updateMapRaster(state);refresh();};
 el('coverage-toggle').onchange=()=>{el('coverage-legend').hidden=!el('coverage-toggle').checked;mapView(state);};
 el('tentative-toggle').onchange=()=>{renderSites(state);mapView(state);};
-function trackLists(data){const s=data.sample_sites;return s?.schema_version===2?{confirmed:s.objects||[],tentative:s.tentative_objects||[]}:{confirmed:[],tentative:[]};}
-function renderSites(data){const lists=trackLists(data),sites=[...lists.confirmed,...(el('tentative-toggle').checked?lists.tentative:[])];el('sites').replaceChildren(...sites.map(s=>{const li=document.createElement('li');li.textContent=`${s.class_name.replaceAll('_',' ')} #${s.track_id} \xb7 ${s.state} \xb7 ${s.confirmation_view_count}/3 supporting views \xb7 evidence score ${s.evidence_score.toFixed(2)} \xb7 ${s.reason}`;return li;}));}
-el('terrain').onerror=()=>{if(el('diagnostic-toggle').checked)el('terrain').setAttribute('href','/map.png?t='+Date.now());};
+const objectClasses={
+  rock:{label:'Rock',color:'#60a5fa'},
+  yellow_crystal_rock:{label:'Yellow crystal rock',color:'#facc63'},
+  mudstone_slab:{label:'Mudstone slab',color:'#c4a4ff'},
+  pale_soil_patch:{label:'Pale soil patch',color:'#e8ba94'}
+};
+const objectMarkers=new Map();
+let hoveredObject=null, objectListSignature='';
+function trackLists(data){
+  const rocks=data.sample_sites,soil=data.soil_sites;
+  const mapped=rocks?.schema_version===2&&rocks.age_seconds<=1;
+  const patches=soil?.schema_version===1&&soil.ready&&soil.age_seconds<=1;
+  const soilSites=patches?(soil.sites||[]):[];
+  const confirmed=(mapped?rocks.objects||[]:[]).map(s=>({...s,selectionId:'object:'+s.track_id}));
+  const tentative=(mapped?rocks.tentative_objects||[]:[]).filter(s=>s.class_name!=='pale_soil_patch'||!patches)
+    .map(s=>({...s,selectionId:'object:'+s.track_id}));
+  for(const site of soilSites){
+    (site.state==='confirmed'?confirmed:tentative).push({...site,selectionId:'soil:'+site.track_id});
+  }
+  return {confirmed,tentative};
+}
+function visibleObjects(data){
+  const lists=trackLists(data);
+  return [...lists.confirmed,...(el('tentative-toggle').checked?lists.tentative:[])]
+    .filter(s=>objectClasses[s.class_name]&&s.map_position?.slice(0,2).length===2&&s.map_position.slice(0,2).every(Number.isFinite));
+}
+function objectDescription(site){
+  const name=objectClasses[site.class_name].label;
+  const count=site.confirmation_view_count??0;
+  return `${name} #${site.track_id} · ${site.state} · ${count} supporting ${count===1?'view':'views'}`;
+}
+function renderSites(data){
+  const labels=visibleObjects(data).map(objectDescription);
+  const signature=JSON.stringify(labels);
+  if(signature===objectListSignature)return;
+  objectListSignature=signature;
+  el('sites').replaceChildren(...(labels.length?labels:['No visible objects yet.']).map(label=>{
+    const row=document.createElement('li');row.textContent=label;return row;
+  }));
+}
+function updateMapTooltip(){
+  const tip=el('map-tooltip'),item=objectMarkers.get(hoveredObject);
+  tip.hidden=!item;
+  if(item){
+    const selectable=window.demoCanSelectObject?.(item.site)===true;
+    tip.textContent=objectDescription(item.site)+(selectable?' · Click to select for sampling':'');
+  }
+}
+function clearObjectMarkers(){
+  el('object-markers').replaceChildren();
+  objectMarkers.clear();
+  hoveredObject=null;
+  updateMapTooltip();
+  renderSites({});
+}
+function renderObjectMarkers(data,xy,radius){
+  const svg='http://www.w3.org/2000/svg',layer=el('object-markers'),present=new Set();
+  for(const site of visibleObjects(data)){
+    const key=site.selectionId;
+    present.add(key);
+    let item=objectMarkers.get(key);
+    if(!item){
+      const element=document.createElementNS(svg,'g'),circle=document.createElementNS(svg,'circle');
+      element.setAttribute('class','map-object');
+      element.setAttribute('tabindex','0');
+      element.append(circle);
+      const reveal=()=>{hoveredObject=key;updateMapTooltip();};
+      const hide=()=>{if(hoveredObject===key){hoveredObject=null;updateMapTooltip();}};
+      for(const event of ['pointerenter','focus'])element.addEventListener(event,reveal);
+      for(const event of ['pointerleave','blur'])element.addEventListener(event,hide);
+      item={element,circle,site};
+      const select=event=>{event.stopPropagation();window.demoSelectObject?.(item.site);};
+      element.addEventListener('click',select);
+      element.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();select(event);}});
+      objectMarkers.set(key,item);
+      layer.append(element);
+    }
+    item.site=site;
+    const [x,y]=xy(site.map_position),color=objectClasses[site.class_name].color;
+    item.element.setAttribute('transform',`translate(${x} ${y})`);
+    const selectable=window.demoCanSelectObject?.(site)===true;
+    item.element.setAttribute('role',selectable?'button':'img');
+    item.element.setAttribute('data-selectable',String(selectable));
+    item.element.setAttribute('aria-label',objectDescription(site)+(selectable?', select for sampling':''));
+    item.circle.setAttribute('r',radius);
+    item.circle.setAttribute('fill',site.state==='confirmed'?color:'#19212a');
+    item.circle.setAttribute('stroke',color);
+    item.circle.setAttribute('data-track-state',site.state);
+  }
+  for(const [key,item] of objectMarkers)if(!present.has(key)){
+    item.element.remove();
+    objectMarkers.delete(key);
+    if(hoveredObject===key)hoveredObject=null;
+  }
+  updateMapTooltip();
+}
+function clearMapRaster(){
+  pendingRaster=null;
+  displayedRaster='';
+  rasterRequestedAt=-Infinity;
+  rasterRoute='';
+  terrainCanvas.getContext?.('2d')?.clearRect(0,0,terrainCanvas.width,terrainCanvas.height);
+}
+async function decodeImage(url){
+  const image=new Image();
+  image.src=url;
+  let timer;
+  try{
+    await Promise.race([image.decode(),new Promise((_,reject)=>{
+      timer=setTimeout(()=>reject(Error('Image decode timed out')),1500);
+    })]);
+    return image;
+  }finally{clearTimeout(timer);}
+}
+async function updateMapRaster(data){
+  if(!data.map||restarting)return;
+  const diag=el('diagnostic-toggle').checked&&Number.isFinite(data.diagnostics?.stamp);
+  const route=diag?'/diagnostics.png':'/map.png', now=performance.now();
+  const key=route+'@'+(diag?data.diagnostics.stamp:data.map.stamp??Math.floor(now/1000));
+  if(pendingRaster&&pendingRaster.route!==route)pendingRaster=null;
+  if(key===displayedRaster)return;
+  if(pendingRaster&&now-rasterRequestedAt<2500)return;
+  if(route===rasterRoute&&now-rasterRequestedAt<1000)return;
+  const request={route,key};
+  pendingRaster=request;
+  rasterRequestedAt=now;
+  rasterRoute=route;
+  let url;
+  try{
+    const response=await fetch(route+'?update='+Date.now()+'-'+(++rasterRevision),{
+      cache:'no-store',signal:AbortSignal.timeout(1800)});
+    if(!response.ok||pendingRaster!==request)return;
+    url=URL.createObjectURL(await response.blob());
+    const image=await decodeImage(url);
+    if(pendingRaster!==request)return;
+    const ctx=terrainCanvas.getContext('2d');
+    ctx.globalCompositeOperation='copy';
+    ctx.drawImage(image,0,0,terrainCanvas.width,terrainCanvas.height);
+    displayedRaster=request.key;
+  }catch(e){
+    // A late or corrupt response leaves the last decoded map on screen.
+  }finally{
+    if(url)URL.revokeObjectURL(url);
+    if(pendingRaster===request)pendingRaster=null;
+  }
+}
+function terrainViewport(data){
+  const m=data.map;
+  const geometry=JSON.stringify([data.session,m.width,m.height,m.origin,m.resolution]);
+  if(geometry!==mapGeometry){
+    if(mapGeometry)clearMapRaster();
+    mapGeometry=geometry;
+    mapViewport=null;
+    const frame=el('terrain-frame');
+    frame.setAttribute('width',m.width);
+    frame.setAttribute('height',m.height);
+    terrainCanvas.width=m.width;
+    terrainCanvas.height=m.height;
+  }
+  if(m.view_box?.length===4&&m.view_box.every(Number.isFinite)){
+    const [x,y,w,h]=m.view_box;
+    const tile=32;
+    const box=[Math.max(0,Math.floor(x/tile)*tile),Math.max(0,Math.floor(y/tile)*tile),
+      Math.min(m.width,Math.ceil((x+w)/tile)*tile),Math.min(m.height,Math.ceil((y+h)/tile)*tile)];
+    const old=mapViewport;
+    mapViewport=old?[Math.min(old[0],box[0]),Math.min(old[1],box[1]),
+      Math.max(old[2],box[2]),Math.max(old[3],box[3])]:box;
+  }
+  if(!mapViewport||(el('demo-full-map')?.checked&&data.demo_status))return [0,0,m.width,m.height];
+  const [left,top,right,bottom]=mapViewport;
+  return [left,top,right-left,bottom-top];
+}
 const seconds=v=>Number.isFinite(v)?`${v.toFixed(2)} s`:'unavailable';
 function diagnostics(data){const g=data.status||{},map=data.map,loc=data.localization||{},f=g.fault,detail=f?.detail;
 el('depth-health').textContent=`Accepted depth age: ${seconds(g.depth_age_seconds)} | `;
@@ -65,12 +268,12 @@ const cause=detail?.causes?.map(s=>s.replaceAll('_',' ')).join(' + ')||f?.reason
 const explanation=detail?.causes?.includes('unknown_terrain')?'Insufficient measured ground in the full predicted motion sweep, including the space swept during turns. ':detail?.causes?.includes('excessive_slope')?'Measured slope exceeds the retained limit. ':detail?.causes?.includes('excessive_height_change')?'Measured height change exceeds the retained limit. ':'';
 el('rejection').textContent=f?`Last safety stop: ${cause}${location}. ${explanation}${detail?.grid_stamp!=null?'Terrain stamp '+detail.grid_stamp.toFixed(3)+' s. ':''}Explicit mode selection is required after inspection.`:'No rejected motion in this control selection.';
 }
-async function post(path,data){const r=await fetch('/'+path,{method:'POST',...(data?{headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}:{})});const result=await r.json();if(!r.ok||result.success===false)throw Error(result.message||'Request failed');return result;}
+async function post(path,data,options={}){const r=await fetch('/'+path,{method:'POST',...(data?{headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}:{}),...options});const result=await r.json();if(!r.ok||result.success===false)throw Error(result.message||'Request failed');return result;}
 function clearKeys(){keys.clear();document.querySelectorAll('[data-key]').forEach(b=>b.classList.remove('held'));}
 function release(){clearKeys();sendDrive();}
 function disarm(){clearKeys();if(token){const current=token;token=null;navigator.sendBeacon('/release',new Blob([JSON.stringify({session:current})],{type:'application/json'}));}}
-function clearSceneView(){resetSpeeds();cameraGeneration++;lastCameraAt=null;if(cameraUrl)URL.revokeObjectURL(cameraUrl);cameraUrl=null;el('terrain').removeAttribute('href');el('markers').replaceChildren();el('sites').replaceChildren();el('camera').removeAttribute('src');el('mapping').textContent='Restarting scene; clearing map and candidates';for(const id of ['depth-health','pose-health','map-health','coverage-health','camera-detail-health','terrain-evidence-health','rejection'])el(id).textContent='Restarting scene; waiting for fresh data';}
-async function act(name){const action=++actionGeneration;disarm();busy=true;if(name==='restart'||name==='new-scene'){restarting=true;clearSceneView();}try{const r=await post(name);if(action!==actionGeneration)return;el('reply').textContent=r.message;if(name==='manual'){token=r.session;sequence=0;lastDriveAt=performance.now();}if(name==='restart'||name==='new-scene')expectedSession=r.session;}catch(e){if(action!==actionGeneration)return;el('reply').textContent=e.message;if(name==='restart'||name==='new-scene')restarting=false;}finally{if(action===actionGeneration){busy=false;refresh();}}}
+function clearSceneView(){resetSpeeds();cameraGeneration++;lastCameraAt=null;if(cameraUrl)URL.revokeObjectURL(cameraUrl);cameraUrl=null;clearMapRaster();mapGeometry='';mapViewport=null;el('markers').replaceChildren();clearObjectMarkers();el('camera').removeAttribute('src');el('mapping').textContent='Restarting scene; clearing map and candidates';for(const id of ['depth-health','pose-health','map-health','coverage-health','camera-detail-health','terrain-evidence-health','rejection'])el(id).textContent='Restarting scene; waiting for fresh data';}
+async function act(name){const action=++actionGeneration;disarm();if(['stop','manual','restart','new-scene'].includes(name))window.releaseDemoOwner?.();busy=true;if(name==='restart'||name==='new-scene'){restarting=true;clearSceneView();}try{const r=await post(name);if(action!==actionGeneration)return;el('reply').textContent=r.message;if(name==='manual'){token=r.session;sequence=0;lastDriveAt=performance.now();}if(name==='restart'||name==='new-scene')expectedSession=r.session;}catch(e){if(action!==actionGeneration)return;el('reply').textContent=e.message;if(name==='restart'||name==='new-scene')restarting=false;}finally{if(action===actionGeneration){busy=false;refresh();}}}
 for(const name of ['confirm','manual','stop','start','restart','new-scene'])el(name).onclick=()=>act(name);
 function held(key,on){if(!allowed.has(key))return;if(on){if(!token)return;keys.add(key);}else{keys.delete(key);}document.querySelectorAll('[data-key]').forEach(b=>b.classList.toggle('held',keys.has(b.dataset.key)));sendDrive();}
 document.querySelectorAll('[data-key]').forEach(b=>{b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);held(b.dataset.key,true);};b.onpointerup=()=>held(b.dataset.key,false);b.onpointercancel=()=>release();});
@@ -78,17 +281,20 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&cameraExpanded){e.p
 document.addEventListener('keyup',e=>{if(allowed.has(normalize(e.key))){e.preventDefault();held(normalize(e.key),false);}});window.addEventListener('blur',disarm);window.addEventListener('pagehide',disarm);document.addEventListener('visibilitychange',()=>{if(document.hidden)disarm();});
 async function sendDrive(){if(!token||sending)return;const now=performance.now();if(lastDriveAt!==null&&now-lastDriveAt>250)clearKeys();lastDriveAt=now;if(now-lastStatus>600){disarm();return;}sending=true;const current=token,started=performance.now();try{await post('drive',{session:current,sequence:++sequence,linear:keys.has('ArrowUp')?requestedSpeed.linear:0,angular:(keys.has('ArrowLeft')?requestedSpeed.angular:0)-(keys.has('ArrowRight')?requestedSpeed.angular:0)});}catch(e){if(token===current){disarm();el('reply').textContent=e.message;}}finally{sending=false;if(token===current&&performance.now()-started>=50)queueMicrotask(sendDrive);}}
 setInterval(sendDrive,50);
-function mapView(data){const m=data.map;if(!m)return;const ns='http://www.w3.org/2000/svg',layer=el('markers');el('terrain').setAttribute('width',m.width);el('terrain').setAttribute('height',m.height);el('map').setAttribute('viewBox',(m.view_box||[0,0,m.width,m.height]).join(' '));layer.replaceChildren();const xy=p=>[(p[0]-m.origin[0])/m.resolution,m.height-(p[1]-m.origin[1])/m.resolution];
+function mapView(data){const m=data.map;if(!m)return;
+const ns='http://www.w3.org/2000/svg',layer=document.createElementNS(ns,'g'),bounds=terrainViewport(data),box=bounds.join(' ');
+if(box!==visibleViewBox){el('map').setAttribute('viewBox',box);visibleViewBox=box;}
+const xy=p=>[(p[0]-m.origin[0])/m.resolution,m.height-(p[1]-m.origin[1])/m.resolution];
 const motion=document.createElementNS(ns,'g');const polygon=(points,color,dashed=false,fill='none')=>{const p=document.createElementNS(ns,'polygon');p.setAttribute('points',points.map(v=>xy(v).join(',')).join(' '));p.setAttribute('stroke',color);p.setAttribute('stroke-width',dashed?.55:.7);p.setAttribute('fill',fill);if(dashed)p.setAttribute('stroke-dasharray','1 .6');motion.append(p);};
 const overlay=data.motion_overlay;if(overlay&&data.status?.age_seconds<.6){for(const p of overlay.sweep||[])polygon(p,'#4ce4ec');if(overlay.footprint)polygon(overlay.footprint,'#e4ffff',false,'#4ce4ec33');}
 if(el('coverage-toggle').checked&&overlay?.coverage)for(const band of overlay.coverage){const color={clear:'#31d7d755',hazard:'#ff393955',unknown:'url(#unseen)'}[band.kind];polygon(band.polygon,'#c8ffff',true,color);motion.lastChild.setAttribute('data-coverage',band.kind);}
 if(overlay?.rejection){for(const p of overlay.rejection.sweep)polygon(p,'#ffba62',true);polygon(overlay.rejection.cell,'#ffffff',false,'#ff3f39');const [x,y]=xy(overlay.rejection.point),ring=document.createElementNS(ns,'circle');for(const [key,value] of Object.entries({cx:x,cy:y,r:2.5,fill:'none',stroke:'#fff','stroke-width':.7}))ring.setAttribute(key,value);motion.append(ring);}
-const lists=trackLists(data);for(const site of [...lists.confirmed,...(el('tentative-toggle').checked?lists.tentative:[])]){if(data.sample_sites.age_seconds>1)continue;const [x,y]=xy(site.map_position),circle=document.createElementNS(ns,'circle'),label=document.createElementNS(ns,'text');circle.setAttribute('cx',x);circle.setAttribute('cy',y);circle.setAttribute('r',2.5);circle.setAttribute('fill',site.state==='confirmed'?'#ffd450':'none');circle.setAttribute('stroke','#ffd450');circle.setAttribute('stroke-width',.6);circle.setAttribute('data-track-state',site.state);label.setAttribute('x',x+4);label.setAttribute('y',y-2);label.setAttribute('fill','#fff');label.setAttribute('font-size',3.5);label.textContent=`#${site.track_id}`;layer.append(circle,label);}
-if(data.rover_pose){const [x,y]=xy(data.rover_pose),arrow=document.createElementNS(ns,'path');arrow.setAttribute('d','M 4 0 L -3 -2 L -2 0 L -3 2 Z');arrow.setAttribute('fill','#398cff');arrow.setAttribute('transform',`translate(${x} ${y}) rotate(${-data.rover_pose[2]*180/Math.PI})`);layer.append(arrow);}layer.append(motion);window.demoMap?.(data);}
+renderObjectMarkers(data,xy,Math.max(2.5,Math.min(9,bounds[2]/100)));
+if(data.rover_pose){const [x,y]=xy(data.rover_pose),arrow=document.createElementNS(ns,'path');arrow.setAttribute('d','M 4 0 L -3 -2 L -2 0 L -3 2 Z');arrow.setAttribute('fill','#398cff');arrow.setAttribute('transform',`translate(${x} ${y}) rotate(${-data.rover_pose[2]*180/Math.PI})`);layer.append(arrow);}layer.append(motion);window.demoMap?.(data,layer);el('markers').replaceChildren(layer);}
 async function refresh(){if(busy)return;const request=++statusRequest,action=actionGeneration;const obsolete=()=>action!==actionGeneration||busy||request<statusApplied;try{const r=await fetch('/status',{cache:'no-store',signal:AbortSignal.timeout(1500)});if(!r.ok)throw Error();const next=await r.json();if(obsolete())return;statusApplied=request;state=next;lastStatus=performance.now();const scene=state.scene||{};
 if(['stopping','generating','starting'].includes(scene.phase)){restarting=true;expectedSession=scene.session;}
 if(restarting&&scene.phase==='ready'&&state.session===scene.session)expectedSession=scene.session;
-if(restarting){if(scene.phase==='failed'){restarting=false;expectedSession=null;el('reply').textContent=scene.error;}else if(!expectedSession||state.session!==expectedSession||scene.phase!=='ready'){disarm();clearSceneView();el('guard').textContent='Restarting scene \xb7 initializing sensors';for(const id of ['manual','confirm','start','restart','new-scene'])el(id).disabled=true;return;}else{restarting=false;expectedSession=null;mapTime=0;el('reply').textContent='Scene restarted. Confirm the clear launch area to begin mapping.';}}
+if(restarting){if(scene.phase==='failed'){restarting=false;expectedSession=null;el('reply').textContent=scene.error;}else if(!expectedSession||state.session!==expectedSession||scene.phase!=='ready'){disarm();clearSceneView();el('guard').textContent=scene.message||'Restarting scene \xb7 initializing sensors';for(const id of ['manual','confirm','start','restart','new-scene'])el(id).disabled=true;return;}else{restarting=false;expectedSession=null;el('reply').textContent='Scene restarted. Confirm the clear launch area to begin mapping.';}}
 const g=state.status||{},m=state.mission_status||{},d=state.detector;const fresh=g.age_seconds<.6,waiting=state.mapping?.waiting_for_confirmation;
 speedLimits(state.manual_speed_limits);
 diagnostics(state);
@@ -96,12 +302,13 @@ el('restart').disabled=busy||!scene.available;el('new-scene').disabled=busy||!sc
 el('guard').textContent=fresh?`${g.mode} \xb7 ${g.ready?'ready':'waiting for sensors'}${g.reason?' \xb7 '+g.reason:''}`:'Rover status is stale';el('manual').disabled=busy||!fresh||!g.ready||m.mission!=='idle'||(g.mode==='manual'&&!!token);el('manual').textContent=g.mode==='manual'&&token?'Manual drive enabled':'Enable manual drive';el('confirm').disabled=busy||!fresh||g.mode!=='stopped';
 if(waiting){el('guard').textContent='Mapping paused \xb7 confirm the clear launch area to begin';el('manual').disabled=true;el('confirm').textContent='Confirm launch area & start mapping';}else{el('confirm').textContent='Confirm clear launch area';}if(state.mapping?.clearance_confirmed)el('confirm').disabled=true;
 if(!fresh||g.mode!=='manual'||!g.ready)disarm();el('command').textContent=`Command: ${(g.command?.[0]||0).toFixed(2)} m/s, ${(g.command?.[1]||0).toFixed(2)} rad/s`;
-el('fault').textContent=waiting?'The map is empty. Inspect the launch area, then confirm it above.':g.fault?.reason==='unsafe_or_unobserved_ground'?'The full predicted motion sweep reaches unknown or unsafe ground. Inspect the rejected cell and fresh coverage before selecting a mode again.':g.fault?`Latched fault: ${g.fault.reason}. Inspect the scene and explicitly enable manual control to resume.`:'';
-el('detector').textContent=d?(d.age_seconds>1?'Detector disconnected':d.ready?`${d.model?.model_family||'Trained detector'} \xb7 ${d.model?.backend==='npu'?'AMD NPU':d.model?.executed_device||d.model?.backend} \xb7 ${d.model?.precision||''} \xb7 ${d.processed_frames} processed frames \xb7 ${d.model?.class_names?.join(', ')}`:`Detector unavailable \xb7 ${d.error}`):'No trained detector configured';
-const tracks=trackLists(state);el('mapping').textContent=waiting?'Map empty \xb7 waiting for launch-area confirmation':state.sample_sites?.schema_version===2?`${tracks.confirmed.length} confirmed rocks \xb7 ${tracks.tentative.length} pending \xb7 ${state.sample_sites.age_seconds>1?'tracking disconnected':state.sample_sites.ready?'tracking ready':state.sample_sites.error}`:'Awaiting confirmation tracker; legacy candidates are not confirmed objects.';if(state.mapping?.compute){const c=state.mapping.compute;el('mapping').textContent+=` \xb7 Terrain: ${c.backend==='rocm'?'AMD GPU':'CPU'}${state.mapping.compute_error?' \xb7 '+state.mapping.compute_error:''}`;}renderSites(state);mapView(state);
-if(performance.now()-mapTime>1000){const diag=el('diagnostic-toggle').checked&&state.diagnostics?.age_seconds<1;el('terrain').setAttribute('href',(diag?'/diagnostics.png':'/map.png')+'?t='+Date.now());mapTime=performance.now();}
+el('fault').textContent=waiting?'The map is empty. Inspect the launch area, then confirm it above.':g.fault?.reason==='unsafe_or_unobserved_ground'?'Predicted motion reaches a tracked obstacle or unsafe or unmeasured ground. Inspect the rejected cell and camera coverage before selecting a mode again.':g.fault?`Latched fault: ${g.fault.reason}. Inspect the scene and explicitly enable manual control to resume.`:'';
+const detectorDetails=d?[d.model?.model_family||'Trained detector',d.model?.backend==='npu'?'AMD NPU':d.model?.executed_device||d.model?.backend,d.model?.precision,`${d.processed_frames} processed frames`,d.model?.class_names?.join(', ')].filter(Boolean).join(' · '):'';
+el('detector').textContent=d?(d.age_seconds>1?'Detector disconnected':d.ready?detectorDetails:`Detector unavailable \xb7 ${d.error}`):'No trained detector configured';
+const tracks=trackLists(state);el('mapping').textContent=waiting?'Map empty \xb7 waiting for launch-area confirmation':state.sample_sites?.schema_version===2?`${tracks.confirmed.length} confirmed objects \xb7 ${tracks.tentative.length} pending \xb7 ${state.sample_sites.age_seconds>1?'tracking disconnected':state.sample_sites.ready?'tracking ready':state.sample_sites.error}`:'Waiting for object tracking.';if(state.mapping?.compute){const c=state.mapping.compute;el('mapping').textContent+=` \xb7 Terrain: ${c.backend==='rocm'?'AMD GPU':'CPU'}${state.mapping.compute_error?' \xb7 '+state.mapping.compute_error:''}`;}renderSites(state);mapView(state);
+updateMapRaster(state);
 el('goal').textContent=m.selected_goal?pose(m.selected_goal):'Choose in RViz';el('check').textContent=m.selection_reason||'Waiting';el('mission').textContent=`${m.mission||'Idle'}${m.result?' \xb7 '+m.result:''}`;el('home').textContent=pose(m.home);el('start').disabled=busy||!fresh||!g.ready||g.mode!=='stopped'||m.mission!=='idle'||m.starting||m.selection_state!=='ready';window.demoUpdate?.(state);
 }catch(e){if(obsolete())return;statusApplied=request;disarm();el('guard').textContent=restarting?'Restarting scene \xb7 reconnecting':'Disconnected';el('manual').disabled=el('start').disabled=el('confirm').disabled=true;}}
-async function camera(){const generation=cameraGeneration;let pendingUrl=null;try{if(restarting)throw Error();const r=await fetch('/camera.jpg',{cache:'no-store',signal:AbortSignal.timeout(1500)});if(!r.ok)throw Error();pendingUrl=URL.createObjectURL(await r.blob());const next=new Image();next.src=pendingUrl;let timer;try{await Promise.race([next.decode(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Image decode timed out')),1500);})]);}finally{clearTimeout(timer);}if(generation!==cameraGeneration||restarting)return;el('camera').src=pendingUrl;if(cameraUrl)URL.revokeObjectURL(cameraUrl);cameraUrl=pendingUrl;pendingUrl=null;lastCameraAt=performance.now();el('camera').setAttribute('data-stale','false');el('camera-state').textContent=r.headers.get('X-Annotated')==='true'?'Live detections matched to this image':'Live camera \xb7 awaiting trained detections';}catch(e){if(generation===cameraGeneration){el('camera').setAttribute('data-stale','true');el('camera-state').textContent=restarting?'Restarting scene':lastCameraAt!==null?`Camera interrupted \xb7 last image ${((performance.now()-lastCameraAt)/1000).toFixed(1)} s old; retrying`:'Camera unavailable \xb7 retrying';}}finally{if(pendingUrl)URL.revokeObjectURL(pendingUrl);setTimeout(camera,40);}}
-refresh();setInterval(refresh,250);camera();
+async function camera(){const generation=cameraGeneration;let pendingUrl=null;try{if(restarting)throw Error();const r=await fetch('/camera.jpg',{cache:'no-store',signal:AbortSignal.timeout(1500)});if(!r.ok)throw Error();pendingUrl=URL.createObjectURL(await r.blob());const next=new Image();next.src=pendingUrl;let timer;try{await Promise.race([next.decode(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Image decode timed out')),1500);})]);}finally{clearTimeout(timer);}if(generation!==cameraGeneration||restarting)return;el('camera').src=pendingUrl;if(cameraUrl)URL.revokeObjectURL(cameraUrl);cameraUrl=pendingUrl;pendingUrl=null;lastCameraAt=performance.now();el('camera').setAttribute('data-stale','false');el('camera-state').textContent=r.headers.get('X-Annotated')==='true'?'Live detections matched to this image':'Live camera \xb7 awaiting trained detections';}catch(e){if(generation===cameraGeneration){el('camera').setAttribute('data-stale','true');el('camera-state').textContent=restarting?'Restarting scene':lastCameraAt!==null?`Camera interrupted \xb7 last image ${((performance.now()-lastCameraAt)/1000).toFixed(1)} s old; retrying`:'Camera unavailable \xb7 retrying';}}finally{if(pendingUrl)URL.revokeObjectURL(pendingUrl);setTimeout(camera,window.demoUpdate?125:40);}}
+refresh();setInterval(()=>{if(statusApplied===statusRequest)refresh();},250);camera();
 </script></html>

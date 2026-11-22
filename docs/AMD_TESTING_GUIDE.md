@@ -5,6 +5,9 @@ This guide describes the source and recorded results available on **November 11,
 terrain geometry and manual operation have bounded evidence; the complete
 autonomous exploration–sample–return mission has not passed acceptance.
 
+For the November 22 survey release, see the
+[V50 run commands and verification status](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v50-thermal-cutoff-and-run-commands).
+
 ## Start here
 
 | Evaluation | Entry point | Requires |

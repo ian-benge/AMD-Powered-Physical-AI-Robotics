@@ -24,6 +24,7 @@ from tf2_ros import Buffer, TransformException, TransformListener
 from .core import Grid, TerrainMemory, aligned_copy, depth_points, mask_outside_memory, terrain_reasons, traversability
 from .ros_utils import apply_tf, grid_message, stamp_seconds
 from .coverage import coverage_profile
+from .object_obstacles import ObjectObstacles
 from .terrain_compute import CpuTerrainCompute
 from .terrain_evidence import ClearanceLocalization, ClearingPolicy, TerrainEvidence
 
@@ -81,7 +82,8 @@ class Terrain(Node):
         self.info = message_filters.Subscriber(self, CameraInfo, '/oak/camera_info', qos_profile=qos_profile_sensor_data)
         self.sync = message_filters.ApproximateTimeSynchronizer([self.depth, self.info], 5, .015)
         self.sync.registerCallback(self.camera)
-        self.create_subscription(PointCloud2, '/rtabmap/cloud_map', self.cloud, qos_profile_sensor_data)
+        if not self.demo_mode:
+            self.create_subscription(PointCloud2, '/rtabmap/cloud_map', self.cloud, qos_profile_sensor_data)
         durable = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
                              reliability=ReliabilityPolicy.RELIABLE)
         self.local_pub = self.create_publisher(OccupancyGrid, '/navigation/local_ground', 1)
@@ -90,6 +92,8 @@ class Terrain(Node):
         self.map_reasons_pub = self.create_publisher(OccupancyGrid, '/navigation/terrain_reasons', durable)
         if self.demo_mode:
             self.measured_pub = self.create_publisher(OccupancyGrid, '/navigation/measured_ground', durable)
+            self.objects = ObjectObstacles()
+            self.create_subscription(String, '/navigation/sample_sites', self.object_tracks, durable)
         self.layers_pub = self.create_publisher(GridMap, '/navigation/terrain_layers', durable)
         self.mapping_pub = self.create_publisher(String, '/navigation/mapping_status', durable)
         self.create_service(Trigger, '/navigation/confirm_clear_start', self.confirm)
@@ -104,6 +108,16 @@ class Terrain(Node):
             blank = Grid(np.full((round(size/.05), round(size/.05)), -1, np.int8), .05, -size/2, -size/2)
             self.map_pub.publish(grid_message(blank, 'map', self.get_clock().now().to_msg()))
             self.map_reasons_pub.publish(grid_message(blank, 'map', self.get_clock().now().to_msg()))
+
+    def object_tracks(self, msg):
+        try:
+            report = json.loads(msg.data)
+            if not isinstance(report, dict):
+                raise ValueError('Expected an object tracking report')
+            self.objects.update(report)
+        except (KeyError, TypeError, ValueError, np.linalg.LinAlgError) as error:
+            self.get_logger().warning('Ignoring invalid object obstacle update: '+str(error),
+                                      throttle_duration_sec=5.)
 
     def publish_mapping_status(self):
         if self.evidence is not None:
@@ -124,6 +138,7 @@ class Terrain(Node):
                                    compute_timings=getattr(self.compute, 'timings', {}),
                                    coverage=getattr(self, 'coverage', None),
                                    measured_coverage=getattr(self, 'measured_status', None),
+                                   tracked_obstacles=len(self.objects.disks) if hasattr(self, 'objects') else 0,
                                    publication_latency_p95_seconds=(float(np.percentile(self.publication_latencies,95)) if len(getattr(self,'publication_latencies',[]))>=30 else None),
                                    publication_latency_samples=len(getattr(self,'publication_latencies',[])),
                                    publication_latency_warmup_seconds=10.,
@@ -275,6 +290,8 @@ class Terrain(Node):
             self.evidence = None
             self.measured = None
             self.measured_status = None
+            if hasattr(self, 'objects'):
+                self.objects = ObjectObstacles()
             self.last_measured_publication = -math.inf
             if hasattr(self,'publication_latencies'):self.publication_latencies.clear()
             self.first_publication_monotonic=None
@@ -354,10 +371,15 @@ class Terrain(Node):
                 # there cannot expand the declared navigation operating area.
                 mask_outside_memory(local, self.memory.grid)
                 mask_outside_memory(local_reasons, self.memory.grid)
+            objects = getattr(self, 'objects', None)
+            if objects is not None:
+                objects.apply(local, local_reasons)
             self.last_stamp = stamp
             self.pending = deque((sample for sample in self.pending
                                   if stamp_seconds(sample[0].header.stamp) > stamp),
                                  maxlen=self.pending.maxlen)
+            coverage_grid = None
+            coverage_due = getattr(self,'measured',None) is not None and stamp-self.last_measured_publication >= 1.
             if map_tf is not None:
                 # Layers from RTAB-Map's merged cloud are diagnostic only: its
                 # cross-keyframe height spans are not used for navigation.
@@ -373,6 +395,10 @@ class Terrain(Node):
                                             self.get_parameter('map_size_m').value, .05)
                 self.seeded(global_grid, self.start_map)
                 global_reasons.data[(global_grid.data >= 0) & (global_grid.data < 90)] = 0
+                if coverage_due:
+                    coverage_grid = Grid(global_grid.data.copy(), global_grid.resolution, global_grid.x, global_grid.y)
+                if objects is not None:
+                    objects.apply(global_grid, global_reasons, lambda points: apply_tf(points, map_tf))
                 self.map_reasons_pub.publish(grid_message(global_reasons, 'map', depth.header.stamp))
                 self.map_pub.publish(grid_message(global_grid, 'map', depth.header.stamp))
             # Publish safety input only after all requested GPU operations succeed.
@@ -389,10 +415,10 @@ class Terrain(Node):
             self.update_seconds = time.monotonic()-started
             self.compute_error = ''
             # Diagnostics run AFTER successful safety publication, at most 1 Hz.
-            if getattr(self,'measured',None) is not None and inverse is not None and stamp-self.last_measured_publication >= 1.:
+            if coverage_grid is not None:
                 from .core import rotation
                 translation, quaternion = self.rigid(inverse)
-                measured, self.measured_status = self.measured.project(global_grid, translation, rotation(quaternion))
+                measured, self.measured_status = self.measured.project(coverage_grid, translation, rotation(quaternion))
                 self.measured_pub.publish(grid_message(measured, 'map', depth.header.stamp))
                 self.last_measured_publication = stamp
         except (TransformException, ValueError, OSError, RuntimeError) as error:

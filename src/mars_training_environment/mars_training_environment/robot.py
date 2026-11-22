@@ -54,7 +54,8 @@ def sync_mast(root, mount_xyz):
     mast.find('geometry/box').set('size', f'0.02 0.02 {length:.12g}')
 
 
-def robot_description(config, live=False, navigation=False, drive_center_x=None):
+def robot_description(config, live=False, navigation=False, drive_center_x=None, *,
+                      rear_wheel_friction=None, rear_rolling_friction=None):
     if live and navigation:
         raise ValueError('RGB-only live and RGB-D navigation profiles are exclusive')
     import xacro
@@ -85,6 +86,22 @@ def robot_description(config, live=False, navigation=False, drive_center_x=None)
         sensor.find('camera').remove(sensor.find('camera/depth_camera'))
         return ET.tostring(root, encoding='unicode')
     if navigation:
+        if rear_rolling_friction is not None and (
+            rear_wheel_friction is None or not 0 < rear_rolling_friction <= 1
+        ):
+            raise ValueError('Rear rolling friction requires rear wheel friction and must be in (0, 1]')
+        if rear_wheel_friction is not None:
+            if not 0 < rear_wheel_friction <= 1:
+                raise ValueError('Rear wheel friction must be greater than zero and at most one')
+            # The axle is the lateral friction axis. Its direction is fixed as
+            # the wheel spins, so rolling grip can differ from lateral grip.
+            for wheel in ('rear_left_wheel', 'rear_right_wheel'):
+                contact = root.find(f"gazebo[@reference='{wheel}']")
+                contact.find('mu1').text = str(rear_wheel_friction)
+                contact.find('mu2').text = str(
+                    rear_wheel_friction if rear_rolling_friction is None else rear_rolling_friction)
+                if rear_rolling_friction is not None:
+                    contact.find('fdir1').text = '0 1 0'
         contact_holder = ET.SubElement(root, 'gazebo', {'reference': 'base_link'})
         contact = ET.SubElement(contact_holder, 'sensor', {'name': 'navigation_chassis_contact', 'type': 'contact'})
         ET.SubElement(contact, 'always_on').text = 'true'

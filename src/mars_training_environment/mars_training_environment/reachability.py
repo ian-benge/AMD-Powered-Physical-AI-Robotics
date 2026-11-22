@@ -35,6 +35,15 @@ def mixed_reachable_config(source):
 
 def validate_profile(terrain):
     profile=terrain.get('profile')
+    recipe=terrain.get('sample_site_recipe')
+    style=terrain.get('surface_style')
+    perimeter=terrain.get('perimeter_objects',False)
+    if type(perimeter) is not bool or perimeter and terrain.get('profile_version')!=2:
+        raise ValueError('Perimeter placement requires the shared version-2 terrain')
+    if style is not None and (terrain.get('profile_version')!=2 or style!='jezero_ripples'):
+        raise ValueError('Jezero surface styling requires the shared version-2 terrain')
+    if recipe is not None and (terrain.get('profile_version')!=2 or recipe not in ('standard','rare_demo_v1')):
+        raise ValueError('Sample-site recipes require a recognized version-2 recipe')
     if profile is None:
         return
     version=terrain.get('profile_version')
@@ -115,12 +124,24 @@ def _connected(free, start, step):
     return distance,parent
 
 
-def validate_layout(field, objects, regions, version=1, background=False):
+def _launch_cell(field):
+    return (round((START[1]+field.size/2)/field.step),round((START[0]+field.size/2)/field.step))
+
+
+def connected_staging_centers(field, objects):
+    """Known clear centers reachable from launch on the evaluator's terrain."""
+    free,x,y,_=free_centers(field,objects)
+    distance,_=_connected(free,_launch_cell(field),field.step)
+    reachable=np.isfinite(distance)
+    return np.column_stack((x[reachable],y[reachable]))
+
+
+def validate_layout(field, objects, regions, version=1, background=False, *, perimeter_sites=()):
     """Find three post-placement routes, retaining truth only for evaluation."""
     if not np.isfinite(field.h).all() or np.ptp(field.h)>.80000001:
         raise LayoutError('Non-finite surface or relief above 0.8 m')
     free,x,y,slopes=free_centers(field,objects)
-    start=(round((START[1]+field.size/2)/field.step),round((START[0]+field.size/2)/field.step))
+    start=_launch_cell(field)
     distance,parent=_connected(free,start,field.step)
     radial=np.hypot(x,y)
     available=np.isfinite(distance)&(radial>=3)&(radial<=7)
@@ -164,6 +185,11 @@ def validate_layout(field, objects, regions, version=1, background=False):
                            staging_xy=[float(x[index]),float(y[index])],target_boundary_gap_m=gap,
                            launch_distance_m=float(radial[index]),path_length_m=float(distance[index]),
                            path_xy=[list(START)]+path))
+    for target in perimeter_sites:
+        cx,cy=target['xyz'][:2]
+        gap=np.hypot(x-cx,y-cy)-target['radius_m']
+        if not (np.isfinite(distance)&(gap>=.75)&(gap<=1.5)).any():
+            raise LayoutError(f"No connected staging area for {target['name']}")
     if version==2 and background and not (np.isfinite(distance)&(np.maximum(abs(x),abs(y))>=12)).any():
         raise LayoutError('Background has no connected outer operating area')
     return dict(schema_version=version,policy='mixed_reachable_v'+str(version),evaluator_only=True,

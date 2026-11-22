@@ -1,5 +1,18 @@
 # Browser profile with the Gazebo window disabled
 
+The later [November 17 GPU repair report](HALO_GPU_REPAIR_20261117.md) records
+V26's bounded 0.05 m/s exploration/home return and verified closed evidence.
+That separate candidate retains ten-Hz RGB-D and requires fresh monitoring for
+the next speed qualification. The historical measurements below are unchanged.
+
+The [November 17 planner rehearsal](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md)
+uses a separate candidate with additional frontier choices and budget diagnostics.
+The stationary results below remain the November 10 measurements. After a
+November 17 exterior-inspection thermal stop, the separate v22 candidate reduces
+RGB-D to ten Hz and limits inspection to ten seconds. Its live thermal and
+movement qualification is tracked in that rehearsal report; it does not globally
+replace the retained fifteen-Hz profile described here.
+
 This separate experimental demo profile sets `gui:=false` and `rviz:=false`.
 Gazebo runs its physics and sensor server with `-s`; Ogre RGB-D still uses the
 connected graphical desktop. The renderer, 960 × 540 images, 15 Hz RGB-D,

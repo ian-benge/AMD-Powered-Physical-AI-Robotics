@@ -16,6 +16,18 @@ from urllib.request import urlopen
 import uuid
 
 
+def retry_session_inventory(check,on_retry=None):
+    """Repeat all guard checks only when a listed login session disappears."""
+    pattern=(r"\['loginctl', 'show-session', '([A-Za-z0-9_-]+)',[^\n]*\]: "
+             r"Failed to get path for session '\1': No session '\1' known\s*")
+    for attempt in range(3):
+        try:return check()
+        except AssertionError as error:
+            if attempt==2 or not re.fullmatch(pattern,str(error)):raise
+            if on_retry is not None:on_retry(str(error))
+            time.sleep(.02)
+
+
 def stationary(status):
     guard=status.get('status',{});command=guard.get('command',[])
     # A viewer may inspect a stopped faulted rover. It never acknowledges or
@@ -134,24 +146,42 @@ def worker_command(identity,token,*arguments):
             'demo-exterior','/work/source/scripts/demo_exterior_view.py',*arguments]
 
 
+def inspection_seconds(config,requested):
+    limit=config.get('model_assessment',{}).get('display_profile',{}).get('exterior_max_seconds',90)
+    if type(limit) is not int or not 5<=limit<=90:raise ValueError('Invalid exterior inspection limit')
+    if not 5<=requested<=limit:raise ValueError(f'This candidate limits exterior inspection to 5..{limit} seconds')
+    return requested
+
+
 def host(args):
     root=Path(__file__).resolve().parent
     subprocess.run([sys.executable,'-B',str(root/'autonomous_demo_assess.py'),'--check'],check=True)
     release=json.loads((root/'ASSESSMENT_RELEASE.json').read_text());app=Path(release['application'])
     config=json.loads(Path(release['configuration']).read_text())
+    inspection_seconds(config,args.seconds)  # refuse excess display load before launching any GUI
+    sys.path.insert(0,str(app/'source/src/rover_navigation'))
+    from rover_navigation.platform_telemetry import check_demo_temperature
     sys.path.insert(0,str(app/'management'))
     import phase2_supervise_live as supervisor
     trial=supervisor.load_guard(args.kit)
     if not os.environ.get('DISPLAY') or not args.attended:raise RuntimeError('Use the attended desktop starter')
-    value=json.loads(subprocess.check_output(['docker','container','inspect','rover-navigation'],text=True))[0]
+    inspected=subprocess.run(['docker','container','inspect','rover-navigation'],capture_output=True,text=True)
+    if inspected.returncode:raise RuntimeError('Demo scene is not running; inspect the starter result before restarting')
+    value=json.loads(inspected.stdout)[0]
     if not supervisor.belongs_to_candidate(value,config,app):raise RuntimeError('Container is not this candidate')
     identity=value['Id'];token=uuid.uuid4().hex
     record=Path(tempfile.mkdtemp(prefix='exterior-',dir=app/'navigation_sessions'))
     stopped=threading.Event();failure=None;child=None;cleanup=[]
     for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,lambda *_:stopped.set())
+    def guards():
+        trial.guard(args.case)
+        return supervisor.live_guard(trial,args.case)
+    def record_retry(error):
+        with (record/'session-retries.jsonl').open('a') as stream:
+            stream.write(json.dumps(dict(wall_monotonic=time.monotonic(),error=error))+'\n')
     def check():
-        trial.guard(args.case);health=supervisor.live_guard(trial,args.case)
-        if not math.isfinite(health['tctl_c']) or health['tctl_c']>=87:raise RuntimeError('Exterior check reached 87 C')
+        health=retry_session_inventory(guards,on_retry=record_retry)
+        check_demo_temperature(health['tctl_c'])
         with urlopen('http://127.0.0.1:8777/status',timeout=1) as response:status=json.load(response)
         if not stationary(status):raise RuntimeError('Exterior inspection requires stopped/disarmed rover and fresh camera')
         session=status.get('session','')

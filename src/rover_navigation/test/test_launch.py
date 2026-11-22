@@ -79,7 +79,7 @@ class LaunchTests(unittest.TestCase):
                 self.assertEqual(saved_camera['rate_hz'],15.)
                 self.assertEqual((saved_camera['width'],saved_camera['height']),(960,540))
                 self.assertEqual(json.loads((folder/'run/session.json').read_text())['camera']['rate_hz'],30.)
-                for invalid_rate in ('nan','inf','0','9','31'):
+                for invalid_rate in ('nan','inf','0','8','9','31'):
                     with self.assertRaises(ValueError):
                         launch.setup(dict(context,camera_rate_hz=invalid_rate,session=str(folder/'invalid-rate')))
                     self.assertFalse((folder/'invalid-rate').exists())
@@ -114,13 +114,70 @@ class LaunchTests(unittest.TestCase):
                                     mapping_on_confirm='true')
                 localized_nodes = launch.setup(localization)
                 demo=launch.setup(dict(localization,demo_mode='true',demo_profile='rehearsal',
-                    database='',camera_rate_hz='15',session=str(folder/'demo')))
+                    database='',camera_rate_hz='15',navigation_speed='0.15',manual_max_linear_speed='0.15',
+                    session=str(folder/'demo')))
                 demo_mission=next(n for n in demo if n.get('executable')=='demo_mission')
+                legacy_slam=next(n for n in localized_nodes if n.get('executable')=='rtabmap')
+                demo_executables={n.get('executable') for n in demo}
+                self.assertTrue({'rgbd_odometry','terrain','sample_sites','mission_controls'} <= demo_executables)
+                self.assertFalse({'rtabmap','live_bridge'} & demo_executables)
+                self.assertTrue(any(n.get('executable')=='live_bridge' for n in localized_nodes))
+                self.assertTrue(legacy_slam['parameters'][1]['publish_tf'])
+                self.assertIn(('grid_map', '/map'), legacy_slam['remappings'])
+                self.assertFalse(json.loads((folder/'demo/session.json').read_text())['slam_graph_enabled'])
+                anchors=[n for n in demo if n.get('executable')=='static_transform_publisher']
+                self.assertEqual(len(anchors), 1)
+                self.assertEqual(anchors[0]['arguments'], ['--frame-id', 'map', '--child-frame-id', 'odom'])
+                self.assertFalse(any(n.get('executable')=='static_transform_publisher' for n in localized_nodes))
+                guard=next(n for n in demo if n.get('executable')=='motion_guard')['parameters'][1]
+                self.assertTrue(guard['fixed_navigation_map'])
+                self.assertEqual(guard['max_linear_speed'], .15)
+                self.assertEqual(demo_mission['parameters'][1]['navigation_speed'], .15)
                 self.assertEqual(demo_mission['parameters'][1]['demo_profile'],'rehearsal')
                 self.assertEqual(demo_mission['parameters'][1]['session'],str(folder/'demo'))
+                import yaml
+                demo_controller = yaml.safe_load((folder/'demo/nav2.yaml').read_text())['controller_server']['ros__parameters']
+                self.assertEqual(demo_controller['FollowPath']['plugin'],
+                                 'nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController')
+                self.assertTrue(demo_controller['FollowPath']['use_collision_detection'])
+                self.assertEqual(demo_controller['FollowPath']['rotate_to_heading_angular_vel'], .30)
+                self.assertEqual(demo_controller['FollowPath']['desired_linear_vel'], .15)
+                self.assertIs(demo_controller['FollowPath']['stateful'], False)
+                self.assertIs(demo_controller['goal_checker']['stateful'], False)
+                self.assertEqual(demo_controller['goal_checker']['xy_goal_tolerance'], .06)
+                self.assertEqual(demo_controller['goal_checker']['yaw_goal_tolerance'], .087)
+                self.assertEqual(demo_controller['goal_checker']['plugin'],'nav2_controller::StoppedGoalChecker')
+                for purpose,radius,yaw in (('frontier',.22,.28),('clearance',.12,.21)):
+                    checker=purpose+'_goal_checker'
+                    self.assertEqual(demo_controller[checker]['plugin'],'nav2_controller::SimpleGoalChecker')
+                    self.assertEqual(demo_controller[checker]['xy_goal_tolerance'], radius)
+                    self.assertEqual(demo_controller[checker]['yaw_goal_tolerance'], yaw)
+                    tree=Path(demo_mission['parameters'][1][purpose+'_bt'])
+                    self.assertEqual(ET.parse(tree).find('.//FollowPath').get('goal_checker_id'),checker)
+                with self.assertRaises(ValueError):
+                    launch.setup(dict(localization,demo_mode='true',database='',camera_rate_hz='10',
+                                      navigation_speed='0.16',session=str(folder/'demo-too-fast')))
+                self.assertEqual(demo_controller['progress_checker']['movement_time_allowance'], 20.)
+                front = ('0.9', '0.8', '1 0 0')
+                for run, rear in (('localized', front), ('demo', ('0.25', '0.8', '0 1 0'))):
+                    robot = ET.parse(folder/run/'robot.urdf')
+                    for wheel, expected in (('front_left', front), ('front_right', front),
+                                            ('rear_left', rear), ('rear_right', rear)):
+                        contact = robot.find(f"gazebo[@reference='{wheel}_wheel']")
+                        self.assertEqual(tuple(contact.findtext(k) for k in ('mu1', 'mu2', 'fdir1')), expected)
                 for executable in ('terrain','sample_sites','mission_controls'):
                     node=next(n for n in demo if n.get('executable')==executable)
                     self.assertTrue(any(p.get('demo_mode') is True for p in node['parameters'] if isinstance(p,dict)))
+                for rate in ('8','10'):
+                    run=folder/f'demo-{rate}hz'
+                    launch.setup(dict(localization,demo_mode='true',demo_profile='rehearsal',database='',
+                        camera_rate_hz=rate,gui='false',rviz='false',session=str(run)))
+                    low_sensor=ET.parse(run/'robot.urdf').find('.//sensor')
+                    self.assertEqual(float(low_sensor.findtext('update_rate')),float(rate))
+                    self.assertEqual(json.loads((run/'session.json').read_text())['camera']['rate_hz'],float(rate))
+                for unsupported in ('7','9','11','14','30'):
+                    with self.assertRaises(ValueError):launch.setup(dict(localization,demo_mode='true',database='',
+                        camera_rate_hz=unsupported,session=str(folder/'demo-unsupported')))
                 with self.assertRaises(ValueError):launch.setup(dict(localization,demo_mode='true',demo_profile='full',camera_rate_hz='15',session=str(folder/'demo-invalid')))
                 with self.assertRaises(ValueError):
                     launch.setup(context)
@@ -154,6 +211,7 @@ class LaunchTests(unittest.TestCase):
             import yaml
             configured = yaml.safe_load(Path(nav_params).read_text())
             self.assertEqual(configured['controller_server']['ros__parameters']['FollowPath']['desired_linear_vel'], .1)
+            self.assertNotIn('stateful', configured['controller_server']['ros__parameters']['FollowPath'])
             from rover_navigation.core import DRIVE_CENTER_X, FOOTPRINT
             self.assertEqual(configured['bt_navigator']['ros__parameters']['robot_base_frame'], 'drive_center')
             for costmap in ('local_costmap', 'global_costmap'):

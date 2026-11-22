@@ -12,12 +12,14 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, qos_profile_sensor_data
 from rosgraph_msgs.msg import Clock as ClockMessage
 from ros_gz_interfaces.msg import Contacts
-from std_msgs.msg import String
+from std_msgs.msg import Float64MultiArray, String
 from std_srvs.srv import Empty, Trigger
 from tf2_ros import Buffer, TransformListener, TransformException
 from rclpy.time import Time
 
-from .core import cause_names, drive_pose, footprint_polygon, swept_clear, swept_conflict, swept_poses
+from .core import (cause_names, drive_pose, footprint_avoids_disk, footprint_polygon,
+                   swept_clear, swept_conflict, swept_poses)
+from .demo_core import SAMPLE_REVERSE_MAX_SPEED
 from .ros_utils import from_grid, stamp_seconds
 from .safety import SafetyGate
 
@@ -26,6 +28,9 @@ class Guard(Node):
     def __init__(self):
         super().__init__('navigation_motion_guard')
         self.gate = SafetyGate()
+        self.declare_parameter('fixed_navigation_map', False)
+        self.fixed_navigation_map = self.get_parameter('fixed_navigation_map').value
+        self.sample_keepout = None
         self.declare_parameter('max_linear_speed', .5)
         self.declare_parameter('max_angular_speed', .6)
         linear,angular=(self.get_parameter(k).value for k in ('max_linear_speed','max_angular_speed'))
@@ -56,6 +61,11 @@ class Guard(Node):
         for source in ('manual', 'autonomous'):
             self.create_subscription(Twist, '/navigation/'+source+'_cmd_vel',
                                      lambda msg, s=source: self.gate.command(s, msg.linear.x, msg.angular.z, time.monotonic()), 1)
+        if self.fixed_navigation_map:
+            self.create_subscription(Float64MultiArray, '/navigation/sample_keepout_odom', self.set_sample_keepout, 1)
+            self.create_subscription(Twist, '/navigation/retreat_cmd_vel',
+                lambda msg: self.gate.command('retreat',msg.linear.x,msg.angular.z,time.monotonic()),1)
+            self.create_service(Trigger,'/navigation/enable_retreat',lambda _,res:self.select('retreat',res))
         self.create_service(Trigger, '/navigation/manual', lambda req, res: self.select('manual', res))
         self.create_service(Trigger, '/navigation/enable_autonomy', lambda req, res: self.select('autonomous', res))
         self.create_service(Trigger, '/navigation/stop', self.stop)
@@ -64,6 +74,14 @@ class Guard(Node):
         self.last_mode = 'stopped'
         self.published = None
         self.status_sequence = 0
+
+    def set_sample_keepout(self, message):
+        disk = list(message.data)
+        if self.gate.mode != 'stopped' or len(disk) != 3 or not all(map(math.isfinite, disk)) or disk[2] <= 0.:
+            return
+        self.sample_keepout = disk
+        self.gate.autonomous_reverse_speed = min(SAMPLE_REVERSE_MAX_SPEED, self.gate.MAX_LINEAR_SPEED)
+        self.publish_status()
 
     def clock_received(self, msg):
         stamp = stamp_seconds(msg.clock)
@@ -178,7 +196,11 @@ class Guard(Node):
         if self.in_contact:
             response.message = 'Chassis contact is active'
             return response
-        if mode == 'autonomous' and not self.tf.can_transform('map', 'base_link', Time()):
+        if mode=='retreat' and (not self.fixed_navigation_map or self.gate.mode!='stopped' or
+                                (self.gate.fault or {}).get('reason')!='chassis_contact'):
+            response.message='Reverse recovery requires a cleared chassis-contact stop'
+            return response
+        if mode in ('autonomous','retreat') and not self.tf.can_transform('map', 'base_link', Time()):
             response.message = 'Map localization is not ready'
             return response
         response.success = self.gate.select(mode, time.monotonic())
@@ -186,7 +208,7 @@ class Guard(Node):
         self.last_mode = self.gate.mode
         response.message = self.gate.mode if response.success else self.gate.reason
         self.publish_status()
-        if response.success and mode == 'autonomous':
+        if response.success and mode in ('autonomous','retreat'):
             # Status published before this one may arrive after the response.
             response.message = json.dumps(dict(mode=mode, stop_generation=self.stop_generation,
                                                status_sequence=self.status_sequence))
@@ -205,19 +227,32 @@ class Guard(Node):
     def tick(self):
         now = time.monotonic()
         detail = {}
-        if self.gate.mode == 'autonomous':
+        if self.gate.mode in ('autonomous','retreat'):
             try:
                 tf = self.tf.lookup_transform('map', 'base_link', Time())
                 age = self.gate.sim_stamp-stamp_seconds(tf.header.stamp)
                 if age > .6:
                     self.gate.stop('map_localization_stale')
                     detail['map_transform_age_seconds'] = age
+                elif self.fixed_navigation_map:
+                    anchor = self.tf.lookup_transform('map', 'odom', Time()).transform
+                    t, q = anchor.translation, anchor.rotation
+                    if not all(abs(value) <= .001 for value in
+                               (t.x, t.y, t.z, q.x, q.y, q.z, abs(q.w)-1.)):
+                        self.gate.stop('navigation_map_frame_changed')
+                        detail['map_to_odom_translation'] = [
+                            value if math.isfinite(value) else None for value in (t.x, t.y, t.z)]
             except TransformException as error:
                 self.gate.stop('map_localization_lost')
                 detail['map_error'] = str(error)
         rejected = []
 
         def clear(v, w):
+            if self.gate.mode in ('autonomous','retreat') and self.sample_keepout is not None and self.pose is not None:
+                if not all(footprint_avoids_disk(p, self.sample_keepout) for p in swept_poses(self.pose, v, w)):
+                    detail['sample_keepout_odom'] = self.sample_keepout
+                    detail['causes'] = ['selected_sample_site_clearance']
+                    return False
             if self.grid is not None and self.pose is not None and swept_clear(self.grid, self.pose, v, w):
                 return True
             rejected.append((v, w))
@@ -277,6 +312,7 @@ class Guard(Node):
                                      stop_generation=self.stop_generation, sequence=self.status_sequence,
                                      odometry_resets=self.odometry_resets,
                                      ready=self.gate.ready(now), command=command, geometry=geometry,
+                                     sample_keepout_odom=self.sample_keepout, in_contact=self.in_contact,
                                      sim_time=self.gate.sim_stamp, **self.ages(now)))
         self.status.publish(status)
 

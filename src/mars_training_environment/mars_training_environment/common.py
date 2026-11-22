@@ -36,7 +36,8 @@ def read_config(path=None):
             if section == 'camera':
                 unknown -= {'rgb_far_m', 'far_clip_mode', 'near_clip_mode', 'render_engine'}
             if section == 'terrain':
-                unknown -= {'profile','profile_version','layout_attempts','apron_m','density','sunlight'}
+                unknown -= {'profile','profile_version','layout_attempts','apron_m','density','sunlight','sample_site_recipe','surface_style'}
+                unknown -= {'perimeter_objects'}
             if section == 'capture':
                 unknown -= {'target_schema'}
             if unknown:

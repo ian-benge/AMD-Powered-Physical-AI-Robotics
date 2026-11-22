@@ -13,6 +13,7 @@ class SafetyGate:
         # operator Stop changes the reason but must not erase this evidence.
         self.fault = None
         self.commands = {}
+        self.autonomous_reverse_speed = 0.
         self.sensors = {}
         self.clock_received = -math.inf
         self.sim_stamp = None
@@ -38,7 +39,7 @@ class SafetyGate:
         if self.clock_reset:
             self.stop('simulation_clock_reset_requires_restart')
             return False
-        if mode not in ('manual', 'autonomous') or not self.ready(now):
+        if mode not in ('manual', 'autonomous', 'retreat') or not self.ready(now):
             self.stop('not_ready')
             return False
         self.mode, self.reason = mode, ''
@@ -50,7 +51,12 @@ class SafetyGate:
         if not all(math.isfinite(x) for x in (v, w)):
             self.stop('invalid_command')
             return
-        self.commands[source] = (max(0., min(self.MAX_LINEAR_SPEED, v)),
+        if source=='retreat':
+            reverse=max(-.05,min(0.,v))
+            self.commands[source]=(reverse,max(-.25,min(.25,w)) if reverse else 0.,now)
+            return
+        minimum = -self.autonomous_reverse_speed if source == 'autonomous' else 0.
+        self.commands[source] = (max(minimum, min(self.MAX_LINEAR_SPEED, v)),
                                  max(-self.MAX_ANGULAR_SPEED, min(self.MAX_ANGULAR_SPEED, w)), now)
 
     def stop(self, reason):

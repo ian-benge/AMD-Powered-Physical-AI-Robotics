@@ -112,6 +112,22 @@ def _mixed_heights(rng, x, y, size):
     return h
 
 
+def _jezero_relief(rng, x, y, size):
+    """Localized wind ripples between low, irregular rocky ridges."""
+    angle = rng.uniform(0, math.tau)
+    along = x*math.cos(angle)+y*math.sin(angle)
+    across = -x*math.sin(angle)+y*math.cos(angle)
+    patches = _value_noise(rng, x, y, 4., size/2+4.)
+    wind = np.clip(.25+1.4*patches, 0., 1.)
+    wavelength = rng.uniform(.9, 1.35)
+    phase = (math.tau*along/wavelength + .65*np.sin(across*.9) +
+             .55*_value_noise(rng,x,y,2.6,size/2+4.))
+    ripples = .024*wind*(np.sin(phase)+.22*np.sin(2*phase+.6))
+    ridge_texture = _value_noise(rng, x, y, 1.5, size/2+4.)
+    ridges = .075*np.maximum(0., np.sin(across*1.4+.7*np.sin(along*.32))) * ridge_texture
+    return ripples+ridges*(1.-wind)
+
+
 def generate_terrain(seed, config, folder):
     from .reachability import PROFILE, validate_profile
     validate_profile(config)
@@ -136,6 +152,9 @@ def generate_terrain(seed, config, folder):
     pad=config['spawn_clearance_m']+(math.sqrt(2)*size/(n-1) if shared else 0)
     blend = _spawn_blend(x, y, pad)
     h = (h-h[n//2, n//2])*blend
+    jezero = shared and config.get('surface_style') == 'jezero_ripples'
+    if jezero:
+        h += _jezero_relief(rng,x,y,size)*blend
     h *= config['relief_m']/max(float(np.ptp(h)), 1e-8)
     field = Terrain(h, size)
     slope = field.maximum_slope()
@@ -192,7 +211,9 @@ def generate_terrain(seed, config, folder):
         from .common import digest
         document.update(profile=PROFILE,profile_version=config.get('profile_version',1),shared_surface=True,
                         surface_sha256=digest({'heights':h.tolist(),'size_m':size}),
-                        geometric_ripples=False,collision_mesh='terrain.dae')
+                        geometric_ripples=jezero,collision_mesh='terrain.dae')
+        if jezero:
+            document['surface_style'] = config['surface_style']
     write_json(folder/'terrain.json', document)
     if config.get('profile_version')==2:
         from .environment_v2 import apron_mesh

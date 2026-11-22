@@ -1,71 +1,203 @@
 <section id="demo-panel" aria-label="Autonomous exploration and simulated sampling">
 <style>
-#demo-panel{border:1px solid #426079;margin:0 0 22px;padding:20px;border-radius:14px;background:#142737}#demo-panel h2{margin:0 0 8px}#demo-phase{font-size:1.35rem;color:#70e4c2;font-weight:700}.demo-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin:15px 0}.demo-metrics div{background:#203649;border-radius:8px;padding:10px}.demo-metrics dt{color:#a8c2d8;font-size:.85rem}.demo-metrics dd{margin:4px 0 0;font-variant-numeric:tabular-nums}#demo-message{color:#ffd273;min-height:1.5em}.demo-buttons{display:flex;flex-wrap:wrap;gap:8px}#soil-sites button{font-size:.9rem;padding:7px;margin:5px}#map.demo-selecting{cursor:crosshair}#demo-panel small{display:block;margin-top:10px}#demo-state-log{white-space:pre-wrap;overflow-wrap:anywhere}
+#demo-panel{padding:16px 18px}#demo-panel h2{margin:0;font-size:14px;color:var(--muted)}
+#demo-phase{font-size:clamp(18px,2.7vw,24px);color:var(--text);font-weight:650;margin:4px 0;letter-spacing:-.025em}
+.demo-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:8px;margin:13px 0 0}
+.demo-metrics div{border-top:1px solid var(--border);padding:7px 4px}.demo-metrics dt{font-size:12px}.demo-metrics dd{margin:3px 0 0;font-size:14px;font-variant-numeric:tabular-nums}
+#demo-message{color:#f2c27b;font-size:14px;margin:5px 0 10px}#demo-message:empty{display:none}
+.demo-buttons{display:flex;flex-wrap:wrap;gap:8px}#demo-return,#demo-approve{border-color:var(--accent)}
+#map.demo-selecting{cursor:crosshair}#demo-state-log{white-space:pre-wrap;overflow-wrap:anywhere}
+#demo-panel details{padding:8px 0 0;background:none;border:0;font-size:13px;margin-bottom:0}
 </style>
-<h2>Explore, simulate a sample, and return</h2><p id="demo-phase">Waiting for the demo service</p>
+<h2>Autonomous mission</h2><p id="demo-phase">Waiting for the demo service</p>
 <p id="demo-message" role="status">Inspect launch clearance before authorizing autonomy.</p>
-<div class="demo-buttons"><button id="demo-explore" disabled>Start autonomous exploration</button><button id="demo-return" disabled>Return now</button><button id="demo-point" disabled>Select location on map</button><button id="demo-preview" disabled>Preview sample round trip</button><button id="demo-approve" disabled>Approve sample trip & automatic return</button><button id="demo-takeover">Stop & take manual control</button></div>
-<div class="demo-metrics"><div><dt>Mission time</dt><dd id="demo-time">—</dd></div><div><dt>Measured ground / 1,600 m²</dt><dd id="demo-area">—</dd></div><div><dt>Return reserve</dt><dd id="demo-reserve">—</dd></div><div><dt>Traveled distance</dt><dd id="demo-distance">—</dd></div><div><dt>Selected target</dt><dd id="demo-target">None</dd></div><div><dt>Simulated sample</dt><dd id="demo-sample">Not collected</dd></div><div><dt>Tctl temperature</dt><dd id="demo-temperature">Use the native temperature terminal</dd></div><div><dt>Map publication p95</dt><dd id="demo-latency">Waiting for timing samples</dd></div></div>
-<div id="soil-sites"></div><label><input id="demo-full-map" type="checkbox" checked> Show full 40 m map</label>
-<small>Solid trails: exploration cyan, first return blue, sample trip amber, final return purple. Dashed lines: currently planned outward/return routes. H: starting point; diamond: selected site; ring: uncertainty-expanded envelope. Sample collection is a timed simulation, without an arm or physical material transfer.</small>
-<details><summary>Mission identities and diagnostics</summary><pre id="demo-state-log"></pre></details>
+<div class="demo-buttons"><button id="demo-explore" disabled>Start autonomous exploration</button><button id="demo-resume" hidden disabled>Resume exploration</button><button id="demo-alternate-route" hidden disabled>Try a different route</button><button id="demo-retreat" hidden disabled>Back up 0.5 m & replan</button><button id="demo-return" disabled>Return now</button><button id="demo-point" disabled>Select location on map</button><button id="demo-preview" disabled>Preview sample round trip</button><button id="demo-alternate-sample" hidden disabled>Preview another angle</button><button id="demo-approve" disabled>Approve drive to sample</button><button id="demo-takeover">Stop & take manual control</button></div>
+<div class="demo-metrics"><div><dt>Mission time</dt><dd id="demo-time">—</dd></div><div><dt>Measured ground / 1,600 m²</dt><dd id="demo-area">—</dd></div><div><dt id="demo-reserve-label">Return reserve</dt><dd id="demo-reserve">—</dd></div><div><dt>Traveled distance</dt><dd id="demo-distance">—</dd></div><div><dt>Selected target</dt><dd id="demo-target">None</dd></div><div><dt>Simulated sample</dt><dd id="demo-sample">Not collected</dd></div><div><dt>Tctl temperature</dt><dd id="demo-temperature">Use the native temperature terminal</dd></div><div><dt>Map publication p95</dt><dd id="demo-latency">Waiting for timing samples</dd></div></div>
+<label id="demo-map-view"><input id="demo-full-map" type="checkbox"> Full 40 m map</label>
+<details><summary>Mission identities and diagnostics</summary><p>H marks home. F marks the current frontier or recovery waypoint. Solid lines show travel. Dashed lines show planned routes.</p><pre id="demo-state-log"></pre></details>
 </section>
 <script>
 (()=>{
-const panel=document.getElementById('demo-panel');document.querySelector('h1').before(panel);
 const $=id=>document.getElementById(id),client=crypto.randomUUID?.()??Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('');
-let owner=false,heartbeatBusy=false,heartbeatSequence=0,actionBusy=false,selecting=false,session=null;
-const active=new Set(['sweeping','exploring','exploration_return','sample_outbound','collecting','sample_return']);
-const labels={ready:'Ready for autonomous exploration',sweeping:'Observing the launch area',exploring:'Exploring and mapping',exploration_return:'Returning from exploration',awaiting_target:'Exploration complete—select a sample location',preview_ready:'Review the sample round trip, then approve',sample_outbound:'Traveling to the sample site',collecting:'Simulated collection—rover held stationary',sample_return:'Returning with the simulated sample',complete:'Complete—simulated sample delivered home',stopped:'Stopped—review the recorded reason'};
-function envelope(extra={}){const d=state.demo_status;if(!d||d.age_seconds>1||performance.now()-lastStatus>600)throw Error('Demo status is unavailable or stale');return {session_id:d.session_id,mission_id:d.mission_id,client_token:client,epoch:d.epoch,...extra};}
+$('mission-slot').append($('demo-panel'));
+$('map-view-options').append($('demo-map-view'));
+let owner=false,heartbeatBusy=false,heartbeatSequence=0,actionBusy=false,arming=false,selecting=false,session=null;
+let heartbeatReceipt=null;
+const atSample=new Set(['collecting','awaiting_sample_return']);
+const active=new Set(['sweeping','exploring','exploration_reposition','exploration_return','sample_outbound',...atSample,'sample_backing','sample_return','contact_reversing','contact_rejoin']);
+const labels={ready:'Ready for autonomous exploration',sweeping:'Observing the launch area',exploring:'Exploring and mapping',exploration_paused:'Exploration paused for route review',exploration_reposition:'Moving to clear ground to continue',exploration_return:'Returning from exploration',awaiting_target:'Exploration complete—select a sample location',preview_ready:'Review the sample round trip, then approve',sample_outbound:'Approaching and facing the sample site',collecting:'Simulated collection—rover held stationary',awaiting_sample_return:'At sample site—ready to return',sample_backing:'Backing away from the sample before turning',sample_return:'Returning home from sample site',contact_paused:'Stopped after chassis contact',contact_reversing:'Backing along the driven path',contact_rejoin:'Moving onto the replanned route',complete:'Mission complete at home',stopped:'Stopped—review the recorded reason'};
+function identity(d){return {session_id:d.session_id,mission_id:d.mission_id,client_token:client,epoch:d.epoch};}
+function sameMission(a,b){return !!a&&!!b&&a.session_id===b.session_id&&a.mission_id===b.mission_id&&a.epoch===b.epoch;}
+function envelope(extra={}){const d=state.demo_status;if(!d||d.age_seconds>1||performance.now()-lastStatus>600)throw Error('Demo status is unavailable or stale');return {...identity(d),...extra};}
 async function command(action,extra={}){return post('demo/'+action,envelope(extra));}
-async function actDemo(action,extra={}){if(actionBusy)return;actionBusy=true;try{if(action==='start-exploration')owner=true;await command(action,extra);$('demo-message').textContent='Command accepted';}catch(e){$('demo-message').textContent=e.message;if(action==='start-exploration')owner=false;}finally{actionBusy=false;refresh();}}
+function releaseDemoOwner(){owner=false;heartbeatReceipt=null;}
+window.releaseDemoOwner=releaseDemoOwner;
+let resumeError='',shownPhase=null;
+async function actDemo(action,extra={}){if(actionBusy)return;actionBusy=true;
+ const recovering=['resume-exploration','alternate-exploration','retreat-and-replan'].includes(action);
+ arming=recovering||action==='start-sample';
+ if(recovering){resumeError='';$('demo-message').textContent='Checking a fresh route from the stopped rover…';}
+ try{if(action==='start-exploration')owner=true;await command(action,extra);$('demo-message').textContent='Command accepted';}
+ catch(e){$('demo-message').textContent=e.message;if(recovering)resumeError=e.message;if(action==='start-exploration')releaseDemoOwner();}
+ finally{actionBusy=false;arming=false;refresh();}}
 $('demo-explore').onclick=()=>actDemo('start-exploration');$('demo-return').onclick=()=>actDemo('return-now');
+$('demo-resume').onclick=()=>actDemo('resume-exploration');
+$('demo-alternate-route').onclick=()=>actDemo('alternate-exploration');
+$('demo-retreat').onclick=()=>actDemo('retreat-and-replan');
 $('demo-preview').onclick=()=>actDemo('preview-sample');$('demo-approve').onclick=()=>actDemo('start-sample',{preview_id:state.demo_status?.preview?.id||''});
+$('demo-alternate-sample').onclick=()=>actDemo('alternate-sample');
 $('demo-point').onclick=()=>{selecting=!selecting;$('map').classList.toggle('demo-selecting',selecting);$('demo-message').textContent=selecting?'Click measured traversable ground on the map. Selection does not move the rover.':'';};
-$('demo-takeover').onclick=async()=>{owner=false;await act('stop');await act('manual');};
-// An observer page never sends heartbeats. Ownership is acquired only by an
-// explicit Start in THIS page; it is neither stored nor exposed in status.
-setInterval(async()=>{if(!owner||heartbeatBusy||!state.demo_status||!active.has(state.demo_status.phase))return;heartbeatBusy=true;try{await command('heartbeat',{sequence:++heartbeatSequence});}catch(e){$('demo-message').textContent=e.message;}finally{heartbeatBusy=false;}},200);
-window.addEventListener('pagehide',()=>{owner=false;});
-$('map').addEventListener('click',event=>{if(!selecting)return;const m=state.map;if(!m)return;const svg=$('map'),p=svg.createSVGPoint();p.x=event.clientX;p.y=event.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());selecting=false;svg.classList.remove('demo-selecting');actDemo('select-target',{x:m.origin[0]+q.x*m.resolution,y:m.origin[1]+(m.height-q.y)*m.resolution});});
+$('demo-takeover').onclick=async()=>{releaseDemoOwner();await act('stop');await act('manual');};
+$('demo-full-map').onchange=()=>mapView(state);
+function canSelectTarget(){const d=state.demo_status;return owner&&!actionBusy&&d?.age_seconds<1&&state.status?.age_seconds<.6&&performance.now()-lastStatus<=600&&['awaiting_target','preview_ready'].includes(d.phase);}
+window.demoCanSelectObject=site=>site.state==='confirmed'&&canSelectTarget()&&
+  (site.selectionId.startsWith('soil:')?state.soil_sites?.ready===true:state.sample_sites?.ready===true);
+window.demoSelectObject=site=>{
+ if(!window.demoCanSelectObject(site))return;
+ selecting=false;$('map').classList.remove('demo-selecting');
+ return actDemo('select-target',{target_id:site.selectionId.startsWith('soil:')?site.track_id:site.selectionId});
+};
+const heartbeatDelayed='Operator contact delayed. The rover stops if contact is lost.';
+async function sendHeartbeat(){
+ const d=state.demo_status;
+ if(!owner||heartbeatBusy||!d||!(arming||d.auto_recovery||active.has(d.phase)))return;
+ const now=performance.now(),statusAge=now-lastStatus;
+ const recentReceipt=sameMission(heartbeatReceipt,d)&&now-heartbeatReceipt.sent<=600;
+ // A checked reply can bridge a slow map update while the page has recent telemetry.
+ if(d.age_seconds>1||statusAge>=1500||(statusAge>600&&!recentReceipt))return;
+ const payload={...identity(d),sequence:++heartbeatSequence};
+ heartbeatBusy=true;
+ try{
+  const reply=await post('demo/heartbeat',payload,{signal:AbortSignal.timeout(250),priority:'high'});
+  if(!owner||!sameMission(payload,state.demo_status))return;
+  if(reply.mission_id!==payload.mission_id)throw Error('Unexpected heartbeat reply');
+  heartbeatReceipt={...payload,sent:now};
+  if($('demo-message').textContent===heartbeatDelayed)$('demo-message').textContent='';
+ }catch(e){
+  if(owner&&sameMission(payload,state.demo_status))$('demo-message').textContent=heartbeatDelayed;
+ }finally{heartbeatBusy=false;}
+}
+setInterval(sendHeartbeat,150);
+window.addEventListener('pagehide',releaseDemoOwner);
+$('map').addEventListener('click',event=>{if(!selecting||!canSelectTarget())return;const m=state.map;if(!m)return;const svg=$('map'),p=svg.createSVGPoint();p.x=event.clientX;p.y=event.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());selecting=false;svg.classList.remove('demo-selecting');actDemo('select-target',{x:m.origin[0]+q.x*m.resolution,y:m.origin[1]+(m.height-q.y)*m.resolution});});
 window.demoUpdate=data=>{
- const d=data.demo_status;if(!d)return;if(session!==d.session_id){if(session!==null)owner=false;session=d.session_id;selecting=false;}
+ const d=data.demo_status;if(!d)return;if(session!==d.session_id){if(session!==null)releaseDemoOwner();session=d.session_id;selecting=false;shownPhase=null;}
  const fresh=d.age_seconds<1&&data.status?.age_seconds<.6,phase=d.phase;
- $('demo-phase').textContent=labels[phase]||phase;
- if(d.reason)$('demo-message').textContent=d.reason;
+ $('demo-phase').textContent=d.auto_recovery?'Automatically checking a different route':labels[phase]||phase;
+ const recoveryPause=['exploration_paused','contact_paused'].includes(phase);
+ if(!recoveryPause)resumeError='';
+ if(phase!==shownPhase){
+   if(phase==='exploration_reposition')$('demo-message').textContent='Following a checked recovery route.';
+   else if(shownPhase==='exploration_reposition'&&phase==='exploring')$('demo-message').textContent='Exploration resumed.';
+   else if(['exploration_paused','exploration_reposition'].includes(shownPhase)&&phase==='exploration_return')
+     $('demo-message').textContent='Following the checked route home.';
+   shownPhase=phase;
+ }
+ if(d.reason&&!(recoveryPause&&arming))$('demo-message').textContent=resumeError||d.reason;
  const health=d.navigation_health;
+ const latency=data.mapping?.publication_latency_p95_seconds;
+ const timingReady=Number.isFinite(latency)&&latency<=.2;
  if(phase==='ready'&&health&&!health.healthy)$('demo-message').textContent='Autonomy waiting: '+health.missing.join(', ');
- else if(phase==='ready'&&health?.healthy&&$('demo-message').textContent?.startsWith('Autonomy waiting:'))$('demo-message').textContent='Navigation inputs ready. Start exploration explicitly.';
+ else if(phase==='ready'&&data.mapping?.clearance_confirmed&&!timingReady)
+   $('demo-message').textContent='Autonomy waiting for healthy map timing.';
+ else if(phase==='ready'&&health?.healthy&&data.mapping?.clearance_confirmed){
+   const message=$('demo-message');
+   if(message.textContent==='Inspect launch clearance before authorizing autonomy.'||message.textContent?.startsWith('Autonomy waiting'))message.textContent='Ready to start exploration.';
+ }
  const available=fresh&&!actionBusy;
- $('demo-explore').disabled=!available||phase!=='ready'||!data.status?.ready||!data.mapping?.clearance_confirmed||!health?.healthy;
- $('demo-return').disabled=!available||!owner||!['sweeping','exploring'].includes(phase);
+ $('demo-explore').disabled=!available||phase!=='ready'||!data.status?.ready||!data.mapping?.clearance_confirmed||!health?.healthy||!timingReady;
+ const sampleResult=phase==='awaiting_sample_return';
+ const canReturn=['sweeping','exploring'].includes(phase)||(sampleResult&&d.sample_return_ready);
+ $('demo-return').textContent=sampleResult?(d.sample?'Return home':'Return without a sample'):'Return now';
+ $('demo-return').disabled=!available||!owner||!canReturn;
+ $('demo-resume').disabled=!available||!owner||d.auto_recovery||!d.resume_ready||!health?.healthy;
+ $('demo-resume').hidden=phase!=='exploration_paused';
+ $('demo-alternate-route').hidden=phase!=='exploration_paused';
+ $('demo-alternate-route').disabled=$('demo-resume').disabled||!d.distinct_route_available;
+ $('demo-retreat').disabled=!available||!owner||!d.contact_ready||!health?.healthy;
+ $('demo-retreat').hidden=phase!=='contact_paused';
  $('demo-point').disabled=!available||!owner||!['awaiting_target','preview_ready'].includes(phase);
  $('demo-preview').disabled=!available||!owner||!d.target||!['awaiting_target','preview_ready'].includes(phase);
  $('demo-approve').disabled=!available||!owner||phase!=='preview_ready'||d.preview_remaining_seconds<=0;
- $('demo-time').textContent=`${Math.floor(d.elapsed_seconds)} s elapsed · ${Math.floor(d.remaining_seconds)} s left`;
+ $('demo-alternate-sample').disabled=!available||!owner||phase!=='preview_ready';
+ $('demo-alternate-sample').hidden=phase!=='preview_ready';
+ const selectingPhase=['awaiting_target','preview_ready'].includes(phase);
+ $('demo-explore').hidden=phase!=='ready';
+ $('demo-return').hidden=!sampleResult&&!['sweeping','exploring'].includes(phase);
+ $('demo-point').hidden=$('demo-preview').hidden=!selectingPhase;
+ $('demo-approve').hidden=phase!=='preview_ready';
+ $('demo-takeover').hidden=!active.has(phase)&&!d.auto_recovery;
+ if(!selectingPhase){selecting=false;$('map').classList.remove('demo-selecting');}
+ if(phase==='awaiting_target'&&owner&&(!d.reason||d.reason===labels.awaiting_target)&&!d.target&&!selecting){
+   if(!$('demo-message').textContent||$('demo-message').textContent===labels.awaiting_target)
+     $('demo-message').textContent='Select a confirmed object on the map, or choose a ground location.';
+ }
+ const timeLeft=Number.isFinite(d.mapping_remaining_seconds)?
+   `${Math.ceil(d.mapping_remaining_seconds)} s mapping left`:`${Math.floor(d.remaining_seconds)} s left`;
+ $('demo-time').textContent=`${Math.floor(d.elapsed_seconds)} s elapsed · ${timeLeft}`;
  const c=d.coverage;$('demo-area').textContent=c?`${c.measured_area_m2.toFixed(1)} m² (${c.measured_percent.toFixed(1)}%)`:'Waiting for measured ground';
- $('demo-reserve').textContent=Number.isFinite(d.return_reserve_seconds)?`${Math.ceil(d.return_reserve_seconds)} s`:'Not yet planned';
+ const reserve=$('demo-reserve');
+ if(selectingPhase&&Number.isFinite(d.sample_time_left_seconds)){
+   const estimate=d.preview?.estimated_seconds;
+   $('demo-reserve-label').textContent='Sample trip';
+   reserve.textContent=(Number.isFinite(estimate)?`About ${Math.ceil(estimate)} s needed · `:'')+`${Math.floor(d.sample_time_left_seconds)} s available`;
+ }else{
+   $('demo-reserve-label').textContent='Return reserve';
+   reserve.textContent=Number.isFinite(d.return_reserve_seconds)?`${Math.ceil(d.return_reserve_seconds)} s`:'Not yet planned';
+ }
  $('demo-distance').textContent=`${d.actual_distance_m.toFixed(2)} m`;
- $('demo-target').textContent=d.target?d.target.source==='detected_soil'?`Detected soil · ${d.target.track_id}`:'Operator-selected map location':'None';
- $('demo-sample').textContent=d.sample?d.sample.delivered?'Simulated · delivered home':'Simulated · collected, not delivered':phase==='collecting'?`Simulating collection · ${Math.min(10,d.collection_elapsed_seconds).toFixed(1)} / 10 s`:'Not collected';
- const t=data.platform_temperature;$('demo-temperature').textContent=t&&Number.isFinite(t.tctl_c)?`${t.tctl_c.toFixed(1)}°C · qualification stop 87°C · native stop 90°C`:'Use the native temperature terminal';
- const latency=data.mapping?.publication_latency_p95_seconds;$('demo-latency').textContent=Number.isFinite(latency)?`${(latency*1000).toFixed(1)} ms · target ≤200 ms`:'Waiting for timing samples';
+ $('demo-target').textContent=d.target?(d.target.track_id?
+   `${d.target.class_name?.replaceAll('_',' ')||'Pale soil patch'} · #${d.target.track_id}`:'Map location'):'None';
+ if(d.preview?.stopping_pose&&d.target_map){
+   const [x,y]=d.preview.stopping_pose,[tx,ty]=d.target_map;
+   $('demo-target').textContent+=` · stop ${Math.hypot(x-tx,y-ty).toFixed(2)} m from target`;
+ }
+ $('demo-sample').textContent=d.sample?d.sample.delivered?'Simulated · delivered home':'Simulated · collected, not delivered':phase==='collecting'?
+   d.collection_paused?'Waiting for a fresh sample view':`Simulating collection · ${Math.min(10,d.collection_elapsed_seconds).toFixed(1)} / 10 s`:'Not collected';
+ const t=data.platform_temperature,temperature=$('demo-temperature');
+ if(t&&Number.isFinite(t.tctl_c)){
+  const readings=[`${t.tctl_c.toFixed(1)}°C`];
+  const demoStop=t.qualification_stop_c,nativeStop=t.native_stop_c;
+  if(Number.isFinite(demoStop))readings.push(`${demoStop===nativeStop?'stop':'qualification stop'} ${demoStop}°C`);
+  if(Number.isFinite(nativeStop)&&nativeStop!==demoStop)readings.push(`native stop ${nativeStop}°C`);
+  temperature.textContent=readings.join(' · ');
+ }else temperature.textContent='Use the native temperature terminal';
+ $('demo-latency').textContent=Number.isFinite(latency)?`${(latency*1000).toFixed(1)} ms · target ≤200 ms`:'Waiting for timing samples';
  $('demo-state-log').textContent=JSON.stringify({session:d.session_id,mission:d.mission_id,phase,reason:d.reason,navigation_health:health,rtf:d.real_time_factor,coverage:c,frontier_visits:d.frontier_visits,preview_valid_seconds:d.preview_remaining_seconds,model:data.detector?.model?.model_sha256,simulation_only:true},null,2);
- const soils=data.soil_sites;$('soil-sites').replaceChildren(...(soils?.ready&&soils.age_seconds<1?soils.sites.filter(s=>s.state==='confirmed'):[]).map(s=>{const b=document.createElement('button');b.textContent=`Select soil ${s.track_id} · ${s.confirmation_view_count} views · last seen ${Math.max(0,soils.stamp-s.last_stamp).toFixed(1)} s ago · evidence ${s.evidence_score.toFixed(2)}`;b.disabled=!available||!owner||!['awaiting_target','preview_ready'].includes(phase);b.onclick=()=>actDemo('select-target',{target_id:s.track_id});return b;}));
- if(['complete','stopped'].includes(phase))owner=false;
+ if(['complete','stopped'].includes(phase))releaseDemoOwner();
 };
-window.demoMap=data=>{
+window.demoMap=(data,layer=$('markers'))=>{
  const d=data.demo_status,m=data.map;if(!d||!m)return;
- const svg=$('map'),layer=$('markers'),ns='http://www.w3.org/2000/svg';
- if($('demo-full-map').checked)svg.setAttribute('viewBox',`0 0 ${m.width} ${m.height}`);
+ const ns='http://www.w3.org/2000/svg';
  const xy=p=>[(p[0]-m.origin[0])/m.resolution,m.height-(p[1]-m.origin[1])/m.resolution];
  function line(points,color,dashed=false){if(!points?.length)return;const p=document.createElementNS(ns,'polyline');p.setAttribute('points',points.map(p=>xy(p).join(',')).join(' '));p.setAttribute('fill','none');p.setAttribute('stroke',color);p.setAttribute('stroke-width',1.7);if(dashed)p.setAttribute('stroke-dasharray','4 3');p.setAttribute('data-demo-route',dashed?'planned':'executed');layer.append(p);}
- const colors={exploring:'#32d7d7',exploration_return:'#549aff',sample_outbound:'#ffb83e',sample_return:'#cf89ff'};
- for(const [phase,color]of Object.entries(colors))line(d.trails.filter(p=>p.phase===phase).map(p=>p.pose),color);
+ const colors={exploring:'#32d7d7',exploration_reposition:'#32d7d7',exploration_return:'#549aff',sample_outbound:'#ffb83e',sample_backing:'#cf89ff',sample_return:'#cf89ff',contact_reversing:'#ff9a74',contact_rejoin:'#ff9a74'};
+ let trail=[],previous;
+ for(const point of d.trails){
+   if(previous&&(previous.phase!==point.phase||previous.segment!==point.segment||
+       Math.hypot(previous.pose[0]-point.pose[0],previous.pose[1]-point.pose[1])>.45)){
+     if(trail.length>1&&colors[previous.phase])line(trail,colors[previous.phase]);
+     trail=[];
+   }
+   trail.push(point.pose);previous=point;
+ }
+ if(trail.length>1&&colors[previous.phase])line(trail,colors[previous.phase]);
  line(d.outward_path,'#ffb83e',true);line(d.return_path,'#cf89ff',true);
- function marker(point,text,color){if(!point)return;const [x,y]=xy(point),g=document.createElementNS(ns,'g');const c=document.createElementNS(ns,'circle');for(const[k,v]of Object.entries({cx:x,cy:y,r:4,fill:color,stroke:'#fff','stroke-width':1}))c.setAttribute(k,v);const label=document.createElementNS(ns,'text');label.setAttribute('x',x+6);label.setAttribute('y',y-5);label.setAttribute('font-size',10);label.setAttribute('fill','#fff');label.textContent=text;g.append(c,label);layer.append(g);return [x,y];}
- marker(d.home,'H','#56e38f');marker(d.frontier,'F','#32d7d7');
+ function marker(point,text,color,description){
+   if(!point)return;
+   const [x,y]=xy(point),g=document.createElementNS(ns,'g'),c=document.createElementNS(ns,'circle');
+   for(const[k,v]of Object.entries({cx:x,cy:y,r:4,fill:color,stroke:'#fff','stroke-width':1}))c.setAttribute(k,v);
+   const label=document.createElementNS(ns,'text');
+   label.setAttribute('x',x+6);label.setAttribute('y',y-5);label.setAttribute('font-size',10);label.setAttribute('fill','#fff');
+   label.textContent=text;
+   if(description){
+     const title=document.createElementNS(ns,'title');title.textContent=description;
+     g.setAttribute('aria-label',description);g.append(title);
+   }
+   g.append(c,label);layer.append(g);return [x,y];
+ }
+ marker(d.home,'H','#56e38f');
+ marker(d.frontier,'F','#32d7d7',d.frontier_kind==='clearance'?'Recovery waypoint':'Frontier waypoint');
  if(d.target_map){const p=marker(d.target_map,d.sample?'Simulated sample':'Target','#ffb83e');const radius=(d.target?.envelope_radius_m||0)+2*Math.sqrt(Math.max(0,((d.target?.covariance?.[0]?.[0]||0)+(d.target?.covariance?.[1]?.[1]||0)+Math.hypot((d.target?.covariance?.[0]?.[0]||0)-(d.target?.covariance?.[1]?.[1]||0),2*(d.target?.covariance?.[0]?.[1]||0)))/2));if(radius>0){const ring=document.createElementNS(ns,'circle');for(const[k,v]of Object.entries({cx:p[0],cy:p[1],r:radius/m.resolution,fill:'none',stroke:'#ffb83e','stroke-width':1}))ring.setAttribute(k,v);layer.append(ring);}}
  marker(d.preview?.stopping_pose,'Stop here','#70e4c2');
 };

@@ -3,10 +3,19 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from rover_navigation.platform_telemetry import read_temperature, write_temperature
+from rover_navigation.platform_telemetry import check_demo_temperature, read_temperature, write_temperature
 
 
 class TemperatureTests(unittest.TestCase):
+    def test_demo_cutoff_is_92_degrees(self):
+        for value in (83.,89.,90.,91.999):
+            check_demo_temperature(value)
+        for value in (92.,92.125):
+            with self.assertRaisesRegex(RuntimeError, 'cutoff 92 C'):
+                check_demo_temperature(value)
+        with self.assertRaisesRegex(RuntimeError, 'invalid'):
+            check_demo_temperature(float('nan'))
+
     def test_fresh_native_reading_is_displayed_but_never_used_as_motion_authority(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder)/'temperature.json'
@@ -15,7 +24,7 @@ class TemperatureTests(unittest.TestCase):
             value = read_temperature(path, 'boot-one', stamp+.5)
             self.assertEqual(value['tctl_c'], 81.5)
             self.assertEqual(value['age_seconds'], .5)
-            self.assertEqual((value['qualification_stop_c'], value['native_stop_c']), (87, 90))
+            self.assertEqual((value['qualification_stop_c'], value['native_stop_c']), (92, 92))
             self.assertNotIn('ready', value)
             self.assertIsNone(read_temperature(path, 'boot-two', stamp+.5))
             self.assertIsNone(read_temperature(path, 'boot-one', stamp+2.01))

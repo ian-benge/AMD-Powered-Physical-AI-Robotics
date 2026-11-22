@@ -36,6 +36,15 @@ class GoalGeometryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             check_path(grid, [(0., 0., 0.), (1., 0., 0.)], (0., 0., 0.), (1., 0., 0.))
 
+    def test_batched_path_check_catches_unknown_during_an_in_place_turn(self):
+        grid=Grid(np.zeros((240,240),dtype=np.int8),.025,-3.,-3.)
+        start,end=(0.,0.,0.),(0.,0.,math.pi/2)
+        grid.data[grid.cell(-.26,-.22)]=-1
+        self.assertTrue(footprint_clear(grid,*start))
+        self.assertTrue(footprint_clear(grid,*end))
+        with self.assertRaisesRegex(ValueError,'hazardous or unknown ground'):
+            check_path(grid,[start,end],start,end)
+
     def test_new_hazard_overrides_old_free_and_reprojects_after_correction(self):
         grid = self.grid()
         observed = np.array([[.5, 0., 0.]])

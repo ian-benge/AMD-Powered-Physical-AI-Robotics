@@ -11,7 +11,8 @@ from rover_training.geometry import CLASS_NAMES, class_id_for, nominal_intrinsic
 
 from .asset_cache import default_cache
 from .annotation import Annotator
-from .candidates import NOTES, add_candidates, paint_procedural_ground, write_candidate_materials
+from .candidates import (NOTES, PERIMETER_SIDES, _place, add_candidates, paint_procedural_ground,
+                         write_candidate_materials)
 from .common import digest, quaternion, read_config, require_label_schema, rotation, split_for_seed, write_json
 from .dust import bake_scene_dust
 from .ground import composite_ground
@@ -19,7 +20,7 @@ from .framing import configured_extrinsics, planning_size_guard, projected_targe
 from .planning import ViewPlanningError, class_coverage, class_view_schedule, targets_for_class
 from .meshes import build_ground, build_library, read_collada, write_dae
 from .terrain import Terrain, generate_terrain
-from .reachability import LayoutError, PROFILE, validate_layout
+from .reachability import LayoutError, PROFILE, connected_staging_centers, validate_layout
 from .environment_v2 import is_v2, stream, target_names, export_class_id, SUNLIGHT
 
 WORLD_NAME = 'mars_training'
@@ -91,9 +92,9 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt,
         # visual vertices. Placement/route clearance must enclose both.
         geometry = {a['id']:np.vstack([geometry[a['id']],
                      read_collada(root/a['collision'],normalize=False)[0]]) for a in pool}
-    for index in range(count):
-        shape_rng=stream(layout_seed,'shape-'+str(index)) if v2 else rng
-        pose_rng=stream(layout_seed,'orientation-'+str(index)) if v2 else rng
+    regions = []
+
+    def add_rock(name, rng, shape_rng, pose_rng, perimeter_side=None):
         asset = pool[int(shape_rng.randint(len(pool)))]
         sampling = shape_rng.random_sample() < rc['sampling_probability']
         diameter = float(shape_rng.uniform(*(rc['sampling_size_m'] if sampling else rc['obstacle_size_m'])))
@@ -102,19 +103,23 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt,
         points = geometry[asset['id']] @ rotation(rpy).T * diameter
         radius = float(np.linalg.norm(points[:, :2], axis=1).max())
         xy = None
-        for _ in range(600):
-            candidate = (clusters[int(rng.randint(len(clusters)))] + rng.normal(0, .7, 2)
-                         if rng.random_sample() < rc['cluster_probability'] else rng.uniform(-size*.43, size*.43, 2))
-            if max(abs(candidate)) + radius > size/2-.4:
-                continue
-            if np.linalg.norm(candidate) < config['terrain']['spawn_clearance_m'] + radius + .3:
-                continue
-            if any(np.linalg.norm(candidate-np.asarray(o['xyz'][:2])) < radius+o['radius_m']+rc['clearance_m'] for o in objects):
-                continue
-            if np.linalg.norm(driveable.gradient(*candidate)) > math.tan(math.radians(config['terrain']['max_slope_deg'])):
-                continue
-            xy = candidate
-            break
+        if perimeter_side:
+            occupied=[(np.asarray(obj['xyz'][:2]),obj['radius_m']) for obj in objects+regions]
+            xy=_place(rng,field,driveable,config,occupied,radius,perimeter_side=perimeter_side)
+        else:
+            for _ in range(600):
+                candidate = (clusters[int(rng.randint(len(clusters)))] + rng.normal(0, .7, 2)
+                             if rng.random_sample() < rc['cluster_probability'] else rng.uniform(-size*.43, size*.43, 2))
+                if max(abs(candidate)) + radius > size/2-.4:
+                    continue
+                if np.linalg.norm(candidate) < config['terrain']['spawn_clearance_m'] + radius + .3:
+                    continue
+                if any(np.linalg.norm(candidate-np.asarray(o['xyz'][:2])) < radius+o['radius_m']+rc['clearance_m'] for o in objects):
+                    continue
+                if np.linalg.norm(driveable.gradient(*candidate)) > math.tan(math.radians(config['terrain']['max_slope_deg'])):
+                    continue
+                xy = candidate
+                break
         if xy is None:
             raise LayoutError('Placement constraints could not be met; reduce rock count or sizes')
         # Lowest support contact against the full sampled footprint. Burial is
@@ -125,17 +130,46 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt,
         z = support - burial*float(np.ptp(points[:,2]))
         shade = rng.uniform(.72,1.0)
         color = (np.array([1., rng.uniform(.82,1.), rng.uniform(.7,.95)])*shade).tolist()
-        objects.append({'name': f'rock_{index:03d}', 'asset_id': asset['id'], 'xyz': [float(xy[0]),float(xy[1]),z],
+        objects.append({'name': name, 'asset_id': asset['id'], 'xyz': [float(xy[0]),float(xy[1]),z],
                         'rpy': rpy, 'scale': diameter, 'size_class': 'sampling' if sampling else 'obstacle',
                         'radius_m': radius, 'burial_fraction': burial, 'burial_m': support-z, 'color': color})
-    regions = []
+    for index in range(count):
+        shape_rng=stream(layout_seed,'shape-'+str(index)) if v2 else rng
+        pose_rng=stream(layout_seed,'orientation-'+str(index)) if v2 else rng
+        add_rock(f'rock_{index:03d}',rng,shape_rng,pose_rng)
     if not empty and config.get('candidates', {}).get('enabled'):
         add_candidates(stream(layout_seed,'candidates') if v2 else rng, config, field, driveable, assets, root, objects, regions, folder,
                        allowed_categories={'pale_stone'} if rocks_only else None)
     if v2:
-        write_json(folder/'layout-attempts'/f'attempt-{layout_attempt:02d}.json',dict(layout_seed=layout_seed,
-            terrain=terrain,objects=objects,regions=regions))
+        layout_path=folder/'layout-attempts'/f'attempt-{layout_attempt:02d}.json'
+        write_json(layout_path,dict(layout_seed=layout_seed,terrain=terrain,objects=objects,regions=regions))
     reachability=validate_layout(field,objects,regions,version=2 if v2 else 1,background=empty) if reachable else None
+    if v2 and config['terrain'].get('perimeter_objects') and not (empty or rocks_only):
+        # Keep the accepted central layout and retry only the added perimeter.
+        base_objects,base_regions=len(objects),len(regions)
+        edge_config=dict(config,candidates=dict(config['candidates'],silica_count=(1,1),sulfur_count=(1,1),
+                                                cheyava_count=(1,1)))
+        samples={'east':'sulfur_rock','west':'cheyava_rock','north':'silica_soil','south':'silica_soil'}
+        for retry in range(8):
+            del objects[base_objects:]
+            del regions[base_regions:]
+            perimeter_sites=[]
+            try:
+                for side in PERIMETER_SIDES:
+                    edge_rng=stream(layout_seed,f'perimeter-{side}-{retry}')
+                    for index in range(2):
+                        add_rock(f'perimeter_{side}_rock_{index:03d}',edge_rng,edge_rng,edge_rng,side)
+                    staging=connected_staging_centers(field,objects) if retry>=4 else None
+                    object_start,region_start=len(objects),len(regions)
+                    add_candidates(edge_rng,edge_config,field,driveable,assets,root,objects,regions,folder,
+                                   allowed_categories={samples[side]},perimeter_side=side,staging_centers=staging)
+                    perimeter_sites.extend(objects[object_start:]+regions[region_start:])
+                reachability=validate_layout(field,objects,regions,version=2,perimeter_sites=perimeter_sites)
+                break
+            except LayoutError as error:
+                if retry==7:
+                    raise ValueError('Could not add a reachable perimeter to the accepted layout: '+str(error)) from error
+        write_json(layout_path,dict(layout_seed=layout_seed,terrain=terrain,objects=objects,regions=regions))
     geometry=dict(seed=seed,layout_seed=layout_seed,layout_attempt=layout_attempt,
                   config_sha256=config_hash,terrain=terrain,objects=objects,regions=regions)
     geometry_sha256=digest(geometry)
@@ -293,6 +327,12 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt,
         environment_recipe=dict(version=2,density=config['terrain']['density'],sunlight=config['terrain']['sunlight'],
             streams=['placement','shape','orientation','candidates','views','materials','dust','lighting'],material_seed=material_seed,
             reserved_family=split+':seed_'+str(seed),scene_group='seed_'+str(seed)))
+    if v2 and config['terrain'].get('sample_site_recipe'):
+        scene['environment_recipe']['sample_site_recipe'] = config['terrain']['sample_site_recipe']
+    if v2 and config['terrain'].get('surface_style'):
+        scene['environment_recipe']['surface_style'] = config['terrain']['surface_style']
+    if v2 and config['terrain'].get('perimeter_objects'):
+        scene['environment_recipe']['perimeter_objects']=True
     if config['capture'].get('target_class_views'):
         scene['view_planning'] = {'policy':'class_quotas_v1','layout_seed':layout_seed,'layout_attempt':layout_attempt}
         coverage = class_coverage([scene])

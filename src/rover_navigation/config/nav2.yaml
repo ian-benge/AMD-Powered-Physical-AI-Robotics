@@ -23,8 +23,11 @@ controller_server:
     goal_checker_plugins: [goal_checker]
     controller_plugins: [FollowPath]
     progress_checker:
-      plugin: nav2_controller::SimpleProgressChecker
+      # A return can start with an in-place turn. Count measured rotation as
+      # progress while retaining the translation and no-motion timeout limits.
+      plugin: nav2_controller::PoseProgressChecker
       required_movement_radius: 0.10
+      required_movement_angle: 0.50
       movement_time_allowance: 20.0
     goal_checker:
       plugin: nav2_controller::StoppedGoalChecker

@@ -25,33 +25,24 @@ The versioned 40 x 40 m environment adds a continuous 20 m apron, larger maps, s
 
 Offline geometry, compatibility, texture allocation and actual CPU/ROCm mapping checks passed. The recorded sparse run reached 13.109 m along an axis and returned within 0.677 m of launch, with reviewed ground error below the retained 15 mm bound. Its p95 local-publication latency was **267.73 ms**, above the **200 ms** target. The subsequent live optimization, remaining standard/cluttered drives and recorded progressive speed stages remain unqualified. Smooth operator observation does not close those gates. Historical cooldown-monitoring gaps remain documented.
 
-## Autonomous demonstration: implemented, not accepted
+## Autonomous demonstration in attended testing
 
-The separate candidate implements fresh-map autonomous exploration, a budgeted
-first return, detected-soil or map-click target selection, preview/approval,
-travel, ten seconds of simulated collection, and automatic return with a sample
-record. It adds route/trail layers, mission status and a typed command service.
-Replay, browser and real ROS interface checks support the implementation; they
-do not establish successful end-to-end operation. [Mission guide](AUTONOMOUS_DEMO_GUIDE.md).
+V50 plans a 25-minute survey at 0.15 m/s and reserves enough time for the first
+home return. The operator selects a sample site, reviews both routes and
+approves the departure. After simulated collection, the operator requests the
+second return. The dashboard shows coverage, confirmed objects, the checked
+route and mission progress. [Mission guide](AUTONOMOUS_DEMO_GUIDE.md).
 
-The first real autonomous rehearsal froze during the first return after 3.443 m
-of estimated travel. The protected logs establish an unclean interruption but no
-initiating cause. There is no successful home return, sample delivery or accepted
-cycle. [Freeze investigation](AUTONOMOUS_DEMO_FREEZE_20261110.md).
+Short rehearsals verified home arrival. The longest V49 survey measured
+536 m² of the 40 × 40 m operating area and reached 30 frontiers before its
+thermal stop at 14:25. An isolated installed ROS fixture verified simulated
+sample delivery at home. The V50 cutoff of 92°C passed offline boundary
+checks. [Attended and offline evidence](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v49-long-survey-and-sampling-demo).
 
-The later GUI-off candidate removes continuous exterior-window rendering while
-retaining 15 Hz Ogre RGB-D. Its five-minute stationary check recorded mean Tctl
-80.82°C, peak 83.125°C, worst reported rolling publication p95 165.65 ms and
-reported median RTF 0.996. It did not meet the sustained-below-80°C target or
-establish a matched cooling benefit. An initial odometry-fault latch was retained.
-[Thermal results and plots](AUTONOMOUS_DEMO_BROWSER_PROFILE.md).
-
-Next steps are platform stability and startup investigation, thermal margin,
-unseen-scene detector review, then fresh bounded exploration/return and sampling
-cycles. Complete the mission guide's speed, drift, contact, recording and variation
-gates before acceptance. Simulated collection remains a timed event; there is no
-physical arm or material-transfer claim. The [AMD testing guide](AMD_TESTING_GUIDE.md)
-provides the current reproduction and issue matrix.
+The next milestone is an attended V50 survey and sample trip with both home
+stops, a delivered sample record and a reviewed thermal trace. Subsequent
+checks cover startup across terrain types, localization drift, wheel contact,
+other scene densities, and performance with demo recording active.
 
 ## Later milestones
 
