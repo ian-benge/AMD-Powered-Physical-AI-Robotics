@@ -29,6 +29,9 @@ Start with [Getting started](GETTING_STARTED.md), [Architecture](ARCHITECTURE.md
 | Browser assessment thermal stop | [Repair and bounded live verification](CAPTURE5000_BROWSER_THERMAL_FIX.md) |
 | Autonomous exploration and simulated sampling candidate | [Operator guide and pending acceptance gates](AUTONOMOUS_DEMO_GUIDE.md), [November 10 freeze investigation](AUTONOMOUS_DEMO_FREEZE_20261110.md) |
 | Autonomous browser profile with the Gazebo window disabled | [Bounded inspection viewer, measured temperature/timing and limits](AUTONOMOUS_DEMO_BROWSER_PROFILE.md) |
+| Current Halo survey and sampling demo | [V50 operator commands](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v50-thermal-cutoff-and-run-commands), [attended results](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v49-long-survey-and-sampling-demo) |
+| November 17 GPU repair | [Incident evidence, isolated candidate and hardware test results](HALO_GPU_REPAIR_20261117.md) |
+| November 17 speed progression | [Fresh monitoring and 0.10 m/s qualification status](AUTONOMOUS_010_QUALIFICATION_20261117.md) |
 | November source and deployment evidence | [Development evidence](../evidence/development-20261107/README.md) |
 | Original laptop webcam prototype | [Webcam example](../examples/webcam/README.md) |
 

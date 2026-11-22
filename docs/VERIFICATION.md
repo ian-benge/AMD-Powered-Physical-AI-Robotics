@@ -11,6 +11,21 @@ python scripts/run_checks.py --output-dir outputs/source-checks
 
 Suites run in separate Python processes to isolate ROS test doubles. GitHub Actions runs the CPU suites on Linux and Windows plus six JavaScript browser harnesses. Real ROCm execution tests skip without compatible hardware; the ROS build workflow compiles six integrated packages in Docker, including the typed demo interface, and checks the real HTTP/ROS service and best-effort odometry without a simulator.
 
+## November 22 survey candidate
+
+The publication check ran **890 source tests with 5 hardware/OS skips**
+across six suites in a Linux container. Six browser harnesses also passed.
+A fresh build compiled all six ROS packages and verified the installed
+demo service, best-effort odometry, heartbeat-loss stop, and refusal to
+drive with missing sensors.
+
+The V49 attended surveys reached 33.5% and 31.7% measured coverage before
+thermal shutdown. Bounded rehearsals verified home arrival, and the isolated
+installed ROS replay verified recovery, both home stops and simulated
+sample delivery. V50 accepts Tctl below 92°C and stops at 92°C in offline
+boundary checks. Full attended survey and sample delivery under V50 are
+pending. [Survey results and operating limits](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v49-long-survey-and-sampling-demo).
+
 ## November 11 AMD handoff
 
 The [testing guide](AMD_TESTING_GUIDE.md) is the current reproduction entry point.

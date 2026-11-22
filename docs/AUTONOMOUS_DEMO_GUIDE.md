@@ -1,15 +1,18 @@
 # Autonomous exploration and simulated sampling
 
-Status: implementation and offline verification in progress. This is a separate
-candidate; no successful autonomous demonstration or endurance qualification is
-claimed. The accepted assessment, 20 m rollback launcher and saved evidence stay
-available. Collection remains simulated; there is no arm or material transfer.
+For the current Halo demo, use the
+[V50 survey commands](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v50-thermal-cutoff-and-run-commands).
+
+V50 is staged for attended survey testing. Prior rehearsals verified home
+arrival, and installed ROS replay verified simulated sample delivery. The
+next live milestone is a full survey, sample trip and verified second home
+stop. [Survey results](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v49-long-survey-and-sampling-demo).
 
 **November 10 incident:** the first v11 autonomous rehearsal froze during its
 first return. Its shutdown was unclean and the initiating cause is unresolved.
 See the [freeze investigation](AUTONOMOUS_DEMO_FREEZE_20261110.md) before using
-the launch instructions below. No successful autonomous cycle or 0.10 m/s
-qualification is established. Remote desktop access has been restored.
+the historical launch instructions below. Later bounded movement results
+appear in the [planner rehearsal report](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md).
 
 **November 10 thermal isolation:** a separate
 [browser profile with the Gazebo window disabled](AUTONOMOUS_DEMO_BROWSER_PROFILE.md)
@@ -30,27 +33,123 @@ its first return. No simulator geometry or truth poses feed mission decisions.
 At home the guard stops and disarms. Select a confirmed pale-soil site or click
 measured safe ground. A map click means **operator-selected**, without a material
 claim. Preview the outward/return routes and stopping pose; approve within 30 s.
-Approval covers travel, ten uninterrupted stationary seconds of simulated
-collection, and the second return. The sample remains undelivered until home.
+Approval starts travel to the checked stopping pose. The rover records ten
+seconds of stationary simulated collection, then waits for **Return home**.
+Delivery is recorded at the verified second home stop.
 
 Stop, takeover, contact, stale localization/sensors, browser heartbeat loss or a
 navigation failure cancels the mission. Restart establishes a new mission and
 clears approvals. A stopped mission cannot silently resume.
+
+### Object-aware rehearsal on Halo
+
+The staged `runtime-v28` adds confirmed rocks and crystals to the local and
+global navigation grids. The obstacle margin includes estimated size, position
+uncertainty and 10 cm of extra clearance. Nav2 plans around these cells, and the
+motion guard stops if the rover's predicted footprint enters them. Selecting an
+object for sampling plans to a nearby safe stopping pose. Collection is simulated
+and still requires the round-trip preview and explicit approval.
+
+Supporting views can be 18 cm apart in the demo, down from 20 cm. Confirmation
+still requires three views plus the existing class and depth checks. The map
+legend lists the class colors. Hover or focus an object marker to see its class,
+ID and supporting view count. Enable **Tentative objects** to see hollow markers
+while evidence is still accumulating.
+
+Start each of these commands in a separate Halo desktop terminal. Wait for
+repeating capture health records before starting temperatures and NPU. Wait for
+the NPU to report ready before starting terrain.
+
+```bash
+# Terminal 1
+~/bin/halo-rover capture
+# Terminal 2
+~/bin/halo-rover temps
+# Terminal 3
+~/bin/halo-rover npu
+```
+
+Start terrain after the native prelaunch temperature check passes (at or below
+70°C for 30 seconds).
+
+```bash
+# Terminal 4
+halo_context=$(python3 -I /home/ian/capstone-training/rover-sim/manage.py context) &&
+eval "$halo_context" &&
+python3 -I "$SIM_KIT/trial.py" "$SIM_LABEL" cooldown --cooldown-phase terrain &&
+bash /home/ian/capstone-training/rover-navigation/navigation_sessions/autonomous-demo-20261109/gpu-repair-20261117/terrain-sdma-off-v2/start_terrain.sh
+```
+
+Wait for `ENVIRONMENT_V2_TERRAIN_READY`, then launch the sparse rehearsal at
+0.05 m/s. Open the [Halo dashboard](http://127.0.0.1:8774) and wait for the
+live camera before running the ten-second exterior inspection.
+
+```bash
+# Terminal 5
+bash /home/ian/capstone-training/rover-navigation/navigation_sessions/autonomous-demo-20261109/runtime-v28/start_autonomous_demo.sh 1 rehearsal 0.05
+# Terminal 6, after the live camera is ready
+bash /home/ian/capstone-training/rover-navigation/navigation_sessions/autonomous-demo-20261109/runtime-v28/view_autonomous_demo.sh 10
+```
+
+Once the viewer closes, confirm the clear launch area. Start exploration as soon
+as the dashboard enables **Start autonomous exploration**. The v28 rehearsal
+uses live navigation readiness in place of the five-minute stationary mapping
+hold. Keep the dashboard visible for the operator heartbeat.
+
+Watch for a confirmed object and a route that passes it with clearance. A run
+without a relevant object encounter verifies exploration and return only. Click
+**Return now** after a frontier visit or after roughly 90 seconds for a short
+retest. After verified home arrival, select a confirmed object and inspect the
+stopping pose in **Preview sample round trip**. If the preview shows safe
+clearance, **Approve sample trip & automatic return** tests the simulated
+collection and second home return.
+
+Press **Stop**, then Ctrl+C the simulation and terrain terminals. Run the
+following in a spare terminal before closing capture or temperatures.
+
+```bash
+~/bin/halo-rover stop && ~/bin/halo-rover finish
+```
+
+After protected finish and its cooldown complete, Ctrl+C the capture and
+temperature terminals.
+
+The Halo finish command displays `MANUAL_SESSION_CLOSED_CLEANLY` for a clean
+short rehearsal. The protected endurance receipt remains in the case directory.
+See the dashboard or demo event log for the mission result.
+
+The staged release passed the navigation tests, ROS service smoke probe and all
+three scene launch checks. Live avoidance and a complete object sampling trip
+are awaiting attended verification.
+
+### V50 survey workflow
+
+The survey aims for 25 minutes of measured-ground mapping, with 32 minutes
+available through the first home arrival. The planner evaluates reachable
+frontiers and returns earlier when the safe return reserve is needed or no
+checked frontier remains. The dashboard reports measured coverage and the
+reason for ending exploration.
+
+At the first home stop, select a confirmed sample site and review the
+outbound and return routes. Approve the drive, wait for the simulated
+collection result, and choose **Return home**. The checked departure
+includes a 0.50 m reverse before the rover turns.
 
 ## Retained profile and limits
 
 | Setting | Candidate behavior |
 |---|---|
 | Environment | Frozen 40 × 40 m sparse scene; standard/cluttered variations |
-| Camera | Ogre, 960 × 540, 15 Hz, 0.40 rad downward tilt, RGB 20 m/depth 8 m |
+| Camera | V50 Ogre RGB-D at 960 × 540 and 8 Hz, with 0.40 rad downward tilt and 8 m usable depth |
 | Detector | Frozen epoch-22 A16W8 NPU candidate; baseline retained separately |
 | Terrain | Float64, HIP flags 4, unchanged hazard/clearing rules |
-| Movement | Start at 0.05 m/s; 0.10 m/s requires a reviewed 0.05 qualification receipt; turn cap 0.30 rad/s |
-| Full profile | 30 min overall; exploration + first return 15 min; selection 5 min; sampling round trip 8 min |
-| Rehearsal | 12 min overall; exploration + return 6 min; selection 1 min; sampling 4 min |
+| Movement | V50 on Halo defaults to 0.15 m/s. The turn cap is 0.30 rad/s. |
+| Full profile | 30 min overall, exploration and first return up to 20 min, selection 2 min, sampling round trip 8 min |
+| Rehearsal | 12 min overall, exploration and first return up to 6 min, selection 1 min, sampling round trip 4 min |
+| Survey | 42 min overall, mapping up to 25 min, first home stop by 32 min, selection 2 min, sampling round trip 8 min plus unused first-return time |
 | Starter | 45 min including setup and shutdown |
 | Browser lease | Operator page sends 200 ms heartbeats; >1 s without renewal requests Stop |
-| Temperature | Qualification stops at 87°C; native 90°C protection is retained |
+| Temperature | V50 uses a 92°C Tctl cutoff for demo workloads and native capture. |
 
 Coverage is depth-supported area inside the operating map. Launch-only clearance,
 unknown space and hazards are reported separately. It is not complete coverage
