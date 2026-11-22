@@ -57,6 +57,32 @@ class ControlsTests(unittest.TestCase):
         self.assertFalse(node.latest['camera_health']['data']['available'])
         self.assertNotIn('status', node.latest)
 
+    def test_demo_rasters_follow_dashboard_cadence_without_encoding_intermediate_maps(self):
+        config = self.module.Controls()
+        config.demo_mode = True
+        stamp = SimpleNamespace(sec=1, nanosec=0)
+        header = SimpleNamespace(frame_id='map', stamp=stamp)
+        info = SimpleNamespace(height=2, width=2, resolution=.05,
+                               origin=SimpleNamespace(position=SimpleNamespace(x=0., y=0.)))
+        grid = SimpleNamespace(header=header, info=info, data=[0, 0, -1, 100])
+        reasons = SimpleNamespace(header=header, info=info, data=[0, 0, -1, 2])
+        with patch.object(self.module.time, 'monotonic', return_value=10.) as clock, \
+                patch.object(self.module.cv2, 'imencode', wraps=self.module.cv2.imencode) as encode:
+            config.terrain(grid)
+            config.terrain_reasons(reasons)
+            stamp.sec = 2
+            clock.return_value = 10.5
+            config.terrain(grid)
+            config.terrain_reasons(reasons)
+            self.assertEqual(encode.call_count, 2)
+            self.assertEqual(config.latest['map']['data']['stamp'], 1.)
+            clock.return_value = 11.1
+            config.terrain(grid)
+            config.terrain_reasons(reasons)
+            self.assertEqual(encode.call_count, 4)
+            self.assertEqual(config.latest['map']['data']['stamp'], 2.)
+            self.assertEqual(config.latest['diagnostics']['data']['slope_cells'], 1)
+
     def test_http_stop_routes_to_service_and_cross_origin_start_is_rejected(self):
         node = MagicMock()
         node.snapshot.return_value = dict(status=dict(mode='stopped'))
@@ -102,3 +128,20 @@ class ControlsTests(unittest.TestCase):
         self.assertTrue(node.drive(dict(session=token, sequence=1, linear=0., angular=0.))['success'])
         node.snapshot.assert_not_called()
         node.manual_pub.publish.assert_called_once()
+
+    def test_slow_heartbeat_relay_releases_its_future_without_issuing_motion_commands(self):
+        node = self.module.Controls()
+        node.demo_mode = True
+        node.session = 'scene'
+        node.demo_type = SimpleNamespace(Request=SimpleNamespace)
+        node.demo_client = MagicMock()
+        node.demo_client.service_is_ready.return_value = True
+        wait = MagicMock()
+        wait.wait.return_value = False
+        with patch.object(self.module.threading, 'Event', return_value=wait):
+            with self.assertRaisesRegex(ValueError, 'heartbeat relay timed out'):
+                node.demo_command('heartbeat', dict(session_id='scene', mission_id='mission',
+                                                    client_token='operator-owned-token', sequence=1))
+        self.assertLess(wait.wait.call_args.args[0], .25)
+        node.demo_client.remove_pending_request.assert_called_once_with(node.demo_client.call_async.return_value)
+        node.service_clients['stop'].call_async.assert_not_called()

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-SECONDS_TO_VIEW=${1:-60}
+SECONDS_TO_VIEW=${1:-10}
 [[ $# -le 1 && "$SECONDS_TO_VIEW" =~ ^[0-9]+$ ]] || { echo 'Usage: view_autonomous_demo.sh [5..90 seconds]'; exit 2; }
 python3 -B "$ROOT/autonomous_demo_assess.py" --check
 eval "$(python3 -I /home/ian/capstone-training/rover-sim/manage.py context)"

@@ -33,7 +33,7 @@ def export_class_id(obj):
     return class_id_for(obj.get('class_name', 'rock'))
 
 
-def configuration(source, density=None, sunlight=None, manual=False):
+def configuration(source, density=None, sunlight=None, manual=False, sample_site_recipe=None):
     from .common import config_path
     result = deepcopy(source)
     updates = json.loads(config_path().with_name('mixed_reachable_v2.json').read_text())
@@ -43,6 +43,15 @@ def configuration(source, density=None, sunlight=None, manual=False):
     t['density'] = density or (source['terrain'].get('density') if is_v2(source) else None) or 'standard'
     t['sunlight'] = sunlight or (source['terrain'].get('sunlight') if is_v2(source) else None) or 'medium'
     result['rocks']['count_range'] = list(DENSITIES[t['density']])
+    recipe = sample_site_recipe or source['terrain'].get('sample_site_recipe', 'standard')
+    if recipe == 'rare_demo_v1':
+        rare = json.loads(config_path().with_name('mixed_reachable_v2_demo_rare.json').read_text())
+        result['candidates'].update(rare['candidates'])
+        t['sample_site_recipe'] = recipe
+    elif recipe == 'standard':
+        t.pop('sample_site_recipe', None)
+    else:
+        raise ValueError('Unknown sample-site recipe')
     if manual:
         result['capture']['views_per_scene'] = 0
         result['capture']['target_class_views'] = {}

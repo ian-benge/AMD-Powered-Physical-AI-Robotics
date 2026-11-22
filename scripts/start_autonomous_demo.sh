@@ -3,10 +3,14 @@ set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 REP=${1:-1}
 PROFILE=${2:-rehearsal}
-SPEED=${3:-0.05}
 MODE=${4:-mission}
-[[ $# -le 4 && "$REP" =~ ^[123]$ && "$PROFILE" =~ ^(rehearsal|full)$ && "$SPEED" =~ ^0\.(05|10)$ && "$MODE" =~ ^(mission|contact)$ ]] || {
-  echo 'Usage: start_autonomous_demo.sh [1|2|3] [rehearsal|full] [0.05|0.10] [mission|contact]'; exit 2;
+if [[ "$MODE" == contact ]]; then
+  SPEED=${3:-0.05}
+else
+  SPEED=${3:-0.15}
+fi
+[[ $# -le 4 && "$REP" =~ ^[123]$ && "$PROFILE" =~ ^(rehearsal|full|survey)$ && "$SPEED" =~ ^0\.(05|10|15)$ && "$MODE" =~ ^(mission|contact)$ ]] || {
+  echo 'Usage: start_autonomous_demo.sh [1|2|3] [rehearsal|full|survey] [0.05|0.10|0.15] [mission|contact]'; exit 2;
 }
 EXTRA=()
 if [[ "$MODE" == contact ]]; then

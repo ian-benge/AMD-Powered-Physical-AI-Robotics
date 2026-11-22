@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Actual ROS constructor/service smoke check, with no sensors or motion publisher."""
+"""Actual ROS constructor, HTTP and operator contact checks with no drive goals."""
 import json
 from pathlib import Path
 import tempfile
 import time
 import threading
 from http.server import ThreadingHTTPServer
+from urllib.error import HTTPError
 from urllib.request import Request,urlopen
 
 import rclpy
@@ -16,6 +17,77 @@ from nav_msgs.msg import Odometry
 from rover_navigation.demo_node import DemoMission
 from rover_navigation_interfaces.srv import DemoCommand
 from rover_navigation.mission_controls import Controls,handler
+
+
+def check_operator_contact(node, executor, port, slow_status, status_waiting, slow_reply, release_status):
+    owner = 'smoke-operator-token'
+
+    def start_fixture():
+        # Exercise the mission deadline without dispatching any Nav2 or drive commands.
+        node.health_details = lambda: dict(healthy=True, checks={}, missing=[])
+        node.odometry_pose = None
+        now = time.monotonic()
+        node.run.start(now, owner, [0., 0., 0.], 0, 0.)
+        node.run.selection_started = node.run.sample_started = now
+        node.run.transition('awaiting_sample_return', now)
+
+    def pulse(sequence, token=owner):
+        request = Request(f'http://127.0.0.1:{port}/demo/heartbeat',
+                          data=json.dumps(dict(session_id='smoke-session', mission_id=node.run.mission_id,
+                                               client_token=token, epoch=0, sequence=sequence)).encode(),
+                          headers={'Content-Type': 'application/json'})
+        try:
+            with urlopen(request, timeout=.25) as reply:
+                return json.load(reply)
+        except HTTPError as error:
+            if error.code != 409:
+                raise
+            with error:
+                return json.load(error)
+
+    def get_status():
+        with urlopen(f'http://127.0.0.1:{port}/status', timeout=5) as reply:
+            json.load(reply)
+
+    slow_status.set()
+    view = threading.Thread(target=get_status, daemon=True)
+    view.start()
+    try:
+        assert status_waiting.wait(2.)
+        fixture = executor.create_task(start_fixture)
+        deadline = time.monotonic() + 2.
+        while not fixture.done() and time.monotonic() < deadline:
+            time.sleep(.01)
+        assert fixture.done()
+        fixture.result()
+
+        receipt = pulse(3)
+        assert receipt['success'] and receipt['mission_id'] == node.run.mission_id, receipt
+        slow_reply.set()
+        try:
+            pulse(4)
+        except TimeoutError:
+            pass
+        else:
+            raise AssertionError('The injected slow heartbeat reply must time out')
+        for sequence in range(5, 18):
+            receipt = pulse(sequence)
+            assert receipt['success'] and view.is_alive(), receipt
+            assert node.run.phase == 'awaiting_sample_return'
+            time.sleep(.15)
+        assert not pulse(18, 'different-operator-token')['success']
+        assert node.run.heartbeat_sequence == 17
+        last_heartbeat = node.run.heartbeat_wall
+        while node.run.phase != 'stopped' and time.monotonic()-last_heartbeat < 1.4:
+            time.sleep(.01)
+        elapsed = time.monotonic()-last_heartbeat
+        assert node.run.reason == 'Operator heartbeat lost' and 1. <= elapsed < 1.4, (node.run.reason, elapsed)
+        assert not pulse(19)['success']
+        assert node.goal is None and not node.pending
+        print(f'ACTUAL_ROS_HEARTBEAT_LOAD_PASS contact loss stopped in {elapsed:.3f} s, no drive goals')
+    finally:
+        release_status.set()
+        view.join(timeout=5.)
 
 
 def main():
@@ -55,7 +127,22 @@ def main():
             assert node.health_details()['checks']['estimated_odometry']
             print('ACTUAL_ROS_BEST_EFFORT_ODOMETRY_RECEIVED_PASS')
             controls=Controls();executor.add_node(controls)
-            server=ThreadingHTTPServer(('127.0.0.1',0),handler(controls))
+            slow_status, status_waiting, slow_reply, release_status = (threading.Event() for _ in range(4))
+
+            class DelayedView(handler(controls)):
+                def do_GET(self):
+                    if self.path == '/status' and slow_status.is_set():
+                        status_waiting.set()
+                        release_status.wait(4.)
+                    super().do_GET()
+
+                def reply(self, status, body, *args, **kwargs):
+                    if self.path == '/demo/heartbeat' and slow_reply.is_set():
+                        slow_reply.clear()
+                        time.sleep(.8)
+                    super().reply(status, body, *args, **kwargs)
+
+            server=ThreadingHTTPServer(('127.0.0.1',0),DelayedView)
             thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
             spin=threading.Thread(target=executor.spin,daemon=True);spin.start()
             try:
@@ -64,6 +151,8 @@ def main():
                         client_token='smoke-operator-token',epoch=0,sequence=2)).encode(),
                     headers={'Content-Type':'application/json'})
                 with urlopen(request,timeout=5) as reply:assert json.load(reply)['success']
+                check_operator_contact(node, executor, server.server_port,
+                                       slow_status, status_waiting, slow_reply, release_status)
             finally:
                 server.shutdown();server.server_close();executor.shutdown();spin.join(timeout=2)
                 controls.destroy_node()

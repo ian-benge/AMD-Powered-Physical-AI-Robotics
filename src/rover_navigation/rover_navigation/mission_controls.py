@@ -84,8 +84,13 @@ class Controls(Node):
         with self.lock:
             self.sim_clock = stamp_seconds(msg.clock), time.monotonic()
 
+    def raster_due(self, name):
+        # The demo page requests a raster once per second. Navigation receives its own maps.
+        previous = self.latest.get(name)
+        return not self.demo_mode or previous is None or time.monotonic() - previous['received'] >= 1.
+
     def terrain_reasons(self, msg):
-        if msg.header.frame_id != 'map':
+        if msg.header.frame_id != 'map' or not self.raster_due('diagnostics'):
             return
         data = np.asarray(msg.data, dtype=np.int16).reshape(msg.info.height, msg.info.width)[::-1]
         ok, encoded = cv2.imencode('.png', reason_colors(data), [cv2.IMWRITE_PNG_COMPRESSION, 1])
@@ -114,6 +119,8 @@ class Controls(Node):
             self.annotated = msg, time.monotonic()
 
     def terrain(self, msg):
+        if not self.raster_due('map'):
+            return
         data = np.asarray(msg.data, dtype=np.int16).reshape(msg.info.height, msg.info.width)[::-1]
         rgb = np.full((*data.shape, 3), (99, 85, 74), dtype=np.uint8)  # OpenCV BGR: gray-blue unknown.
         rgb[(data >= 0) & (data < 90)] = (200, 223, 203)
@@ -213,7 +220,10 @@ class Controls(Node):
 
     def demo_command(self,command,data):
         if not getattr(self,'demo_mode',False):raise ValueError('Demo workflow is not enabled')
-        allowed={'start-exploration':'start_exploration','return-now':'return_now','select-target':'select_target',
+        allowed={'start-exploration':'start_exploration','resume-exploration':'resume_exploration',
+                 'alternate-exploration':'alternate_exploration','alternate-sample':'alternate_sample',
+                 'retreat-and-replan':'retreat_and_replan',
+                 'return-now':'return_now','select-target':'select_target',
                  'preview-sample':'preview_sample','start-sample':'start_sample','heartbeat':'heartbeat'}
         if command not in allowed:raise ValueError('Unknown demo action')
         fields={'session_id','mission_id','client_token','target_id','preview_id','epoch','sequence','x','y'}
@@ -237,8 +247,12 @@ class Controls(Node):
         if not self.demo_client.service_is_ready():raise ValueError('Demo command service unavailable')
         done=threading.Event();future=self.demo_client.call_async(req)
         future.add_done_callback(lambda _:done.set())
-        if not done.wait(28. if command=='preview-sample' else 5.):
-            if command!='heartbeat':self.service_clients['stop'].call_async(Trigger.Request())
+        timeout = {'heartbeat': .22, 'preview-sample': 28., 'alternate-sample': 28.}.get(command, 5.)
+        if not done.wait(timeout):
+            if command=='heartbeat':
+                self.demo_client.remove_pending_request(future)
+                raise ValueError('Operator heartbeat relay timed out')
+            self.service_clients['stop'].call_async(Trigger.Request())
             raise ValueError('Demo request timed out; motion actions require a new explicit review')
         response=future.result()
         return dict(success=response.success,message=response.message,

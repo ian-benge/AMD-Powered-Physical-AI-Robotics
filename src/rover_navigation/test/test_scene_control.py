@@ -145,6 +145,8 @@ class SceneControlTests(unittest.TestCase):
         def generated(args,**kwargs):
             self.assertIn('PYTHONPATH=/work/source/src/rover_navigation:/work/source/src/mars_training_environment:/work/source/src/rover_training',args)
             self.assertEqual(kwargs['timeout'],600.)
+            self.assertEqual(args[args.index('--cpus')+1], '2')
+            self.assertIn('OMP_NUM_THREADS=2', args)
             dest=self.root/'navigation_sessions/generated-scenes/v2-generation/scenes/scene_1000017'
             dest.mkdir(parents=True);(dest/'scene.json').write_text('{}')
         with patch('rover_navigation.scene_control.secrets.randbelow',return_value=17), \

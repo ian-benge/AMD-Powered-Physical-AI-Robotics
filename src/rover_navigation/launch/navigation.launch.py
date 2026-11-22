@@ -31,9 +31,11 @@ def setup(context):
     pitch = float(LaunchConfiguration('camera_pitch').perform(context))
     engine = LaunchConfiguration('sensor_render_engine').perform(context)
     rgb_far = float(LaunchConfiguration('camera_rgb_far').perform(context))
+    fixture = LaunchConfiguration('fixture').perform(context)
     camera_rate = float(LaunchConfiguration('camera_rate_hz').perform(context))
-    if not math.isfinite(camera_rate) or not 10 <= camera_rate <= 30:
-        raise ValueError('camera_rate_hz must be finite and in [10, 30] Hz')
+    low_load = camera_rate == 8 and (demo_mode or fixture == 'flat')
+    if not (10 <= camera_rate <= 30 or low_load):
+        raise ValueError('camera_rate_hz must be in [10, 30] Hz or 8 Hz for the demo or flat fixture')
     if not math.isfinite(rgb_far) or not 8 <= rgb_far <= 20:
         raise ValueError('camera_rgb_far must be finite and in [8, 20] metres')
     if engine not in ('ogre2', 'ogre'):
@@ -44,8 +46,10 @@ def setup(context):
         raise ValueError('camera_pitch must be finite and in [0, pi/2) radians')
     if not math.isfinite(speed) or not 0 < speed <= .2:
         raise ValueError('navigation_speed must be in (0, 0.20] m/s')
-    if demo_mode and (speed>.10 or camera_rate!=15 or LaunchConfiguration('database').perform(context)):
-        raise ValueError('Demo requires a fresh map, 15 Hz RGB-D and speed <=0.10 m/s')
+    if demo_mode:
+        from rover_navigation.demo_core import DEMO_MAX_SPEED
+        if speed>DEMO_MAX_SPEED or camera_rate not in (8,10,15) or LaunchConfiguration('database').perform(context):
+            raise ValueError(f'Demo requires a fresh map, 8, 10 or 15 Hz RGB-D and speed <={DEMO_MAX_SPEED:.2f} m/s')
     from rover_navigation.manual_input import ManualInput
     initial=float(LaunchConfiguration('manual_initial_linear_speed').perform(context))
     ManualInput(max_linear=float(LaunchConfiguration('manual_max_linear_speed').perform(context)),
@@ -73,7 +77,6 @@ def setup(context):
     ground_view(scene['config']['camera'])  # validate the complete experiment geometry
     bundle = source.parents[2]
     assets = json.loads((bundle/'assets/catalog.json').read_text())
-    fixture = LaunchConfiguration('fixture').perform(context)
     terrain_collision = LaunchConfiguration('terrain_collision').perform(context)
     if terrain_collision not in ('visual', 'scene'):
         raise ValueError('terrain_collision must be visual or scene')
@@ -104,13 +107,20 @@ def build_nodes(context, scene, run, source, database):
     try: demo_mode = LaunchConfiguration('demo_mode').perform(context) == 'true'
     except KeyError: demo_mode = False
     demo_profile = LaunchConfiguration('demo_profile').perform(context) if demo_mode else 'full'
-    description = robot_description(scene['config'], navigation=True, drive_center_x=DRIVE_CENTER_X)
+    rear_wheel_friction = .25 if demo_mode else None
+    rear_rolling_friction = .80 if demo_mode else None
+    description = robot_description(scene['config'], navigation=True, drive_center_x=DRIVE_CENTER_X,
+                                    rear_wheel_friction=rear_wheel_friction, rear_rolling_friction=rear_rolling_friction)
     (run/'robot.urdf').write_text(description)
     (run/'session.json').write_text(json.dumps(dict(scene=str(source), camera=camera, database=database,
                                                    container_image=os.environ.get('NAV_IMAGE', 'rover-navigation'),
                                                    install_relative=os.environ.get('NAV_INSTALL_REL', 'install_navigation'),
                                                    predicted_ground_view=ground_view(camera),
                                                    drive_center_x=DRIVE_CENTER_X,
+                                                   navigation_map_reference='visual_odometry' if demo_mode else 'slam',
+                                                   slam_graph_enabled=not demo_mode,
+                                                   rear_wheel_friction=rear_wheel_friction,
+                                                   rear_rolling_friction=rear_rolling_friction,
                                                    terrain_collision=LaunchConfiguration('terrain_collision').perform(context),
                                                    terrain_backend=LaunchConfiguration('terrain_backend').perform(context),
                                                    terrain_url=LaunchConfiguration('terrain_url').perform(context),
@@ -150,7 +160,25 @@ def build_nodes(context, scene, run, source, database):
         raise ValueError('Installed Nav2 lacks Jazzy differential-drive lattice primitives')
     params['planner_server']['ros__parameters']['GridBased']['lattice_filepath'] = str(lattice)
     params['bt_navigator']['ros__parameters']['default_nav_to_pose_bt_xml'] = str(share/'config/navigate.xml')
-    params['controller_server']['ros__parameters']['FollowPath']['desired_linear_vel'] = float(LaunchConfiguration('navigation_speed').perform(context))
+    controller = params['controller_server']['ros__parameters']
+    speed = float(LaunchConfiguration('navigation_speed').perform(context))
+    controller['FollowPath']['desired_linear_vel'] = speed
+    if demo_mode:
+        # Reacquire position if uneven ground carries the rover outside XY tolerance.
+        from rover_navigation.demo_core import FRONTIER_ARRIVAL_YAW, REPOSITION_ARRIVAL_YAW
+        controller['FollowPath']['stateful'] = False
+        controller['goal_checker']['stateful'] = False
+        tree=(share/'config/navigate.xml').read_text()
+        for purpose,radius,yaw in (('frontier',.22,FRONTIER_ARRIVAL_YAW),
+                                   ('clearance',.12,REPOSITION_ARRIVAL_YAW)):
+            checker=purpose+'_goal_checker'
+            controller['goal_checker_plugins'].append(checker)
+            # Keep aiming inside the wider mission arrival region. This inner
+            # tolerance keeps controller corrections away from its boundary.
+            controller[checker]=dict(plugin='nav2_controller::SimpleGoalChecker',stateful=False,
+                                     xy_goal_tolerance=radius,yaw_goal_tolerance=yaw)
+            (run/f'{purpose}_navigate.xml').write_text(
+                tree.replace('goal_checker_id="goal_checker"',f'goal_checker_id="{checker}"'))
     front, rear, half = (round(v, 4) for v in FOOTPRINT)
     footprint = json.dumps([[front, half], [front, -half], [rear, -half], [rear, half]])
     params['bt_navigator']['ros__parameters']['robot_base_frame'] = 'drive_center'
@@ -184,19 +212,25 @@ def build_nodes(context, scene, run, source, database):
         'frame_id': 'base_link', 'odom_frame_id': 'odom', 'publish_tf': True,
         'approx_sync': True, 'approx_sync_max_interval': .015,
         'qos': 2, 'qos_camera_info': 2, 'Odom/ResetCountdown': '0'}], remappings=remaps+[('odom', '/odom')])
-    slam = Node(package='rtabmap_slam', executable='rtabmap', namespace='rtabmap', parameters=[sim, {
-        'frame_id': 'base_link', 'odom_frame_id': 'odom', 'map_frame_id': 'map',
-        'subscribe_depth': True, 'approx_sync': True, 'approx_sync_max_interval': .015,
-        'qos_image': 2, 'qos_camera_info': 2,
-        'database_path': str(run/'rtabmap.db'),
-        'Mem/IncrementalMemory': 'false' if database else 'true',
-        'Mem/InitWMWithAllNodes': 'true' if database else 'false',
-        'Grid/FromDepth': 'true', 'Grid/CellSize': '.05', 'Grid/RangeMax': '8.0',
-        'cloud_decimation': 3, 'cloud_voxel_size': .025,
-        'Grid/NormalsSegmentation': 'true'}], remappings=remaps+[('odom', '/odom'), ('grid_map', '/map')])
-    nodes = [gazebo, bridge, rsp, spawn, stamper, vo, slam,
+    nodes = [gazebo, bridge, rsp, spawn, stamper, vo,
              RegisterEventHandler(OnProcessExit(target_action=spawn, on_exit=[jsb])),
              RegisterEventHandler(OnProcessExit(target_action=jsb, on_exit=[wheels]))]
+    if demo_mode:
+        # Demo terrain and object mapping use RGB-D and the continuous odometry origin.
+        nodes.append(Node(package='tf2_ros', executable='static_transform_publisher',
+                          name='demo_navigation_map_anchor', parameters=[sim],
+                          arguments=['--frame-id', 'map', '--child-frame-id', 'odom']))
+    else:
+        nodes.append(Node(package='rtabmap_slam', executable='rtabmap', namespace='rtabmap', parameters=[sim, {
+            'frame_id': 'base_link', 'odom_frame_id': 'odom', 'map_frame_id': 'map', 'publish_tf': True,
+            'subscribe_depth': True, 'approx_sync': True, 'approx_sync_max_interval': .015,
+            'qos_image': 2, 'qos_camera_info': 2,
+            'database_path': str(run/'rtabmap.db'),
+            'Mem/IncrementalMemory': 'false' if database else 'true',
+            'Mem/InitWMWithAllNodes': 'true' if database else 'false',
+            'Grid/FromDepth': 'true', 'Grid/CellSize': '.05', 'Grid/RangeMax': '8.0',
+            'cloud_decimation': 3, 'cloud_voxel_size': .025,
+            'Grid/NormalsSegmentation': 'true'}], remappings=remaps+[('odom', '/odom'), ('grid_map', '/map')]))
     for name in ('terrain', 'motion_guard', 'mission'):
         options = {'budget_seconds': float(LaunchConfiguration('budget_seconds').perform(context)),
                    'navigation_speed': float(LaunchConfiguration('navigation_speed').perform(context)),
@@ -210,9 +244,10 @@ def build_nodes(context, scene, run, source, database):
             options['adaptive_terrain'] = LaunchConfiguration('adaptive_terrain').perform(context) == 'true'
             options['evidence_output'] = str(run/'terrain-evidence-events.jsonl')
         if name=='motion_guard' and demo_mode:
-            options.update(max_linear_speed=.1,max_angular_speed=.3)
+            options.update(max_linear_speed=max(.10,speed),max_angular_speed=.3, fixed_navigation_map=True)
         if name=='mission' and demo_mode:
-            options.update(session=str(run),demo_output=str(run/'demo-events.jsonl'),demo_profile=demo_profile)
+            options.update(session=str(run),demo_output=str(run/'demo-events.jsonl'),demo_profile=demo_profile,
+                           frontier_bt=str(run/'frontier_navigate.xml'),clearance_bt=str(run/'clearance_navigate.xml'))
         nodes.append(Node(package='rover_navigation', executable='demo_mission' if name=='mission' and demo_mode else name,
                           output='screen', parameters=[sim, options]))
     if LaunchConfiguration('rviz').perform(context) == 'true':
@@ -229,7 +264,7 @@ def build_nodes(context, scene, run, source, database):
                                        'max_angular_speed':float(LaunchConfiguration('manual_max_angular_speed').perform(context))}]))
         nodes.append(Node(package='rover_navigation', executable='evaluate', output='screen',
                           parameters=[sim, {'output': str(run/'mission-events.jsonl')}]))
-    if LaunchConfiguration('preview').perform(context) == 'true':
+    if not demo_mode and LaunchConfiguration('preview').perform(context) == 'true':
         # The existing gazebo control mode is camera-only in LiveBridge; no
         # GazeboDrive node is launched here. This viewer never publishes motion.
         nodes.append(Node(package='rover_perception', executable='live_bridge', name='navigation_camera_viewer',

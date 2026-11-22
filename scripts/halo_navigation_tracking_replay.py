@@ -8,7 +8,7 @@ import argparse
 import json
 from pathlib import Path
 
-from rover_navigation.sample_sites import DEFAULTS, SiteStore
+from rover_navigation.sample_sites import DEFAULTS, DEMO_BASELINE_M, SiteStore
 from rover_navigation.tracking_evaluation import reference_matches
 
 
@@ -16,16 +16,18 @@ def replay(events, trial, scene):
     store, frames = None, 0
     positive, negative, rejected_negative = 0, 0, 0
     configuration = None
+    baseline = DEFAULTS['min_baseline_m']
     false_events, duplicate_events, seen_false, seen_duplicate = [], [], set(), set()
     for event in events:
         if event['kind'] == 'configuration':
             configuration = event
-            if event['defaults'] != DEFAULTS:
+            if event['defaults'] not in (DEFAULTS, dict(DEFAULTS, min_baseline_m=DEMO_BASELINE_M)):
                 raise ValueError('Recorded thresholds differ from this replay implementation')
+            baseline = event['defaults']['min_baseline_m']
         if event['kind'] != 'frame':
             continue
         if store is None or store.epoch != event['epoch']:
-            store = SiteStore(epoch=event['epoch'])
+            store = SiteStore(epoch=event['epoch'], min_baseline_m=baseline)
         store.update(event['observations'], event['stamp'], event['observer'], event['camera'][:3],
                      event['eligible_visible_misses'])
         current = [store.export(item) for item in store.objects if item['state'] == 'confirmed']

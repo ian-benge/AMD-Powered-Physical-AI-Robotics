@@ -51,6 +51,8 @@ class GuardAdapterTests(unittest.TestCase):
     def setUp(self):
         self.node = self.module.Guard.__new__(self.module.Guard)
         self.node.gate = SafetyGate()
+        self.node.fixed_navigation_map = False
+        self.node.sample_keepout = None
         self.node.gate.clock(2., 100.)
         self.node.last_odom = self.node.last_grid = -math.inf
         self.node.pose = self.node.grid = None
@@ -71,6 +73,31 @@ class GuardAdapterTests(unittest.TestCase):
                          self.modules['rclpy.qos'].ReliabilityPolicy.BEST_EFFORT)
         self.assertEqual(node.gate.mode, 'stopped')
         self.assertEqual(node.create_timer.call_args.args[0], .05)
+
+    def test_checked_reverse_preserves_sample_and_rear_terrain_clearance(self):
+        for hazard in ('none','sample','unknown'):
+            with self.subTest(hazard=hazard):
+                self.setUp()
+                node=self.node
+                node.set_sample_keepout(types.SimpleNamespace(data=[-.59,0.,.20] if hazard=='sample' else [1.,0.,.2]))
+                self.assertEqual(self.published()['sample_keepout_odom'],node.sample_keepout)
+                self.armed()
+                node.last_mode='autonomous'
+                node.pose=(0.,0.,0.)
+                node.grid=Grid(np.zeros((100,100),np.int8),.05,-2.5,-2.5)
+                if hazard=='unknown':
+                    _,col=node.grid.cell(-.40,0.)
+                    node.grid.data[:,col]=-1
+                node.gate.command('manual',-.5,0.,100.)
+                self.assertEqual(node.gate.commands['manual'][0],0.)
+                node.gate.command('autonomous',-.5,0.,100.)
+                with patch.object(self.module.time,'monotonic',return_value=100.05):
+                    node.tick()
+                expected=-.05 if hazard=='none' else 0.
+                self.assertEqual(node.pub.publish.call_args.args[0].linear.x,expected)
+                if hazard=='sample':
+                    self.assertIn('selected_sample_site_clearance',
+                                  self.published()['fault']['detail']['causes'])
 
     def message(self, stamp=2.):
         return types.SimpleNamespace(header=types.SimpleNamespace(frame_id='odom', stamp=types.SimpleNamespace(
@@ -143,6 +170,24 @@ class GuardAdapterTests(unittest.TestCase):
         self.node.contact(types.SimpleNamespace(contacts=[]))
         self.assertEqual(self.node.gate.mode, 'stopped')
 
+    def test_retreat_select_requires_cleared_contact_and_ignores_forward_commands(self):
+        node=self.armed()
+        node.fixed_navigation_map=True
+        node.contact(types.SimpleNamespace(contacts=[object()]))
+        reply=types.SimpleNamespace(success=False,message='')
+        with patch.object(self.module.time,'monotonic',return_value=100.):
+            self.assertFalse(node.select('retreat',reply).success)
+            node.contact(types.SimpleNamespace(contacts=[]))
+            self.assertTrue(node.select('retreat',reply).success)
+        node.gate.command('autonomous',.10,0.,100.)
+        self.assertEqual(node.gate.output(100.01,lambda *_:True),(0.,0.))
+        node.gate.command('retreat',.10,.20,100.)
+        self.assertEqual(node.gate.output(100.02,lambda *_:True),(0.,0.))
+        node.gate.command('retreat',-.10,.30,100.)
+        self.assertEqual(node.gate.output(100.03,lambda *_:True),(-.05,.25))
+        self.assertEqual(node.gate.output(100.04,lambda *_:False),(0.,0.))
+        self.assertEqual(node.gate.reason,'unsafe_or_unobserved_ground')
+
     def armed(self, transform_stamp=2.):
         node = self.node
         node.tf, node.pub, node.status, node.cancel = MagicMock(), MagicMock(), MagicMock(), MagicMock()
@@ -172,6 +217,24 @@ class GuardAdapterTests(unittest.TestCase):
         status = self.published()
         self.assertEqual(status['reason'], 'operator_stop')
         self.assertEqual(status['fault']['reason'], 'map_localization_stale')
+
+    def test_fixed_navigation_map_rejects_fresh_shift_before_moving(self):
+        node = self.armed()
+        node.fixed_navigation_map = True
+        node.grid = Grid(np.zeros((100, 100), dtype=np.int8), .05, -2.5, -2.5)
+        node.pose = (0., 0., 0.)
+        anchor = types.SimpleNamespace(transform=types.SimpleNamespace(
+            translation=types.SimpleNamespace(x=.1, y=-2.8, z=0.),
+            rotation=types.SimpleNamespace(x=0., y=0., z=.02, w=1.)))
+        pose = node.tf.lookup_transform.return_value
+        node.tf.lookup_transform.side_effect = lambda target, source, when: anchor if source == 'odom' else pose
+        node.gate.command('autonomous', .05, 0., 100.)
+        with patch.object(self.module.time, 'monotonic', return_value=100.05):
+            node.tick()
+        status = self.published()
+        self.assertEqual((status['mode'], status['reason'], status['command']),
+                         ('stopped', 'navigation_map_frame_changed', [0., 0.]))
+        node.cancel.call_async.assert_called_once()
 
     def test_unsafe_ground_fault_records_rejected_command_and_sample(self):
         node = self.armed()

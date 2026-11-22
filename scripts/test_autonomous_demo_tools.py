@@ -7,6 +7,18 @@ from autonomous_demo_assess import demo_settings
 
 
 class DemoToolTests(unittest.TestCase):
+    def test_low_load_camera_setting_is_explicit_and_other_sensor_fields_are_retained(self):
+        original=dict(camera_rate_hz=15,camera=dict(width=960,height=540,far_m=8,rgb_far_m=20,tilt_rad=.4),
+                      terrain_backend='rocm_http',sensor_render_engine='ogre',adaptive_terrain=True)
+        for rate in (8,10):
+            config=dict(model_assessment=dict(camera_rate_hz=rate))
+            result=demo_settings(lambda *_:copy.deepcopy(original),config,None,'rehearsal',.05)
+            self.assertEqual(result['camera_rate_hz'],rate)
+            for field in ('camera','terrain_backend','sensor_render_engine','adaptive_terrain'):
+                self.assertEqual(result[field],original[field])
+        self.assertEqual(original['camera_rate_hz'],15)
+        for rate in (0,9,11,30,float('nan')):
+            with self.assertRaises(ValueError):demo_settings(lambda *_:dict(original),dict(model_assessment=dict(camera_rate_hz=rate)),None,'rehearsal',.05)
     def test_contact_fixture_cannot_start_an_autonomous_mission_or_change_sensor_profile(self):
         original=lambda c,s:dict(camera_rate_hz=15,terrain_backend='rocm_http',sensor_render_engine='ogre')
         contact=demo_settings(original,{},None,'rehearsal',.05,'flat')

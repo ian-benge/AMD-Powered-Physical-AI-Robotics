@@ -11,6 +11,7 @@ DEFAULTS = dict(min_views=3, min_baseline_m=.20, min_view_span_s=2., min_confide
                 maximum_distance_m=.50, position_std_floor_m=.05, tentative_timeout_s=30.,
                 prior=.20, hit_log_odds=math.log(4), miss_log_odds=math.log(3),
                 score_bounds=[.02, .98], automatic_classes=['rock', 'yellow_crystal_rock'])
+DEMO_BASELINE_M = .18
 
 
 def depth_location(data, encoding, width, height, step, bigendian, k, box):
@@ -40,11 +41,11 @@ def depth_location(data, encoding, width, height, step, bigendian, k, box):
     return np.array([(u-k[2])*z/k[0], (v-k[5])*z/k[4], z])
 
 
-def _independent(views, camera, observer):
+def _independent(views, camera, observer, baseline=.20):
     # Requiring observer translation additionally excludes a camera moving on
     # its mount's arc during a pure rover rotation.
-    return all(np.linalg.norm(np.asarray(v['camera'])-camera) >= .20-1e-8 and
-               np.linalg.norm(np.asarray(v['observer'])-observer[:3]) >= .20-1e-8 for v in views)
+    return all(np.linalg.norm(np.asarray(v['camera'])-camera) >= baseline-1e-8 and
+               np.linalg.norm(np.asarray(v['observer'])-observer[:3]) >= baseline-1e-8 for v in views)
 
 
 def _view(stamp, camera, observer):
@@ -62,8 +63,9 @@ def _iou(a, b):
 
 class SiteStore:
     """Conservative, epoch-local static tracks; contains no robot control."""
-    def __init__(self, epoch=0):
+    def __init__(self, epoch=0, *, min_baseline_m=DEFAULTS['min_baseline_m']):
         self.epoch, self.objects, self.next_id = epoch, [], 1
+        self.min_baseline_m = min_baseline_m
         self.ambiguous = []
         self.last_stamp = -math.inf
         self.events = deque(maxlen=4096)
@@ -138,7 +140,7 @@ class SiteStore:
         item['detection_count'] += 1
         item['max_confidence'] = max(item['max_confidence'], obs['confidence'])
         item['geometry'] = obs['geometry']
-        if _independent(item['_class_views'], camera, observer) and len(item['_class_views']) < 128:
+        if _independent(item['_class_views'], camera, observer, self.min_baseline_m) and len(item['_class_views']) < 128:
             item['_class_views'].append(_view(stamp, camera, observer))
             item['_class_samples'] = (item['_class_samples']+[(obs['class_name'], obs['confidence'])])[-32:]
             evidence = {name: sum(q for label, q in item['_class_samples'] if label == name) for name in FOUR_CLASS_NAMES}
@@ -146,7 +148,10 @@ class SiteStore:
             item['class_name'] = max(evidence, key=evidence.get)
             item['class_support'] = evidence[item['class_name']]/max(1e-12, sum(evidence.values()))
         supported = obs['geometry'].get('supported') and obs['confidence'] >= .50
-        independent = _independent(item['_positive_views'], camera, observer)
+        if supported:
+            item['last_supported_stamp'] = stamp
+            item['last_supported_confidence'] = obs['confidence']
+        independent = _independent(item['_positive_views'], camera, observer, self.min_baseline_m)
         if supported and independent and len(item['_positive_views']) < 128:
             view = _view(stamp, camera, observer)
             item['_positive_views'].append(view)
@@ -236,12 +241,14 @@ class SiteStore:
                 appearance_ok = similarity >= .30
             extent_ratio = np.linalg.norm(obs['extent'])/max(.01, np.linalg.norm(item['extent']))
             if not margin or not mutual or not appearance_ok or not .25 <= extent_ratio <= 4.:
-                protected.update(tracks[n]['track_id'] for n in finite)
-                self.event('ambiguous', stamp, item, observation=obs, candidates=[tracks[n]['track_id'] for n in finite])
+                candidates = [tracks[n]['track_id'] for n in finite]
+                protected.update(candidates)
+                self.event('ambiguous', stamp, item, observation=obs, candidates=candidates)
                 if len(self.ambiguous) < 20:
                     self.ambiguous.append(dict(obs, id=900000+len(self.ambiguous),
                         track_id=f'{self.epoch}:ambiguous:{len(self.ambiguous)}', epoch=self.epoch,
                         state='unverified', reason='ambiguous match; no track evidence updated',
+                        candidate_track_ids=candidates,
                         confirmation_view_count=0, independent_view_count=0, evidence_score=.20,
                         last_stamp=stamp, max_confidence=obs['confidence']))
                 decisions.append(dict(outcome='ambiguous', id=item['track_id']))

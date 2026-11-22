@@ -15,6 +15,36 @@ from mars_training_environment.capture_attempts import evidence_hashes,verify_co
 
 
 class EnvironmentV2Tests(unittest.TestCase):
+    def test_rare_demo_recipe_reduces_targets_and_preserves_rock_density_and_restart_config(self):
+        standard=configuration(read_config(),density='sparse',sunlight='low')
+        rare=configuration(standard,sample_site_recipe='rare_demo_v1')
+        self.assertEqual(rare['rocks'],standard['rocks'])
+        self.assertEqual(rare['camera'],standard['camera'])
+        self.assertEqual(rare['candidates']['pale_stone_count'],standard['candidates']['pale_stone_count'])
+        keys=('silica_count','pale_lookalike_count','sulfur_count','cheyava_count','veined_lookalike_count')
+        old=sum(sum(standard['candidates'][k])/2 for k in keys)
+        new=sum(sum(rare['candidates'][k])/2 for k in keys)
+        self.assertAlmostEqual(new/old,9.5/34.)
+        self.assertEqual(mixed_reachable_config(rare),rare)
+        self.assertEqual(configuration(rare,sample_site_recipe='standard'),standard)
+        self.assertEqual(rare['terrain']['density'],'sparse')
+        self.assertEqual(rare['terrain']['sunlight'],'low')
+        validate_profile(rare['terrain'])
+        recipe=Path(__file__).resolve().parents[1]/'config/mixed_reachable_v2_demo_rare.json'
+        self.assertEqual(read_config(recipe)['candidates'],configuration(read_config(),sample_site_recipe='rare_demo_v1')['candidates'])
+    def test_rare_demo_band_assignment_preserves_both_mudstone_variants_and_outer_route(self):
+        from mars_training_environment.candidates import candidate_band
+        rare=configuration(read_config(),sample_site_recipe='rare_demo_v1');seen={}
+        self.assertEqual(candidate_band(rare,'cheyava_rock',0,seen),'near')
+        self.assertEqual(candidate_band(rare,'veined_lookalike',0,seen),'outer')
+        self.assertEqual([candidate_band(rare,'sulfur_rock',i,seen) for i in range(2)],['near','outer'])
+        standard=configuration(read_config())
+        self.assertEqual([candidate_band(standard,'sulfur_rock',i,{}) for i in range(4)],['near','near','outer','outer'])
+        self.assertEqual([candidate_band(rare,'pale_stone',i,{}) for i in range(4)],['near','near','outer','outer'])
+    def test_unknown_sample_site_recipe_is_rejected(self):
+        with self.assertRaises(ValueError):configuration(read_config(),sample_site_recipe='unknown')
+        bad=configuration(read_config());bad['terrain']['sample_site_recipe']='unknown'
+        with self.assertRaises(ValueError):validate_profile(bad['terrain'])
     def test_profile_and_legacy_are_distinct(self):
         old=mixed_reachable_config(read_config());new=configuration(read_config())
         validate_profile(old['terrain']);validate_profile(new['terrain'])

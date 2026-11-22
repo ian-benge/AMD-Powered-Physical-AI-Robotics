@@ -17,6 +17,8 @@ from importlib.resources import files
 from urllib.error import HTTPError
 from uuid import uuid4
 
+from .platform_telemetry import TCTL_STOP_C
+
 
 class SceneControl:
     def __init__(self, project, bundle, session):
@@ -89,16 +91,23 @@ class SceneControl:
         prefix='/work/source' if (self.project/'source/src/rover_navigation/rover_navigation/scene_generation.py').is_file() else '/work'
         pythonpath=':'.join(prefix+'/src/'+name for name in ('rover_navigation','mars_training_environment','rover_training'))
         seed = 1_000_000+secrets.randbelow(900_000_000)
+        style = ['--mars-survey'] if version==2 and str(self.config.get('demo_mode','false')).lower()=='true' else []
         logs = self.sessions/'control'
         logs.mkdir(parents=True, exist_ok=True)
-        with (logs/(session+'-generation.log')).open('x') as log:
-            subprocess.run(['docker', 'run', '--rm', '--network', 'none',
-                '--label', 'rover.scene-generation=true', '--user', f'{os.getuid()}:{os.getgid()}',
-                '-e', 'PYTHONPATH='+pythonpath,
-                '-v', str(self.project)+':/work:ro', '-v', str(output)+':/generated', '-w', '/work',
-                self.config.get('container_image','rover-navigation'), 'python3', '-m', 'rover_navigation.scene_generation',
-                '--template', '/generated/template.json', '--output', '/generated', '--seed', str(seed)],
-                stdout=log, stderr=subprocess.STDOUT, check=True, timeout=600. if version==2 else 180.)
+        log_path = logs/(session+'-generation.log')
+        try:
+            with log_path.open('x') as log:
+                subprocess.run(['docker', 'run', '--rm', '--init', '--network', 'none', '--cpus', '2',
+                    '--label', 'rover.scene-generation=true', '--user', f'{os.getuid()}:{os.getgid()}',
+                    '-e', 'PYTHONPATH='+pythonpath, '-e', 'OMP_NUM_THREADS=2', '-e', 'OPENBLAS_NUM_THREADS=2',
+                    '-v', str(self.project)+':/work:ro', '-v', str(output)+':/generated', '-w', '/work',
+                    self.config.get('container_image','rover-navigation'), 'python3', '-m', 'rover_navigation.scene_generation',
+                    '--template', '/generated/template.json', '--output', '/generated', '--seed', str(seed), *style],
+                    stdout=log, stderr=subprocess.STDOUT, check=True, timeout=600. if version==2 else 180.)
+        except subprocess.CalledProcessError as error:
+            raise RuntimeError(f'Scene generator stopped with exit status {error.returncode}. See {log_path.name}.') from error
+        except subprocess.TimeoutExpired as error:
+            raise RuntimeError(f'Scene generation timed out. See {log_path.name}.') from error
         scene = f'scene_{seed:06d}'
         if not (output/'scenes'/scene/'scene.json').is_file():
             raise RuntimeError('Generator did not produce a scene; inspect the generation log')
@@ -108,6 +117,9 @@ class SceneControl:
         """Lifecycle hook for an attended supervisor's atomic stop/start gate."""
         return subprocess.Popen(command,cwd=self.project,stdout=log,stderr=subprocess.STDOUT,
                                 start_new_session=True)
+
+    def prepare_generation(self):
+        """Attended supervisors can wait for their platform to cool."""
 
     def run_restart(self, session, new_scene=False):
         try:
@@ -138,13 +150,18 @@ class SceneControl:
             if new_scene:
                 with self.lock:
                     self.state['phase'] = 'generating'
+                self.prepare_generation()
+                with self.lock:
+                    self.state['message'] = 'Generating a new Martian scene'
                 bundle, scene = self.generate_scene(session)
+                self.prepare_generation()
             logs = self.sessions/'control'
             logs.mkdir(parents=True, exist_ok=True)
             with (logs/(session+'.log')).open('x') as log:
                 self.process = self.start_process(self.launch_command(session, bundle, scene, new_scene),log)
             with self.lock:
                 self.state['phase'] = 'starting'
+                self.state.pop('message', None)
             deadline = time.monotonic()+120.
             while time.monotonic() < deadline:
                 if self.process.poll() is not None:
@@ -250,7 +267,7 @@ def gateway_handler(manager):
             headers = {'Content-Type': self.headers.get('Content-Type', 'application/octet-stream')}
             request = Request('http://127.0.0.1:8777'+route, data=data, headers=headers)
             try:
-                response = urlopen(request, timeout=30. if route in ('/start','/demo/preview-sample') else 6. if route.startswith('/demo/') else 4.)
+                response = urlopen(request, timeout=30. if route in ('/start','/demo/preview-sample','/demo/alternate-sample') else 6. if route.startswith('/demo/') else 4.)
             except HTTPError as error:
                 response = error
             with response:
@@ -279,7 +296,8 @@ def gateway_handler(manager):
                             try:
                                 if label.read_text().strip()=='Tctl':
                                     value=float(label.with_name(label.name.replace('_label','_input')).read_text())/1000
-                                    payload['platform_temperature']=dict(tctl_c=value,sensor='AMD Tctl',native_stop_c=90.)
+                                    payload['platform_temperature']=dict(tctl_c=value,sensor='AMD Tctl',
+                                        qualification_stop_c=TCTL_STOP_C,native_stop_c=TCTL_STOP_C)
                                     break
                             except (OSError,ValueError):continue
                     return self.reply(status, payload)
@@ -297,7 +315,9 @@ def gateway_handler(manager):
                     return self.reply(400, dict(success=False, message='Restart takes no request body'))
                 result = manager.restart(new_scene=self.path == '/new-scene')
                 return self.reply(202 if result['success'] else 409, result)
-            demo_routes=('/demo/start-exploration','/demo/return-now','/demo/select-target',
+            demo_routes=('/demo/start-exploration','/demo/resume-exploration','/demo/alternate-exploration',
+                         '/demo/alternate-sample','/demo/retreat-and-replan',
+                         '/demo/return-now','/demo/select-target',
                          '/demo/preview-sample','/demo/start-sample','/demo/heartbeat')
             if self.path not in ('/drive', '/release', '/stop', '/start', '/manual', '/confirm')+demo_routes:
                 return self.reply(404, dict(success=False, message='Not found'))

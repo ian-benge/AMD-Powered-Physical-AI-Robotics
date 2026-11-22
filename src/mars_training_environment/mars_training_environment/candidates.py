@@ -83,15 +83,40 @@ def slab_mesh(seed=21, aspect=0.62, thickness=0.045):
     return vertices, np.asarray(faces, dtype=int), _planar_uv(vertices)
 
 
+def candidate_band(config, category, index, seen):
+    """Keep rare demo targets in both bands without adding more target objects."""
+    if config['terrain'].get('profile_version') != 2:
+        return None
+    groups = {'silica_soil':'soil', 'pale_lookalike':'soil', 'sulfur_rock':'crystal',
+              'cheyava_rock':'slab', 'veined_lookalike':'slab'}
+    if config['terrain'].get('sample_site_recipe') == 'rare_demo_v1' and category in groups:
+        group = groups[category]
+        count = seen.get(group, 0)
+        seen[group] = count + 1
+        return 'near' if count % 2 == 0 else 'outer'
+    return 'near' if index % 4 < 2 else 'outer'
+
+
+PERIMETER_SIDES = {'east': (0,1), 'west': (0,-1), 'north': (1,1), 'south': (1,-1)}
+
+
 def add_candidates(rng, config, field, driveable, assets, root, objects, regions, scene_folder,
-                   allowed_categories=None):
+                   allowed_categories=None, *, perimeter_side=None, staging_centers=None):
     """Append mesh candidates and ground regions. Empty scenes call this never."""
     selected = set(config['candidates']['categories'])
     v2=config['terrain'].get('profile_version')==2
+    band_counts = {}
     if allowed_categories is not None:
         selected &= set(allowed_categories)
     by_id = {asset['id']: asset for asset in assets}
-    occupied = [(np.asarray(obj['xyz'][:2], dtype=float), obj['radius_m']) for obj in objects]
+    occupied = [(np.asarray(obj['xyz'][:2], dtype=float), obj['radius_m']) for obj in objects+regions]
+    prefix = f'perimeter_{perimeter_side}_' if perimeter_side else ''
+
+    def place(category, index, radius):
+        band=None if perimeter_side else candidate_band(config,category,index,band_counts)
+        return _place(rng,field,driveable,config,occupied,radius,band=band,
+                      perimeter_side=perimeter_side,staging_centers=staging_centers)
+
     for category, key, size_key in (
             ('silica_soil', 'silica_count', 'silica_size_m'),
             ('pale_lookalike', 'pale_lookalike_count', 'silica_size_m')):
@@ -101,12 +126,11 @@ def add_candidates(rng, config, field, driveable, assets, root, objects, regions
             if config['terrain'].get('profile') == 'mixed_reachable':
                 polygon -= polygon.mean(axis=0)
             radius = float(np.linalg.norm(polygon - polygon.mean(axis=0), axis=1).max())
-            xy = _place(rng, field, driveable, config, occupied, radius,
-                        band=('near' if index%4<2 else 'outer') if v2 else None)
+            xy = place(category,index,radius)
             polygon = polygon + xy
             z = float(field.height(xy[0], xy[1]))
             regions.append({
-                'name': f'{category}_{index:03d}',
+                'name': f'{prefix}{category}_{index:03d}',
                 'asset_id': category,
                 'class_name': category,
                 'source': 'ground_region',
@@ -132,11 +156,9 @@ def add_candidates(rng, config, field, driveable, assets, root, objects, regions
             scale = float(rng.uniform(*config['candidates'][size_key]))
             tilt = math.radians(12 if category in ('cheyava_rock', 'veined_lookalike') else 18)
             rpy = [float(rng.uniform(-tilt, tilt)), float(rng.uniform(-tilt, tilt)), float(rng.uniform(-math.pi, math.pi))]
-            radius_guess = scale * 0.75
-            xy = _place(rng, field, driveable, config, occupied, radius_guess,
-                        band=('near' if index%4<2 else 'outer') if v2 else None)
             points = vertices @ rotation(rpy).T * scale
             radius = float(np.linalg.norm(points[:, :2], axis=1).max())
+            xy = place(category,index,radius if perimeter_side else scale*.75)
             surface = field.height(points[:, 0] + xy[0], points[:, 1] + xy[1])
             support = float(np.max(surface - points[:, 2]))
             burial = float(rng.uniform(burial_lo, burial_hi))
@@ -149,7 +171,7 @@ def add_candidates(rng, config, field, driveable, assets, root, objects, regions
             else:
                 references = ['PIA26368', 'PIA26401']
             obj = {
-                'name': f'{category}_{index:03d}',
+                'name': f'{prefix}{category}_{index:03d}',
                 'asset_id': asset['id'],
                 'class_name': category,
                 'source': 'mesh',
@@ -555,14 +577,34 @@ def _blob(rng, longest):
     return poly / current * longest
 
 
-def _place(rng, field, driveable, config, occupied, radius, band=None):
+def _place(rng, field, driveable, config, occupied, radius, band=None, *, perimeter_side=None,
+           staging_centers=None):
     size = field.size
     clearance = config['rocks']['clearance_m']
     spawn = config['terrain']['spawn_clearance_m']
     limit = math.tan(math.radians(config['terrain']['max_slope_deg']))
-    if band:limit=math.tan(math.radians(8.))
+    if band or perimeter_side:limit=math.tan(math.radians(8.))
+    if staging_centers is not None:
+        axis,sign=PERIMETER_SIDES[perimeter_side]
+        staging_centers=staging_centers[(staging_centers[:,axis]*sign>=size*.40-radius-1.35)&
+                                       (np.abs(staging_centers[:,1-axis])<=size*.34+radius+1.35)]
+        if not len(staging_centers):
+            from .reachability import LayoutError
+            raise LayoutError(f'No reachable staging area near the {perimeter_side} perimeter')
     for _ in range(800):
-        if band:
+        if perimeter_side:
+            axis,sign=PERIMETER_SIDES[perimeter_side]
+            if staging_centers is None:
+                xy=np.empty(2)
+                xy[axis]=sign*rng.uniform(size*.40,size*.455)
+                xy[1-axis]=rng.uniform(-size*.34,size*.34)
+            else:
+                center=staging_centers[rng.randint(len(staging_centers))]
+                azimuth=rng.uniform(-math.pi,math.pi)
+                xy=center+(radius+rng.uniform(.95,1.35))*np.array([math.cos(azimuth),math.sin(azimuth)])
+                if not size*.40<=xy[axis]*sign<=size*.455 or abs(xy[1-axis])>size*.34:
+                    continue
+        elif band:
             angle=(rng.randint(4)*math.pi/2+rng.uniform(-.3,.3)) if band=='outer' else rng.uniform(-math.pi,math.pi)
             distance=rng.uniform(*( (4.,6.) if band=='near' else (13.5,15.5) ))
             xy=distance*np.array([math.cos(angle),math.sin(angle)])

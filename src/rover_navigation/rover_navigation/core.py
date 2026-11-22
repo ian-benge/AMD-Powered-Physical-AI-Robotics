@@ -32,6 +32,19 @@ def turn_radius(footprint=FOOTPRINT, margin=.025):
     return math.hypot(max(abs(footprint[0]), abs(footprint[1])), footprint[2])+margin
 
 
+def footprint_avoids_disk(pose, disk, margin=.025):
+    """Test the padded chassis rectangle against a protected sample site."""
+    x, y, yaw = pose
+    cx, cy, radius = disk
+    dx, dy = cx-x, cy-y
+    forward = dx*math.cos(yaw)+dy*math.sin(yaw)
+    sideways = -dx*math.sin(yaw)+dy*math.cos(yaw)
+    front, rear, half_width = FOOTPRINT
+    gap_x = max(rear-margin-forward, forward-front-margin, 0.)
+    gap_y = max(abs(sideways)-half_width-margin, 0.)
+    return math.hypot(gap_x, gap_y) > radius
+
+
 def rotation(q):
     q = np.asarray(q, dtype=float)
     norm = np.linalg.norm(q)
@@ -237,7 +250,7 @@ def cause_names(code):
     if code < 0:
         return ['unknown_terrain']
     names = [name for bit, name in ((2, 'excessive_slope'), (4, 'excessive_height_change'),
-                                    (8, 'hazard_evidence_unavailable')) if code & bit]
+                                    (8, 'hazard_evidence_unavailable'), (16, 'tracked_object')) if code & bit]
     return names or ['traversable']
 
 

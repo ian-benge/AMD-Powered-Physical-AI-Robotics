@@ -57,8 +57,9 @@ def live_guard(trial, case):
     label = next(p for p, m in health['sensor_metadata'].items()
                  if m.get('driver') == 'k10temp' and m.get('label') == 'Tctl')
     tctl = float(Path(label).read_text())/1000
-    if not -20 <= tctl < 90:
-        raise RuntimeError('Stop: Tctl reached the 90 C experiment threshold or is invalid')
+    stop_tctl_c = trial.policy.STOP_TCTL_C
+    if not -20 <= tctl < stop_tctl_c:
+        raise RuntimeError(f'Stop: Tctl reached the {stop_tctl_c:g} C experiment threshold or is invalid')
     if time.time()-(case/'temperature-live.jsonl').stat().st_mtime > 10:
         raise RuntimeError('Visible temperature monitor is stale')
     return dict(utc=trial.utc(), tctl_c=tctl, capture_utc=health['utc'])

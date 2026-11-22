@@ -21,7 +21,7 @@ from vision_msgs.msg import Detection2DArray
 from rover_perception.live_core import image_to_bgr
 from .core import rotation
 from .ros_utils import apply_tf, stamp_seconds
-from .sample_sites import DEFAULTS, SiteStore
+from .sample_sites import DEFAULTS, DEMO_BASELINE_M, SiteStore
 from .site_geometry import color_histogram, depth_image, measure, pose_covariance, visible_region
 
 
@@ -42,17 +42,19 @@ class SampleSites(Node):
         self.soil_store = None
         if self.get_parameter('demo_mode').value:
             from .soil_sites import SoilStore
-            self.soil_store = SoilStore()
+            self.soil_store = SoilStore(min_baseline_m=DEMO_BASELINE_M)
         self.output = Path(self.get_parameter('output').value)
         if not self.get_parameter('output').value or self.output.exists():
             raise ValueError('Specify a new sample-site output path; historical tracks are never restored')
         self.output.parent.mkdir(parents=True, exist_ok=True)
         self.event_stream = self.output.with_name(self.output.stem+'-events.jsonl').open('x')
-        self.event_stream.write(json.dumps(dict(kind='configuration', schema_version=2, defaults=DEFAULTS,
+        baseline = DEMO_BASELINE_M if self.soil_store is not None else DEFAULTS['min_baseline_m']
+        self.store, self.archived = SiteStore(min_baseline_m=baseline), []
+        self.event_stream.write(json.dumps(dict(kind='configuration', schema_version=2,
+            defaults=dict(DEFAULTS, min_baseline_m=baseline),
             geometry=dict(plane_samples=30, plane_inlier_fraction=.5, plane_tolerance_m=.015,
                           max_plane_tilt_deg=20, min_relief_m=.03, raised_fraction=.2),
             score_description='engineering evidence score; not calibrated detector accuracy'))+'\n')
-        self.store, self.archived = SiteStore(), []
         self.depths, self.infos, self.images = OrderedDict(), OrderedDict(), OrderedDict()
         self.pending, self.seen, self.odometry = deque(maxlen=1), deque(maxlen=256), deque(maxlen=120)
         self.counts, self.guard, self.detector = Counter(), {}, {}
@@ -117,10 +119,10 @@ class SampleSites(Node):
             self.flush_events()
             self.archived.append(dict(epoch=self.store.epoch, reason='odometry_reset',
                                       objects=[self.store.export(x) for x in self.store.objects]))
-            self.store = SiteStore(epoch=self.store.epoch+1)
+            self.store = SiteStore(epoch=self.store.epoch+1, min_baseline_m=self.store.min_baseline_m)
             if getattr(self,'soil_store',None) is not None:
                 from .soil_sites import SoilStore
-                self.soil_store = SoilStore(epoch=self.store.epoch)
+                self.soil_store = SoilStore(epoch=self.store.epoch, min_baseline_m=self.store.min_baseline_m)
             for collection in (self.pending, self.depths, self.infos, self.images, self.seen, self.odometry):
                 collection.clear()
             self.last_processed = -math.inf
@@ -325,11 +327,14 @@ class SampleSites(Node):
                        ready=not bool(detail), error=detail, suspended_reason=detail,
                        evidence_score_description='engineering evidence score; not calibrated detector accuracy',
                        objects=objects, tentative_objects=tentative, stored_count=len(self.store.objects),
+                       ambiguous_track_ids=sorted({ident for item in self.store.ambiguous
+                                                   for ident in item.get('candidate_track_ids', ())}),
                        retired_count=sum(x['state'] == 'retired' for x in self.store.objects),
                        counts=dict(self.counts), archived_epochs=self.archived, epoch=self.store.epoch,
                        odometry_resets=self.odometry_resets, accepted_stamp=self.last_processed if math.isfinite(self.last_processed) else None,
                        map_transform_age_seconds=transform_age,
-                       processing_ms=self.processing_ms, defaults=DEFAULTS)
+                       processing_ms=self.processing_ms,
+                       defaults=dict(DEFAULTS, min_baseline_m=self.store.min_baseline_m))
         if emit:
             if getattr(self,'soil_store',None) is not None:
                 sites=[]

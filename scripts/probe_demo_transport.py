@@ -10,7 +10,7 @@ import sys
 import time
 
 
-def worker(role,output):
+def worker(role,output,rate=15):
     import rclpy
     from rclpy.node import Node
     from rclpy.qos import qos_profile_sensor_data
@@ -34,8 +34,8 @@ def worker(role,output):
             images[name]=image
         time.sleep(1.)
         start=time.monotonic()
-        for i in range(90):
-            due=start+i/15
+        for i in range(6*rate):
+            due=start+i/rate
             while time.monotonic()<due:time.sleep(max(0.,min(.002,due-time.monotonic())))
             sec,nano=divmod(int(time.monotonic()*1e9),1_000_000_000)
             for name,image in images.items():
@@ -45,24 +45,25 @@ def worker(role,output):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--rate-hz',type=int,choices=(8,10,15),default=15)
     p.add_argument('--worker',choices=('reader','writer'));a=p.parse_args()
-    if a.worker:return worker(a.worker,a.output)
+    if a.worker:return worker(a.worker,a.output,a.rate_hz)
     if a.output.exists():raise ValueError('Preserve the previous throughput report')
     profile=Path(os.environ['FASTRTPS_DEFAULT_PROFILES_FILE']);assert profile.is_file()
     env=dict(os.environ,ROS_DOMAIN_ID='218',ROS_AUTOMATIC_DISCOVERY_RANGE='LOCALHOST')
     raw=a.output.with_suffix('.samples.json')
-    reader=subprocess.Popen([sys.executable,__file__,'--worker','reader','--output',str(raw)],env=env)
+    reader=subprocess.Popen([sys.executable,__file__,'--worker','reader','--output',str(raw),'--rate-hz',str(a.rate_hz)],env=env)
     try:
         time.sleep(.4)
-        subprocess.run([sys.executable,__file__,'--worker','writer','--output',str(raw)],env=env,check=True,timeout=15)
+        subprocess.run([sys.executable,__file__,'--worker','writer','--output',str(raw),'--rate-hz',str(a.rate_hz)],env=env,check=True,timeout=15)
         reader.wait(timeout=15)
         if reader.returncode:raise RuntimeError('Transport reader failed')
-        samples=json.loads(raw.read_text());report=dict(fixture_only=True,motion_requested=False,streams={},passed=True)
+        samples=json.loads(raw.read_text());report=dict(fixture_only=True,motion_requested=False,streams={},passed=True,requested_rate_hz=a.rate_hz)
         for name,rows in samples.items():
             rate=(len(rows)-1)/(rows[-1][0]-rows[0][0]) if len(rows)>1 else 0.
             gap=max((b[0]-a[0] for a,b in zip(rows,rows[1:])),default=999.)
             report['streams'][name]=dict(count=len(rows),wall_hz=rate,max_gap_seconds=gap)
-            report['passed'] &= len(rows)>=80 and rate>=12 and gap<=.6
+            report['passed'] &= len(rows)>=int(6*a.rate_hz*.89) and rate>=a.rate_hz*.8 and gap<=.6
         a.output.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report),flush=True)
         if not report['passed']:raise RuntimeError('Large-image DDS throughput failed')
     finally:

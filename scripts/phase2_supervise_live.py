@@ -111,6 +111,19 @@ def main(phase=2, record_terrain=False):
                       NAV_SOFTWARE_RENDERING='0',NAV_GZ_PARTITION=f'rover-phase{phase}-live',NAV_ROS_DOMAIN_ID='87')
 
     class GuardedScenes(SceneControl):
+        def prepare_generation(self):
+            with self.lock:
+                self.state['message'] = 'Cooling Halo before continuing the scene change'
+            until = time.monotonic()+180.
+            while not halted.is_set():
+                live_guard(trial,args.case)
+                if trial.policy.cooled(trial.control_health(args.case)):
+                    return
+                if time.monotonic() >= until:
+                    raise RuntimeError('Scene change cooldown did not reach 70°C for 30 seconds')
+                halted.wait(1.)
+            raise RuntimeError('Scene change stopped during cooldown')
+
         def start_process(self,command,log):
             with transition_lock:
                 if halted.is_set():raise RuntimeError('Supervisor stopped before process launch')
@@ -196,7 +209,11 @@ def main(phase=2, record_terrain=False):
                         prefix='ENVIRONMENT_V2' if config.get('environment_version')==2 else 'PHASE3'
                         print(prefix+'_SYNC_CAPTURE_COMPLETE: '+str(recorder['output']),flush=True)
                 time.sleep(.5)
-    except Exception as error:failure=str(error)
+    except Exception as error:
+        failure=str(error)
+        print('SCENE_SUPERVISOR_STOP: '+failure,file=sys.stderr,flush=True)
+        with manager.lock:
+            manager.state.update(phase='failed', error=failure)
     finally:
         halted.set()
         with transition_lock:

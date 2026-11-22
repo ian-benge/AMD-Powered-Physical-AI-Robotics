@@ -1,10 +1,20 @@
-"""Display-only telemetry from the native capture guard; never authorizes motion."""
+"""Demo cutoff and display telemetry from the native capture guard."""
 import json
 import math
 import os
 from pathlib import Path
 import tempfile
 import time
+
+
+TCTL_STOP_C = 92
+
+
+def check_demo_temperature(temperature):
+    if not math.isfinite(temperature):
+        raise RuntimeError('Demo temperature reading is invalid')
+    if temperature >= TCTL_STOP_C:
+        raise RuntimeError(f'Demo temperature reached {temperature:g} C (cutoff {TCTL_STOP_C} C)')
 
 
 def write_temperature(path, health, boot_id, case):
@@ -40,6 +50,6 @@ def read_temperature(path, boot_id, now=None):
                 not -.05 <= now-stamp <= 2.):
             return None
         return dict(tctl_c=temperature, age_seconds=max(0., now-stamp), utc=value['utc'],
-                    source=value['source'], qualification_stop_c=87, native_stop_c=90)
+                    source=value['source'], qualification_stop_c=TCTL_STOP_C, native_stop_c=TCTL_STOP_C)
     except (OSError, ValueError, KeyError, TypeError):
         return None
