@@ -4,7 +4,6 @@ Used only by a separately pinned native monitoring kit. Existing graphical
 session selection and per-case session identity checks remain in remote_session.
 """
 from pathlib import Path
-import pwd
 
 
 def validate(listener, unit, process_uid, expected_uid, argv):
@@ -19,6 +18,8 @@ def validate(listener, unit, process_uid, expected_uid, argv):
 
 
 def verify_listener(listener, command):
+    import pwd
+
     raw = command(['systemctl', 'show', 'gnome-remote-desktop.service',
                    '-p', 'ActiveState', '-p', 'MainPID', '-p', 'User'])
     unit = dict(row.split('=', 1) for row in raw.splitlines() if '=' in row)
