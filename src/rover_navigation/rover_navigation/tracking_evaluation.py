@@ -1,7 +1,7 @@
 """Independent evaluator only. Never imported by live navigation/tracking."""
 import math
 from collections import Counter
-from rover_training.geometry import CLASS_NAMES, class_id_for
+from rover_training.geometry import CLASS_NAMES, FOUR_CLASS_NAMES, class_id_for
 
 
 def revisit_evidence(before, after):
@@ -21,15 +21,19 @@ def revisit_evidence(before, after):
                 criterion='same confirmed ID, increased last observation stamp, <=0.6 simulated seconds old')
 
 
-def reference_matches(objects, start, scene):
+def reference_matches(objects, start, scene, *, classes=('rock', 'yellow_crystal_rock')):
     truth, estimate = start['truth'], start['estimate']
     yaw = truth['yaw']-estimate['yaw']
     c, s = math.cos(yaw), math.sin(yaw)
     eligible = []
+    expanded_labels = 'mudstone_slab' in classes
+    if expanded_labels:
+        from mars_training_environment.environment_v2 import export_class_id
     for obj in scene['objects']:
-        label = class_id_for(obj.get('class_name', 'rock'))
-        if label is not None and CLASS_NAMES[label] in ('rock', 'yellow_crystal_rock'):
-            eligible.append((obj, CLASS_NAMES[label]))
+        label = export_class_id(obj) if expanded_labels else class_id_for(obj.get('class_name', 'rock'))
+        names = FOUR_CLASS_NAMES if expanded_labels else CLASS_NAMES
+        if label is not None and names[label] in classes:
+            eligible.append((obj, names[label]))
     matches, false = [], []
     for item in objects:
         x, y = item['odom_position'][:2]

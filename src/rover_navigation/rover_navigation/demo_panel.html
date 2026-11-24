@@ -6,12 +6,16 @@
 .demo-metrics div{border-top:1px solid var(--border);padding:7px 4px}.demo-metrics dt{font-size:12px}.demo-metrics dd{margin:3px 0 0;font-size:14px;font-variant-numeric:tabular-nums}
 #demo-message{color:#f2c27b;font-size:14px;margin:5px 0 10px}#demo-message:empty{display:none}
 .demo-buttons{display:flex;flex-wrap:wrap;gap:8px}#demo-return,#demo-approve{border-color:var(--accent)}
+#demo-sample-handoff:not([hidden]){display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px}
+#demo-sample-return{background:var(--accent);color:#09251f;font-weight:650}
+#demo-sample-return-info{font-size:13px;color:var(--muted)}
 #map.demo-selecting{cursor:crosshair}#demo-state-log{white-space:pre-wrap;overflow-wrap:anywhere}
 #demo-panel details{padding:8px 0 0;background:none;border:0;font-size:13px;margin-bottom:0}
 </style>
 <h2>Autonomous mission</h2><p id="demo-phase">Waiting for the demo service</p>
 <p id="demo-message" role="status">Inspect launch clearance before authorizing autonomy.</p>
 <div class="demo-buttons"><button id="demo-explore" disabled>Start autonomous exploration</button><button id="demo-resume" hidden disabled>Resume exploration</button><button id="demo-alternate-route" hidden disabled>Try a different route</button><button id="demo-retreat" hidden disabled>Back up 0.5 m & replan</button><button id="demo-return" disabled>Return now</button><button id="demo-point" disabled>Select location on map</button><button id="demo-preview" disabled>Preview sample round trip</button><button id="demo-alternate-sample" hidden disabled>Preview another angle</button><button id="demo-approve" disabled>Approve drive to sample</button><button id="demo-takeover">Stop & take manual control</button></div>
+<div id="demo-sample-handoff" hidden><button id="demo-sample-return" type="button" aria-describedby="demo-sample-return-info" disabled>Return home</button><span id="demo-sample-return-info" role="status"></span></div>
 <div class="demo-metrics"><div><dt>Mission time</dt><dd id="demo-time">—</dd></div><div><dt>Measured ground / 1,600 m²</dt><dd id="demo-area">—</dd></div><div><dt id="demo-reserve-label">Return reserve</dt><dd id="demo-reserve">—</dd></div><div><dt>Traveled distance</dt><dd id="demo-distance">—</dd></div><div><dt>Selected target</dt><dd id="demo-target">None</dd></div><div><dt>Simulated sample</dt><dd id="demo-sample">Not collected</dd></div><div><dt>Tctl temperature</dt><dd id="demo-temperature">Use the native temperature terminal</dd></div><div><dt>Map publication p95</dt><dd id="demo-latency">Waiting for timing samples</dd></div></div>
 <label id="demo-map-view"><input id="demo-full-map" type="checkbox"> Full 40 m map</label>
 <details><summary>Mission identities and diagnostics</summary><p>H marks home. F marks the current frontier or recovery waypoint. Solid lines show travel. Dashed lines show planned routes.</p><pre id="demo-state-log"></pre></details>
@@ -21,6 +25,8 @@
 const $=id=>document.getElementById(id),client=crypto.randomUUID?.()??Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('');
 $('mission-slot').append($('demo-panel'));
 $('map-view-options').append($('demo-map-view'));
+const sampleHandoff=$('demo-sample-handoff'),sampleReturn=$('demo-sample-return'),sampleReturnInfo=$('demo-sample-return-info');
+$('stop').before(sampleHandoff);
 let owner=false,heartbeatBusy=false,heartbeatSequence=0,actionBusy=false,arming=false,selecting=false,session=null;
 let heartbeatReceipt=null;
 const atSample=new Set(['collecting','awaiting_sample_return']);
@@ -30,17 +36,22 @@ function identity(d){return {session_id:d.session_id,mission_id:d.mission_id,cli
 function sameMission(a,b){return !!a&&!!b&&a.session_id===b.session_id&&a.mission_id===b.mission_id&&a.epoch===b.epoch;}
 function envelope(extra={}){const d=state.demo_status;if(!d||d.age_seconds>1||performance.now()-lastStatus>600)throw Error('Demo status is unavailable or stale');return {...identity(d),...extra};}
 async function command(action,extra={}){return post('demo/'+action,envelope(extra));}
-function releaseDemoOwner(){owner=false;heartbeatReceipt=null;}
+function releaseDemoOwner(){owner=false;heartbeatReceipt=null;sampleReturn.disabled=true;}
 window.releaseDemoOwner=releaseDemoOwner;
-let resumeError='',shownPhase=null;
+let resumeError='',sampleReturnError='',shownPhase=null;
 async function actDemo(action,extra={}){if(actionBusy)return;actionBusy=true;
  const recovering=['resume-exploration','alternate-exploration','retreat-and-replan'].includes(action);
+ const returning=action==='return-now'&&state.demo_status?.phase==='awaiting_sample_return';
  arming=recovering||action==='start-sample';
  if(recovering){resumeError='';$('demo-message').textContent='Checking a fresh route from the stopped rover…';}
+ if(returning){sampleReturnError='';sampleReturn.disabled=true;sampleReturnInfo.textContent='Requesting return home…';}
  try{if(action==='start-exploration')owner=true;await command(action,extra);$('demo-message').textContent='Command accepted';}
- catch(e){$('demo-message').textContent=e.message;if(recovering)resumeError=e.message;if(action==='start-exploration')releaseDemoOwner();}
+ catch(e){$('demo-message').textContent=e.message;if(recovering)resumeError=e.message;
+  if(returning){sampleReturnError=e.message;sampleReturnInfo.textContent=e.message;}
+  if(action==='start-exploration')releaseDemoOwner();}
  finally{actionBusy=false;arming=false;refresh();}}
 $('demo-explore').onclick=()=>actDemo('start-exploration');$('demo-return').onclick=()=>actDemo('return-now');
+sampleReturn.onclick=()=>{if(!sampleReturn.disabled)return actDemo('return-now');};
 $('demo-resume').onclick=()=>actDemo('resume-exploration');
 $('demo-alternate-route').onclick=()=>actDemo('alternate-exploration');
 $('demo-retreat').onclick=()=>actDemo('retreat-and-replan');
@@ -50,6 +61,24 @@ $('demo-point').onclick=()=>{selecting=!selecting;$('map').classList.toggle('dem
 $('demo-takeover').onclick=async()=>{releaseDemoOwner();await act('stop');await act('manual');};
 $('demo-full-map').onchange=()=>mapView(state);
 function canSelectTarget(){const d=state.demo_status;return owner&&!actionBusy&&d?.age_seconds<1&&state.status?.age_seconds<.6&&performance.now()-lastStatus<=600&&['awaiting_target','preview_ready'].includes(d.phase);}
+function updateSampleReturn(d,fresh){
+ const phase=d.phase,result=phase==='awaiting_sample_return';
+ sampleHandoff.hidden=phase!=='sample_outbound'&&!atSample.has(phase);
+ sampleReturn.disabled=!result||!d.sample_return_ready||!fresh||!owner||actionBusy;
+ sampleReturn.textContent=result&&!d.sample?'Return without a sample':'Return home';
+ if(!result)sampleReturnError='';
+ let message='';
+ if(phase==='sample_outbound')message='Return becomes available after collection.';
+ else if(phase==='collecting')message=d.collection_paused?'Waiting for a fresh view of the sample.':'Collecting. The rover is held stationary.';
+ else if(result){
+   if(!owner)message='Use the dashboard that started the mission.';
+   else if(!fresh)message='Waiting for fresh rover status.';
+   else if(actionBusy)message='Requesting return home…';
+   else if(!d.sample_return_ready)message='Waiting for a stationary rover and healthy navigation.';
+   else message=sampleReturnError||(d.sample?'Sample collected. Ready to return.':'Collection unconfirmed. Ready to return.');
+ }
+ if(sampleReturnInfo.textContent!==message)sampleReturnInfo.textContent=message;
+}
 window.demoCanSelectObject=site=>site.state==='confirmed'&&canSelectTarget()&&
   (site.selectionId.startsWith('soil:')?state.soil_sites?.ready===true:state.sample_sites?.ready===true);
 window.demoSelectObject=site=>{
@@ -81,8 +110,9 @@ setInterval(sendHeartbeat,150);
 window.addEventListener('pagehide',releaseDemoOwner);
 $('map').addEventListener('click',event=>{if(!selecting||!canSelectTarget())return;const m=state.map;if(!m)return;const svg=$('map'),p=svg.createSVGPoint();p.x=event.clientX;p.y=event.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());selecting=false;svg.classList.remove('demo-selecting');actDemo('select-target',{x:m.origin[0]+q.x*m.resolution,y:m.origin[1]+(m.height-q.y)*m.resolution});});
 window.demoUpdate=data=>{
- const d=data.demo_status;if(!d)return;if(session!==d.session_id){if(session!==null)releaseDemoOwner();session=d.session_id;selecting=false;shownPhase=null;}
+ const d=data.demo_status;if(!d)return;if(session!==d.session_id){if(session!==null)releaseDemoOwner();session=d.session_id;selecting=false;shownPhase=null;sampleReturnError='';}
  const fresh=d.age_seconds<1&&data.status?.age_seconds<.6,phase=d.phase;
+ updateSampleReturn(d,fresh&&performance.now()-lastStatus<=600);
  $('demo-phase').textContent=d.auto_recovery?'Automatically checking a different route':labels[phase]||phase;
  const recoveryPause=['exploration_paused','contact_paused'].includes(phase);
  if(!recoveryPause)resumeError='';
@@ -106,9 +136,7 @@ window.demoUpdate=data=>{
  }
  const available=fresh&&!actionBusy;
  $('demo-explore').disabled=!available||phase!=='ready'||!data.status?.ready||!data.mapping?.clearance_confirmed||!health?.healthy||!timingReady;
- const sampleResult=phase==='awaiting_sample_return';
- const canReturn=['sweeping','exploring'].includes(phase)||(sampleResult&&d.sample_return_ready);
- $('demo-return').textContent=sampleResult?(d.sample?'Return home':'Return without a sample'):'Return now';
+ const canReturn=['sweeping','exploring'].includes(phase);
  $('demo-return').disabled=!available||!owner||!canReturn;
  $('demo-resume').disabled=!available||!owner||d.auto_recovery||!d.resume_ready||!health?.healthy;
  $('demo-resume').hidden=phase!=='exploration_paused';
@@ -123,7 +151,7 @@ window.demoUpdate=data=>{
  $('demo-alternate-sample').hidden=phase!=='preview_ready';
  const selectingPhase=['awaiting_target','preview_ready'].includes(phase);
  $('demo-explore').hidden=phase!=='ready';
- $('demo-return').hidden=!sampleResult&&!['sweeping','exploring'].includes(phase);
+ $('demo-return').hidden=!canReturn;
  $('demo-point').hidden=$('demo-preview').hidden=!selectingPhase;
  $('demo-approve').hidden=phase!=='preview_ready';
  $('demo-takeover').hidden=!active.has(phase)&&!d.auto_recovery;

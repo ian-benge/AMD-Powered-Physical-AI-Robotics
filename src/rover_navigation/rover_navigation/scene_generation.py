@@ -26,6 +26,8 @@ def generate(output, template, seed, *, mars_survey=False, perimeter_objects=Fal
         if config['terrain'].get('profile_version')!=2:
             raise ValueError('Perimeter placement needs shared version-2 terrain')
         config['terrain']['perimeter_objects']=True
+        from .demo_core import DEMO_MAP_EDGE_SETBACK_M
+        config['terrain']['perimeter_soil_staging_setback_m']=DEMO_MAP_EDGE_SETBACK_M
     # Reuse the environment generator's terrain/object constraints. Dataset
     # capture poses and class quotas are unnecessary for a manual drive scene.
     config['dataset']['seeds'] = [seed]

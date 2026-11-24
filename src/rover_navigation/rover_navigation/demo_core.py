@@ -61,6 +61,9 @@ CONTACT_RECOVERABLE = EXPLORATION_ROUTE_PHASES | {'sample_outbound','sample_retu
 TRAIL_PHASES = ('exploring', 'exploration_return', 'sample_outbound', 'sample_backing', 'sample_return')
 FRONTIER_ARRIVAL_RADIUS = .40
 FRONTIER_ARRIVAL_YAW = .28
+FRONTIER_DETOUR_STOP_RADIUS = .65
+DEMO_MAP_EDGE_SETBACK_M = 3.
+DEMO_PLANNING_MAP_TOPIC = '/navigation/demo_planning_map'
 REPOSITION_ARRIVAL_RADIUS = .22
 REPOSITION_ARRIVAL_YAW = .21
 WAYPOINT_CLEARANCE_PAD = .03
@@ -68,6 +71,8 @@ REPOSITION_ARRIVAL_MARGIN = REPOSITION_ARRIVAL_RADIUS+WAYPOINT_CLEARANCE_PAD
 EXPLORATION_TRAIL_DISTANCE = 3.
 FRONTIER_SHORTLIST_SIZE = 24
 FRONTIER_CANDIDATE_LIMIT = 80
+SURVEY_FRONTIER_LEG_MIN_M = 3.5
+SURVEY_NEARBY_FRONTIER_M = 6.
 SAMPLE_REVERSE_DISTANCE = .50
 SAMPLE_REVERSE_MAX_SPEED = .05
 SAMPLE_HEADING_TOLERANCE = math.radians(5)
@@ -109,6 +114,16 @@ def return_reserve(path, speed, rtf=1., *, contingency_seconds=30.):
     return 1.5*(path_length(path)/speed+turns/.3)/min(1., rtf)+contingency_seconds
 
 
+def demo_map_interior(grid):
+    """View the driving area in its original frame, leaving observations intact."""
+    inset = math.ceil(DEMO_MAP_EDGE_SETBACK_M / grid.resolution)
+    if min(grid.data.shape) <= 2*inset:
+        raise ValueError('The operating map is too small for the demo edge setback')
+    offset = inset*grid.resolution
+    return Grid(grid.data[inset:-inset, inset:-inset], grid.resolution,
+                grid.x+offset, grid.y+offset)
+
+
 def frontier_stop_clear(grid, pose, arrival_margin=FRONTIER_ARRIVAL_RADIUS+WAYPOINT_CLEARANCE_PAD):
     """Allow a full turn at arrival with margin for goal and map uncertainty."""
     x,y=pose[:2]
@@ -145,7 +160,7 @@ def exploration_overlap(path, trail):
 
 
 def observation_frontiers(grid, pose, attempted=(), max_goals=FRONTIER_SHORTLIST_SIZE,
-                          speed=.1, angular_speed=.3, *, home=None, trail=()):
+                          speed=.1, angular_speed=.3, *, home=None, trail=(), prefer_local=False):
     """Cluster reachable observation poses; estimate gain, never mark unknown free.
 
     Uses known/hazard occupancy for conservative 2-D ray occlusion. Gain is a
@@ -206,13 +221,33 @@ def observation_frontiers(grid, pose, attempted=(), max_goals=FRONTIER_SHORTLIST
             back = math.dist(grid.point(*cell), home[:2])
         return outbound+back
 
-    for cluster_id, component in enumerate(sorted(clusters, key=lambda v: min(map(round_trip_distance,v)))):
+    if prefer_local:
+        # Keep both nearby viewpoints and useful longer legs along a single
+        # connected map edge before applying the per-region shortlist limit.
+        regions = []
+        for component in clusters:
+            nearby, longer, distant = [], [], []
+            for cell in component:
+                advance=math.dist(grid.point(*cell),pose[:2])
+                if SURVEY_FRONTIER_LEG_MIN_M<=advance<=SURVEY_NEARBY_FRONTIER_M:
+                    longer.append(cell)
+                elif distances[cell]<=SURVEY_NEARBY_FRONTIER_M:
+                    nearby.append(cell)
+                else:
+                    distant.append(cell)
+            regions.extend(region for region in (nearby, longer, distant) if region)
+        clusters = regions
+
+    def viewpoint_distance(cell):
+        return float(distances[cell]) if prefer_local else round_trip_distance(cell)
+
+    for cluster_id, component in enumerate(sorted(clusters, key=lambda v: min(map(viewpoint_distance,v)))):
         if len(goals)>=FRONTIER_CANDIDATE_LIMIT:
             break
         # Give each sector of a connected frontier a useful new viewpoint before
         # filling the rest of its shortlist with nearby alternatives.
         def viewpoint_cost(cell):
-            return round_trip_distance(cell)/novelty[cell]
+            return viewpoint_distance(cell)/novelty[cell]
         representatives = sorted(component,key=lambda p:(viewpoint_cost(p),distances[p],p))
         sectors = {}
         for cell in representatives:
@@ -265,6 +300,8 @@ def observation_frontiers(grid, pose, attempted=(), max_goals=FRONTIER_SHORTLIST
             selected.append((x, y))
             if len(selected)>=16 or len(goals)>=FRONTIER_CANDIDATE_LIMIT:
                 break
+    if prefer_local:
+        return sorted(goals,key=lambda g:(g['distance_m'], -g['score'], g['pose']))[:max_goals]
     by_gain = sorted(goals, key=lambda g: (-g['score'], g['distance_m'], g['pose']))
     by_cost = sorted(goals, key=lambda g: (g['travel_seconds'], -g['expected_gain_m2'], g['pose']))
     shortlist = []
@@ -317,6 +354,17 @@ def collection_poses(grid, point, envelope_radius=0., covariance=None, *,
 
 def heading_error(yaw, desired):
     return math.atan2(math.sin(desired-yaw), math.cos(desired-yaw))
+
+
+def recovery_departure_angle(pose, path):
+    """Keep the direction of the planner's initial stationary turn."""
+    start=path[0]
+    turn=heading_error(pose[2],start[2])
+    for a,b in zip(path,path[1:]):
+        if math.dist(start[:2],b[:2])>.015:
+            break
+        turn+=heading_error(a[2],b[2])
+    return turn
 
 
 def recorded_retreat(grid, start, breadcrumbs, keepout=None):

@@ -35,6 +35,7 @@ class TerrainAdapterTests(unittest.TestCase):
         node = self.module.Terrain.__new__(self.module.Terrain)
         node.compute = self.module.CpuTerrainCompute()
         node.compute_error = ''
+        node.edge_setback = False
         node.tf = MagicMock()
         node.start = node.start_map = None
         node.latest = None, None, 10.
@@ -57,6 +58,22 @@ class TerrainAdapterTests(unittest.TestCase):
         info = types.SimpleNamespace(header=header, width=48, height=48,
                                      k=[40., 0., 24., 0., 40., 24., 0., 0., 1.])
         return depth, info, received
+
+    def test_demo_publishes_cropped_planning_grid_and_full_terrain_grid(self):
+        node = self.node()
+        node.edge_setback = True
+        node.map_pub, node.planning_pub = MagicMock(), MagicMock()
+        grid = self.module.Grid(np.zeros((800,800),np.int8),.05,-20.,-20.)
+        grid.data[grid.cell(7.5,17.8)] = 100
+        with patch.object(self.module,'grid_message',side_effect=lambda g,*_:g):
+            node.publish_global(grid,grid,None)
+        observed = node.map_pub.publish.call_args.args[0]
+        planning = node.planning_pub.publish.call_args.args[0]
+        self.assertEqual(observed.data.shape,(800,800))
+        self.assertEqual(observed.at(7.5,17.8),100)
+        self.assertEqual((planning.x,planning.y,planning.data.shape),(-17.,-17.,(680,680)))
+        self.assertEqual(planning.at(7.5,17.8),-1)
+        self.assertEqual(planning.at(7.5,16.5),0)
 
     def test_newest_untransformable_frame_does_not_starve_older_ready_depth(self):
         node = self.node()

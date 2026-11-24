@@ -30,14 +30,17 @@ class AdapterTests(unittest.TestCase):
         n.selection_generation=2;n.expected_stop=False;n.starting=False;n.start_epoch=None
         n.mode='idle';n.manual_used=False;n.working=False;n.nav_done=None;n.nav_arrived_at=None
         n.waypoint_stop_deadline=None
+        n.frontier_detour_stop=False
+        n.frontier_turn_deadline=None;n.frontier_turn_stop_at=None
         n.last_route_check=float('inf')
         n.return_requested=False
         n.pause_stop_epoch=None;n.resume_return=False;n.frontier=None;n.frontier_future=None
         n.contact_point=None;n.retreat_route=None
+        n.recovery_turn=None;n.local_grid=None;n.local_grid_wall=-math.inf
         n.frontier_bt='';n.clearance_bt='';n.sample_view_angles=[];n.failed_route=[];n.alternate_route=[]
-        n.frontier_arrival_blocked=False
+        n.frontier_arrival_blocked=False;n.return_route_blocked=False
         n.frontier_trail=();n.trails=[]
-        n.auto_retry_pending=False;n.auto_retry_count=0;n.auto_retry_until=0.
+        n.auto_retry_pending=False;n.auto_retry_locations=[];n.auto_retry_until=0.
         n.active_path=[];n.current_target=None;n.current_purpose=''
         n.stop_client=MagicMock();n.cancel=MagicMock();n.flush=MagicMock()
         return n
@@ -149,7 +152,7 @@ class AdapterTests(unittest.TestCase):
         n=self.frontier_node();n.frontier_future=None;n.worker=MagicMock()
         asyncio.run(n.advance())
         args=n.worker.submit.call_args
-        self.assertEqual(args.kwargs,dict(max_goals=24,speed=.05,angular_speed=.3,home=[0.,0.,0.],trail=()))
+        self.assertEqual(args.kwargs,dict(max_goals=24,speed=.05,angular_speed=.3,home=[0.,0.,0.],trail=(),prefer_local=False))
         self.assertIsNot(args.args[1].data,n.grid.data)
 
     def test_survey_search_submits_all_generated_frontier_candidates(self):
@@ -158,6 +161,7 @@ class AdapterTests(unittest.TestCase):
         args=n.worker.submit.call_args
         self.assertEqual(args.kwargs['max_goals'],80)
         self.assertEqual(args.kwargs['speed'],.15)
+        self.assertTrue(args.kwargs['prefer_local'])
 
     def test_next_frontier_waits_for_fresh_stop_after_nav2_reaches_arrival_region(self):
         n=self.frontier_node();n.worker=MagicMock()
@@ -197,6 +201,73 @@ class AdapterTests(unittest.TestCase):
                 n.finish_navigation(NS(status=5),purpose)
             self.assertEqual(n.nav_done,purpose)
             self.assertIsNone(n.goal)
+
+    def test_frontier_stops_translation_before_turning_toward_unknown_terrain(self):
+        n=self.frontier_node()
+        n.current_purpose='frontier';n.current_target=[.39,0.,.71]
+        n.guard['mode']='autonomous';n.run.heartbeat_wall=100.;n.healthy=lambda:True
+        n.goal=MagicMock();n.sample_motion=MagicMock()
+        n.guard_wall=n.odometry_wall=100.1;n.velocity=[.15,0.]
+        n.check_waypoint_arrival(100.1)
+        n.goal.cancel_goal_async.assert_called_once()
+        n.sample_motion.assert_not_called()
+        with patch.object(self.module.time,'monotonic',return_value=100.2),patch.object(
+                self.module,'GoalStatus',NS(STATUS_SUCCEEDED=4,STATUS_CANCELED=5)):
+            n.finish_navigation(NS(status=5),'frontier')
+        self.assertFalse(n.finish_frontier_view(100.3))
+        n.sample_motion.assert_not_called()
+        n.guard_wall=n.odometry_wall=100.35;n.velocity=[0.,0.]
+        self.assertFalse(n.finish_frontier_view(100.4))
+        n.sample_motion.assert_called_once_with(angular=.3)
+        n.pose=lambda:[0.,0.,.66]
+        self.assertFalse(n.finish_frontier_view(100.5))
+        n.sample_motion.assert_called_with()
+        n.guard_wall=n.odometry_wall=100.55
+        self.assertTrue(n.finish_frontier_view(100.6))
+        self.assertEqual([e['kind'] for e in n.run.events if e['kind'].startswith('frontier_turn_')],
+                         ['frontier_turn_started','frontier_turn_completed'])
+
+    def test_early_return_interrupts_frontier_turn_before_dispatching_home(self):
+        n=self.frontier_node()
+        n.current_purpose=n.nav_done='frontier';n.current_target=[.25,0.,-.71]
+        n.guard['mode']='autonomous';n.run.heartbeat_wall=100.;n.healthy=lambda:True
+        n.nav_arrived_at=100.1;n.guard_wall=n.odometry_wall=100.15;n.velocity=[0.,0.]
+        n.sample_motion=MagicMock();n.path=AsyncMock(return_value=n.return_path);n.send_demo=MagicMock()
+        self.assertFalse(n.finish_frontier_view(100.2))
+        n.sample_motion.assert_called_once_with(angular=-.3)
+        n.request_exploration_return()
+        n.guard_wall=n.odometry_wall=100.25;n.velocity=[0.,-.3]
+        with patch.object(self.module.time,'monotonic',return_value=100.3):
+            asyncio.run(n.advance())
+        n.sample_motion.assert_called_with()
+        n.send_demo.assert_not_called()
+        n.guard_wall=n.odometry_wall=100.35;n.velocity=[0.,0.]
+        with patch.object(self.module.time,'monotonic',return_value=100.4):
+            asyncio.run(n.advance())
+        n.send_demo.assert_called_once_with(n.home_map(),'home')
+        self.assertEqual(n.run.frontier_visits,[])
+
+    def test_frontier_detour_stop_requires_a_nearby_clear_pose_and_a_current_long_plan(self):
+        for distance,clear,current,detour,expected in (
+                (.58,True,True,True,True),(.58,False,True,True,False),
+                (.58,True,False,True,False),(.58,True,True,False,False),(.66,True,True,True,False)):
+            with self.subTest(distance=distance,clear=clear,current=current,detour=detour):
+                n=self.frontier_node()
+                n.current_purpose='frontier';n.current_target=[distance,0.,.70]
+                n.guard['mode']='autonomous';n.run.heartbeat_wall=100.;n.healthy=lambda:True
+                n.goal=MagicMock();n.sample_motion=MagicMock()
+                start=[0.,0.,0.] if current else [-.3,0.,0.]
+                n.active_path=[start,[0.,1.,0.],[distance,1.,0.],n.current_target] if detour else [start,n.current_target]
+                if not clear:n.grid.data[n.grid.cell(0.,0.)]=100
+                n.check_waypoint_arrival(100.1)
+                self.assertEqual(n.goal.cancel_goal_async.call_count,int(expected))
+                self.assertEqual(n.frontier_detour_stop,expected)
+                n.sample_motion.assert_not_called()
+                if expected:
+                    # Preserve the extended arrival region through Nav2's
+                    # terminal result and check the settled pose again.
+                    n.active_path=[]
+                    self.assertEqual(n.waypoint_arrival_pose(100.2),n.pose())
 
     def test_progress_abort_counts_as_arrival_only_at_a_clear_ready_waypoint(self):
         for distance,clear,ready,code,expected in ((.235,True,True,105,True),(.41,True,True,105,False),
@@ -362,6 +433,108 @@ class AdapterTests(unittest.TestCase):
         self.assertEqual(n.run.reason,'Survey mapping time reached')
         n.cancel.assert_called_once()
 
+    def test_survey_checks_a_short_frontier_before_a_high_gain_distant_one(self):
+        n=self.frontier_node();n.run.policy=DemoPolicy.survey()
+        n.grid=Grid(np.zeros((800,800),np.int8),.05,-20.,-20.)
+        local=[0.,3.,0.];remote=[12.,0.,0.]
+        n.frontier_trail=np.column_stack((np.zeros(16),np.linspace(0.,3.,16)))
+        n.path=AsyncMock(side_effect=lambda a,b:[a,b])
+        n.send_demo=MagicMock()
+        with patch.object(self.module.time,'monotonic',return_value=500.):
+            asyncio.run(n.choose_frontier([dict(self.candidate(remote),expected_gain_m2=100.),self.candidate(local)]))
+        n.send_demo.assert_called_once_with(local,'frontier')
+        self.assertEqual(n.path.await_count,2)
+
+    def test_survey_prefers_a_clear_longer_leg_over_a_shorter_or_distant_one(self):
+        n=self.frontier_node();n.run.policy=DemoPolicy.survey()
+        n.grid=Grid(np.zeros((800,800),np.int8),.05,-20.,-20.)
+        short=[1.6,0.,0.];longer=[4.5,0.,0.];remote=[12.,0.,0.]
+        n.path=AsyncMock(side_effect=lambda a,b:[a,b])
+        n.send_demo=MagicMock()
+        with patch.object(self.module.time,'monotonic',return_value=500.):
+            asyncio.run(n.choose_frontier([self.candidate(short),self.candidate(longer),
+                                           dict(self.candidate(remote),expected_gain_m2=100.,score=10.)]))
+        n.send_demo.assert_called_once_with(longer,'frontier')
+        self.assertEqual(n.path.await_count,2)
+        event=next(e for e in n.run.events if e['kind']=='frontier_selected')
+        self.assertTrue(event['preferred_long_leg'])
+        self.assertEqual(event['outward_distance_m'],4.5)
+
+    def test_survey_uses_shorter_fallback_when_the_long_leg_detours_or_retraces(self):
+        for detour in (False,True):
+            with self.subTest(detour=detour):
+                n=self.frontier_node();n.run.policy=DemoPolicy.survey()
+                n.grid=Grid(np.zeros((800,800),np.int8),.05,-20.,-20.)
+                short=[0.,1.3,0.];longer=[4.5,0.,0.]
+                if not detour:
+                    n.frontier_trail=np.column_stack((np.linspace(0.,4.5,25),np.zeros(25)))
+                def path(a,b):
+                    return [a,[0.,3.,0.],[4.5,3.,0.],b] if detour and b==longer else [a,b]
+                n.path=AsyncMock(side_effect=path)
+                n.send_demo=MagicMock()
+                with patch.object(self.module.time,'monotonic',return_value=500.):
+                    asyncio.run(n.choose_frontier([self.candidate(short),self.candidate(longer)]))
+                n.send_demo.assert_called_once_with(short,'frontier')
+                self.assertEqual(n.path.await_count,3)
+                self.assertNotIn((longer,n.home_map()),[call.args for call in n.path.await_args_list])
+                event=next(e for e in n.run.events if e['kind']=='frontier_selected')
+                self.assertFalse(event['preferred_long_leg'])
+
+    def test_survey_longer_leg_still_has_to_fit_the_return_reserve(self):
+        n=self.frontier_node();n.run.policy=DemoPolicy.survey()
+        n.grid=Grid(np.zeros((800,800),np.int8),.05,-20.,-20.)
+        short=[1.6,0.,0.];longer=[4.5,0.,0.]
+        n.rtf=lambda:.15
+        n.path=AsyncMock(side_effect=lambda a,b:[a,b])
+        n.send_demo=MagicMock()
+        with patch.object(self.module.time,'monotonic',return_value=1490.):
+            asyncio.run(n.choose_frontier([self.candidate(short),self.candidate(longer)]))
+        n.send_demo.assert_called_once_with(short,'frontier')
+        rejected=next(e for e in n.run.events if e['kind']=='planning_candidate_rejected')
+        self.assertEqual(rejected['pose'],longer)
+        self.assertIn('exceeds remaining budget',rejected['reason'])
+
+    def test_survey_compares_route_length_around_an_obstacle(self):
+        n=self.frontier_node();n.run.policy=DemoPolicy.survey()
+        n.grid=Grid(np.zeros((800,800),np.int8),.05,-20.,-20.)
+        detour=[1.,1.,0.];short=[3.,0.,0.]
+        def path(a,b):
+            if a==n.pose() and b==detour:
+                return [a,[0.,6.,0.],[1.,6.,0.],b]
+            return [a,b]
+        n.path=AsyncMock(side_effect=path)
+        n.send_demo=MagicMock()
+        with patch.object(self.module.time,'monotonic',return_value=500.):
+            asyncio.run(n.choose_frontier([dict(self.candidate(detour),expected_gain_m2=100.),self.candidate(short)]))
+        n.send_demo.assert_called_once_with(short,'frontier')
+        event=next(e for e in n.run.events if e['kind']=='frontier_selected')
+        self.assertEqual(event['shortest_checked_route_m'],3.)
+
+    def test_survey_stops_comparing_after_three_checked_nearby_round_trips(self):
+        n=self.frontier_node();n.run.policy=DemoPolicy.survey()
+        goals=[self.candidate([1.+.08*i,0.,0.]) for i in range(20)]
+        n.path=AsyncMock(side_effect=lambda a,b:[a,b])
+        n.send_demo=MagicMock()
+        with patch.object(self.module.time,'monotonic',return_value=500.):
+            asyncio.run(n.choose_frontier(goals))
+        n.send_demo.assert_called_once_with(goals[0]['pose'],'frontier')
+        self.assertEqual(n.path.await_count,6)
+
+    def test_survey_checks_a_possible_shorter_route_after_three_detours(self):
+        n=self.frontier_node();n.run.policy=DemoPolicy.survey()
+        n.grid=Grid(np.zeros((800,800),np.int8),.05,-20.,-20.)
+        detours=[[1.+.2*i,0.,0.] for i in range(3)];short=[2.,0.,0.]
+        def path(a,b):
+            if b in detours:
+                return [a,[0.,4.,0.],[b[0],4.,0.],b]
+            return [a,b]
+        n.path=AsyncMock(side_effect=path)
+        n.send_demo=MagicMock()
+        with patch.object(self.module.time,'monotonic',return_value=500.):
+            asyncio.run(n.choose_frontier([self.candidate(p) for p in [*detours,short]]))
+        n.send_demo.assert_called_once_with(short,'frontier')
+        self.assertEqual(n.path.await_count,8)
+
     def test_blocked_return_pauses_and_requires_explicit_healthy_resume(self):
         n=self.frontier_node()
         n.guard['mode']='autonomous'
@@ -434,6 +607,26 @@ class AdapterTests(unittest.TestCase):
         self.assertGreaterEqual(distance_to_route(point,n.failed_route),.65)
         self.assertEqual(n.alternate_route,n.failed_route)
 
+    def test_short_recovery_skips_a_detour_around_the_start(self):
+        n=self.frontier_node();n.operation_deadline=103.5
+        start=[0.,0.,0.];home=[-2.,0.,0.]
+        first=[.5,0.,0.]
+        checks=[]
+        async def path(a,b,**kwargs):
+            checks.append((a,b))
+            if a==start and b==home:
+                raise ValueError('Direct turn blocked')
+            if b==first:
+                return [a,[0.,.25,0.],[.5,.25,0.],b]
+            return [a,b]
+        n.path=path
+        with patch.object(self.module.time,'monotonic',return_value=100.):
+            point,route=asyncio.run(n.recovery_return(start,home,n.selection_generation))
+        self.assertNotEqual(point,first)
+        self.assertAlmostEqual(math.dist(start[:2],point[:2]),.5)
+        self.assertNotIn((first,home),checks)
+        self.assertEqual(route[-1],home)
+
     def test_alternate_skips_a_loop_to_a_nearby_reposition_waypoint(self):
         n=self.frontier_node()
         start=[0.,0.,0.]
@@ -454,6 +647,88 @@ class AdapterTests(unittest.TestCase):
         self.assertEqual(len(offered),2)
         self.assertEqual(point,offered[1])
         self.assertEqual(route[-1],home)
+
+    def test_recovery_turn_follows_the_checked_direction_before_nav2_moves(self):
+        n=self.frontier_node()
+        n.run.phase='exploration_reposition';n.run.heartbeat_wall=100.
+        n.guard['mode']='autonomous';n.healthy=lambda:True
+        start=[0.,0.,math.radians(-135.)];pose=list(start)
+        point=[-.4,1.95,math.pi/2]
+        route=[start,*[[0.,0.,math.radians(yaw)] for yaw in (-160.,-180.,153.,103.)],point]
+        n.pose=lambda:list(pose)
+        n.local_grid=Grid(np.zeros((240,240),np.int8),.025,-3.,-3.)
+        n.local_grid.data[n.local_grid.cell(-.27,.30)]=100
+        n.local_grid_wall=100.
+        n.sample_motion=MagicMock();n.send_demo=MagicMock()
+        n.path=AsyncMock(side_effect=lambda start,target,**kwargs:[start,target])
+        with patch.object(self.module.time,'monotonic',return_value=100.1):
+            with self.assertRaisesRegex(ValueError,'hazardous or unknown ground'):
+                n.check_recovery_rotation(start,math.radians(130.))
+            n.checked_recovery_turn(start,route)
+            n.start_recovery_connector(point,route,100.1)
+            asyncio.run(n.advance_recovery_turn(100.1))
+        n.sample_motion.assert_called_once_with(angular=-.3)
+        n.send_demo.assert_not_called()
+        pose[2]=route[-2][2]
+        n.velocity=[0.,-.03];n.guard_wall=n.odometry_wall=100.2
+        asyncio.run(n.advance_recovery_turn(100.3))
+        n.sample_motion.assert_called_with()
+        n.send_demo.assert_not_called()
+        n.velocity=[0.,0.];n.guard_wall=n.odometry_wall=100.35
+        with patch.object(self.module.time,'monotonic',return_value=100.4):
+            asyncio.run(n.advance_recovery_turn(100.4))
+        n.path.assert_awaited_once_with(pose,point,keepout=None)
+        n.send_demo.assert_called_once_with(point,'clearance')
+
+    def test_recovery_turn_checks_the_latest_local_map_before_motion(self):
+        n=self.frontier_node()
+        n.run.phase='exploration_reposition';n.run.heartbeat_wall=100.
+        n.guard['mode']='autonomous';n.healthy=lambda:True
+        n.local_grid=Grid(np.zeros((240,240),np.int8),.025,-3.,-3.)
+        n.local_grid_wall=99.
+        target=[0.,1.,math.pi/2]
+        n.sample_motion=MagicMock();n.send_demo=MagicMock()
+        n.start_recovery_connector(target,[n.pose(),[0.,0.,math.pi/2],target],100.)
+        with patch.object(self.module.time,'monotonic',return_value=100.1):
+            with self.assertRaisesRegex(ValueError,'fresh local ground'):
+                asyncio.run(n.advance_recovery_turn(100.1))
+            n.local_grid_wall=100.1
+            n.local_grid.data[n.local_grid.cell(0.,0.)]=100
+            with self.assertRaisesRegex(ValueError,'hazardous or unknown ground'):
+                asyncio.run(n.advance_recovery_turn(100.1))
+        n.sample_motion.assert_not_called()
+        n.send_demo.assert_not_called()
+
+    def test_changed_recovery_heading_rechecks_and_turns_again_without_rearming(self):
+        n=self.frontier_node()
+        n.run.phase='exploration_reposition';n.run.heartbeat_wall=100.
+        n.guard['mode']='autonomous';n.healthy=lambda:True
+        pose=[0.,0.,0.];n.pose=lambda:list(pose)
+        n.local_grid=Grid(np.zeros((240,240),np.int8),.025,-3.,-3.)
+        n.sample_motion=MagicMock();n.send_demo=MagicMock();n.arm=AsyncMock()
+        target=[0.,1.5,math.pi/2]
+        n.start_recovery_connector(target,[pose[:],[0.,0.,.8],target],100.)
+        pose[2]=.8;n.guard_wall=n.odometry_wall=100.1;n.velocity=[0.,0.]
+        asyncio.run(n.advance_recovery_turn(100.2))
+        n.guard_wall=n.odometry_wall=n.local_grid_wall=100.25
+        first=[pose[:],[0.,0.,1.03],target]
+        second=[[0.,0.,1.03],target]
+        n.path=AsyncMock(side_effect=[first,second])
+        with patch.object(self.module.time,'monotonic',return_value=100.3):
+            asyncio.run(n.advance_recovery_turn(100.3))
+            self.assertEqual(n.recovery_turn.corrections,1)
+            self.assertAlmostEqual(n.recovery_turn.remaining,.23)
+            n.send_demo.assert_not_called()
+            asyncio.run(n.advance_recovery_turn(100.4))
+        self.assertAlmostEqual(n.sample_motion.call_args.kwargs['angular'],.23)
+        pose[2]=1.03
+        asyncio.run(n.advance_recovery_turn(100.5))
+        n.send_demo.assert_not_called()
+        n.guard_wall=n.odometry_wall=100.55
+        with patch.object(self.module.time,'monotonic',return_value=100.6):
+            asyncio.run(n.advance_recovery_turn(100.6))
+        n.arm.assert_not_awaited()
+        n.send_demo.assert_called_once_with(target,'clearance')
 
     def test_automatic_replan_waits_for_stop_and_keeps_existing_owner_lease(self):
         n=self.frontier_node()
@@ -477,7 +752,7 @@ class AdapterTests(unittest.TestCase):
             asyncio.run(task(now,token))
         self.assertEqual(n.run.heartbeat_wall,99.8)
         self.assertEqual(n.run.phase,'exploration_reposition')
-        self.assertEqual(n.auto_retry_count,1)
+        self.assertEqual(n.auto_retry_locations,[[0.,0.]])
         n.send_demo.assert_called_once_with(connector,'clearance')
         self.assertTrue(any(e.get('automatic') for e in n.run.events))
 
@@ -512,21 +787,68 @@ class AdapterTests(unittest.TestCase):
         n.arm.assert_awaited_once()
         n.send_demo.assert_called_once_with(next_frontier,'frontier')
 
-    def test_automatic_replan_does_not_arm_on_expired_lease_or_exhausted_retries(self):
-        for heartbeat,count in ((97.,0),(99.8,2)):
-            n=self.frontier_node()
-            n.healthy=lambda:True
-            n.velocity=[0.,0.]
-            n.active_path=[[0.,0.,0.],[3.,0.,0.]]
-            n.executor=MagicMock();n.arm=AsyncMock()
-            n.run.heartbeat_wall=heartbeat;n.auto_retry_count=count
-            with patch.object(self.module.time,'monotonic',return_value=100.):
-                n.route_blocked('Route blocked')
-                n.guard_received(self.message(stop_generation=8))
-                n.schedule_automatic_replan(100.)
-            self.assertEqual(n.run.phase,'exploration_paused')
-            n.executor.create_task.assert_not_called()
-            n.arm.assert_not_awaited()
+    def test_automatic_replan_does_not_arm_on_expired_lease(self):
+        n=self.frontier_node()
+        n.healthy=lambda:True;n.velocity=[0.,0.]
+        n.active_path=[[0.,0.,0.],[3.,0.,0.]]
+        n.executor=MagicMock();n.arm=AsyncMock()
+        n.run.heartbeat_wall=97.
+        with patch.object(self.module.time,'monotonic',return_value=100.):
+            n.route_blocked('Route blocked')
+            n.guard_received(self.message(stop_generation=8))
+            n.schedule_automatic_replan(100.)
+        self.assertEqual(n.run.phase,'exploration_paused')
+        n.executor.create_task.assert_not_called()
+        n.arm.assert_not_awaited()
+
+    def test_new_stopped_location_can_recheck_the_return_route_and_resume_mapping(self):
+        n=self.frontier_node()
+        n.healthy=lambda:True;n.velocity=[0.,0.]
+        n.auto_retry_locations=[[0.,0.],[.1,0.]]
+        n.pose=lambda:[1.4,0.,0.]
+        n.run.heartbeat_wall=99.8;n.arm=AsyncMock()
+        n.recovery_return=AsyncMock(return_value=(None,[n.pose(),n.home_map()]))
+        n.alternative_route=AsyncMock()
+        with patch.object(self.module.time,'monotonic',return_value=100.):
+            n.route_blocked('Return path check failed',return_check=True)
+            n.guard_received(self.message(stop_generation=8))
+            asyncio.run(n.automatic_replan(100.,n.selection_generation))
+        n.alternative_route.assert_not_awaited()
+        n.recovery_return.assert_awaited_once()
+        n.arm.assert_awaited_once()
+        self.assertEqual(n.run.phase,'exploring')
+        self.assertEqual(n.auto_retry_locations[-1],[1.4,0.])
+        self.assertEqual(n.last_route_check,100.)
+
+    def test_exhausted_location_only_checks_a_final_return(self):
+        n=self.frontier_node()
+        n.healthy=lambda:True;n.velocity=[0.,0.]
+        n.run.phase='exploration_paused';n.run.heartbeat_wall=99.8
+        n.auto_retry_locations=[[0.,0.],[.1,0.]]
+        n.recovery_return=AsyncMock(side_effect=ValueError('No checked home route'))
+        n.alternative_route=AsyncMock();n.arm=AsyncMock()
+        with patch.object(self.module.time,'monotonic',return_value=100.):
+            asyncio.run(n.automatic_replan(100.,n.selection_generation))
+            asyncio.run(n.automatic_replan(100.,n.selection_generation))
+        n.alternative_route.assert_not_awaited()
+        n.recovery_return.assert_awaited_once()
+        n.arm.assert_not_awaited()
+        self.assertEqual(n.run.phase,'exploration_paused')
+        self.assertTrue(n.resume_return)
+        self.assertEqual(n.auto_retry_locations,[[0.,0.],[.1,0.]])
+
+    def test_automatic_recovery_at_the_mapping_limit_chooses_the_checked_return(self):
+        n=self.frontier_node();n.run.policy=DemoPolicy.survey()
+        n.healthy=lambda:True;n.velocity=[0.,0.]
+        n.run.phase='exploration_paused';n.run.heartbeat_wall=1499.8
+        n.recovery_return=AsyncMock(return_value=(None,[n.pose(),n.home_map()]))
+        n.alternative_route=AsyncMock();n.arm=AsyncMock()
+        with patch.object(self.module.time,'monotonic',return_value=1500.):
+            asyncio.run(n.automatic_replan(1500.,n.selection_generation))
+        n.alternative_route.assert_not_awaited()
+        n.recovery_return.assert_awaited_once()
+        n.arm.assert_awaited_once()
+        self.assertEqual(n.run.phase,'exploration_return')
 
     def test_failed_alternate_checks_a_route_home_with_the_same_operator_lease(self):
         n=self.frontier_node()

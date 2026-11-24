@@ -102,7 +102,42 @@ def supporting_plane(points):
     return normal, offset, fraction
 
 
-def measure(depth, k, box, translation, quaternion, localization_covariance, surface=False):
+def low_profile_relief(world, inside, valid, normal, offset):
+    """Measure millimeter-scale relief against nearby, gently curved ground."""
+    ring = ~inside
+    support = ring & (np.abs(world @ normal+offset) <= .03)
+    if support.sum() < .65*ring.sum():
+        return None
+    xy = world[:, :2]-world[support, :2].mean(axis=0)
+    x, y = (xy/np.maximum(.05, xy[support].std(axis=0))).T
+    # A plane alone can classify the crest of a ripple as a thin object.
+    terms = np.column_stack((np.ones(len(x)), x, y, x*x, x*y, y*y))
+    coefficients, _, rank, _ = np.linalg.lstsq(terms[support], world[support, 2], rcond=None)
+    if rank != len(coefficients):
+        return None
+    residual = world[:, 2]-terms @ coefficients
+    noise = float(np.quantile(np.abs(residual[support]), .90))
+    if noise > .015:
+        return None
+    threshold = max(.005, noise+.002)
+    raised = residual >= threshold
+    # Require a local rim as well as height above the fitted surface. A
+    # smooth ripple can still rise above the estimate between ring samples.
+    pixels = np.full(valid.shape, -1, dtype=int)
+    pixels[valid] = np.arange(len(world))
+    rim_samples = 0
+    for a, b in ((pixels[:, :-1], pixels[:, 1:]), (pixels[:-1], pixels[1:])):
+        adjacent = (a >= 0) & (b >= 0)
+        a, b = a[adjacent], b[adjacent]
+        near_box = (inside[a] | inside[b]) & (raised[a] | raised[b])
+        a, b = a[near_box], b[near_box]
+        run = np.linalg.norm(world[a, :2]-world[b, :2], axis=1)
+        rise = np.abs(residual[a]-residual[b])
+        rim_samples += int((rise >= np.maximum(.0015, .13*run)).sum())
+    return residual[inside], threshold, rim_samples
+
+
+def measure(depth, k, box, translation, quaternion, localization_covariance, surface=False, *, low_profile=False):
     """Return odom measurement, conservative covariance and independent relief test."""
     k, box = np.asarray(k, float), np.asarray(box, float)
     h, w = depth.shape
@@ -112,7 +147,7 @@ def measure(depth, k, box, translation, quaternion, localization_covariance, sur
         raise ValueError('Invalid aligned box/calibration')
     camera_rotation = rotation(quaternion)
     translation = np.asarray(translation, float)
-    points, inside, total, _, _, _ = _points(depth, k, box, .5)
+    points, inside, total, valid, _, _ = _points(depth, k, box, .3 if low_profile else .5)
     core = points[inside]
     if len(core) < 9 or len(core) < .2*total:
         raise ValueError('Insufficient valid depth inside detection')
@@ -144,10 +179,25 @@ def measure(depth, k, box, translation, quaternion, localization_covariance, sur
         normal, offset, fraction = plane
         heights = world[inside] @ normal+offset
         raised = heights >= .03
-        evidence.update(plane_inlier_fraction=fraction, raised_fraction=float(raised.mean()),
-                        supported=bool(raised.mean() >= .2), contradiction=bool(raised.mean() < .2),
-                        reason='raised geometry supported' if raised.mean() >= .2 else 'insufficient raised geometry')
-        if evidence['supported']:
+        supported = bool(raised.mean() >= .2)
+        evidence.update(plane_inlier_fraction=fraction, raised_fraction=float(raised.mean()))
+        reason = 'raised geometry supported' if supported else 'insufficient raised geometry'
+        contradiction = not supported
+        if low_profile and not supported:
+            dense = fraction >= .65 and len(core) >= .8*total
+            relief = low_profile_relief(world, inside, valid, normal, offset) if dense else None
+            contradiction = False
+            if relief is not None:
+                heights, threshold, rim_samples = relief
+                raised = heights >= threshold
+                supported = bool(raised.sum() >= 12 and raised.mean() >= .12 and rim_samples >= 4)
+                fully_visible = min(box[0], box[1], w-box[2], h-box[3]) >= 3.
+                contradiction = bool(fully_visible and (np.abs(heights) < threshold).mean() >= .9)
+                evidence.update(low_profile_relief_m=threshold, low_profile_raised_fraction=float(raised.mean()),
+                                low_profile_rim_samples=rim_samples)
+            reason = 'low-profile slab geometry supported' if supported else 'insufficient low-profile slab relief'
+        evidence.update(supported=supported, contradiction=contradiction, reason=reason)
+        if supported:
             selected = core[raised]
     # Median surface location, not a collection pose or inferred object center.
     optical = np.median(selected, axis=0)

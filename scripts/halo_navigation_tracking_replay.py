@@ -8,7 +8,7 @@ import argparse
 import json
 from pathlib import Path
 
-from rover_navigation.sample_sites import DEFAULTS, DEMO_BASELINE_M, SiteStore
+from rover_navigation.sample_sites import DEFAULTS, DEMO_BASELINE_M, DEMO_DEFAULTS, SiteStore
 from rover_navigation.tracking_evaluation import reference_matches
 
 
@@ -16,22 +16,23 @@ def replay(events, trial, scene):
     store, frames = None, 0
     positive, negative, rejected_negative = 0, 0, 0
     configuration = None
-    baseline = DEFAULTS['min_baseline_m']
+    defaults = DEFAULTS
     false_events, duplicate_events, seen_false, seen_duplicate = [], [], set(), set()
     for event in events:
         if event['kind'] == 'configuration':
             configuration = event
-            if event['defaults'] not in (DEFAULTS, dict(DEFAULTS, min_baseline_m=DEMO_BASELINE_M)):
+            defaults = event['defaults']
+            if defaults not in (DEFAULTS, dict(DEFAULTS, min_baseline_m=DEMO_BASELINE_M), DEMO_DEFAULTS):
                 raise ValueError('Recorded thresholds differ from this replay implementation')
-            baseline = event['defaults']['min_baseline_m']
         if event['kind'] != 'frame':
             continue
         if store is None or store.epoch != event['epoch']:
-            store = SiteStore(epoch=event['epoch'], min_baseline_m=baseline)
+            store = SiteStore(epoch=event['epoch'], min_baseline_m=defaults['min_baseline_m'],
+                              demo_mode=defaults==DEMO_DEFAULTS)
         store.update(event['observations'], event['stamp'], event['observer'], event['camera'][:3],
                      event['eligible_visible_misses'])
         current = [store.export(item) for item in store.objects if item['state'] == 'confirmed']
-        current_score = reference_matches(current, trial['start'], scene)
+        current_score = reference_matches(current, trial['start'], scene, classes=defaults['automatic_classes'])
         for item in current_score['false_confirmed']:
             identity = (event['epoch'], item['track_id'])
             if identity not in seen_false:
@@ -43,9 +44,10 @@ def replay(events, trial, scene):
                 seen_duplicate.add(identity)
                 duplicate_events.append(dict(stamp=event['stamp'], reference=name))
         for observation in event['observations']:
-            if observation['class_name'] not in DEFAULTS['automatic_classes']:
+            if observation['class_name'] not in defaults['automatic_classes']:
                 continue
-            labels = reference_matches([dict(observation, track_id='observation')], trial['start'], scene)
+            labels = reference_matches([dict(observation, track_id='observation')], trial['start'], scene,
+                                       classes=defaults['automatic_classes'])
             if labels['matches']:
                 positive += 1
             else:
@@ -55,7 +57,7 @@ def replay(events, trial, scene):
     if configuration is None or store is None:
         raise ValueError('No configuration and replayable frames')
     confirmed = [store.export(item) for item in store.objects if item['state'] == 'confirmed']
-    scoring = reference_matches(confirmed, trial['start'], scene)
+    scoring = reference_matches(confirmed, trial['start'], scene, classes=defaults['automatic_classes'])
     return dict(test='phase3_recorded_tracking_replay', passed=bool(confirmed) and not scoring['false_confirmed']
                 and not scoring['duplicate_references'] and not false_events and not duplicate_events
                 and positive > 0 and rejected_negative > 0,

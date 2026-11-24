@@ -38,6 +38,17 @@ class TrackTests(unittest.TestCase):
         self.assertEqual(demo.objects[0]['confirmation_view_count'], 3)
         self.assertEqual(standard.objects[0]['state'], 'tentative')
 
+    def test_demo_confirms_supported_rocks_crystals_and_slabs_after_two_views(self):
+        for name in ('rock', 'yellow_crystal_rock', 'mudstone_slab'):
+            with self.subTest(name=name):
+                demo = SiteStore(demo_mode=True)
+                update(demo, 1., 0., [observation(name)])
+                update(demo, 1.5, .01, [observation(name)])
+                self.assertEqual(demo.objects[0]['state'], 'tentative')
+                update(demo, 2.2, .19, [observation(name)])
+                self.assertEqual(demo.objects[0]['state'], 'confirmed')
+                self.assertEqual(demo.objects[0]['confirmation_view_count'], 2)
+
     def test_single_detection_is_tentative(self):
         store = SiteStore()
         update(store, 1., 0.)
@@ -205,6 +216,20 @@ class GeometryTests(unittest.TestCase):
         result = measure(depth, self.k, [45, 45, 75, 75], [0., 0., 1.], [1., 0., 0., 0.], np.zeros((6, 6)))
         self.assertFalse(result['geometry']['supported'])
         self.assertFalse(result['geometry']['contradiction'])
+
+    def test_low_profile_slab_requires_measured_relief_above_supporting_ground(self):
+        depth = np.ones((120, 120))
+        args = (self.k, [45, 45, 75, 75], [0., 0., 1.], [1., 0., 0., 0.], np.zeros((6, 6)))
+        flat = measure(depth, *args, low_profile=True)
+        self.assertFalse(flat['geometry']['supported'])
+        self.assertTrue(flat['geometry']['contradiction'])
+        depth[50:70, 49:71] = .992
+        standard = measure(depth, *args)
+        slab = measure(depth, *args, low_profile=True)
+        self.assertFalse(standard['geometry']['supported'])
+        self.assertTrue(slab['geometry']['supported'])
+        self.assertFalse(slab['geometry']['contradiction'])
+        self.assertAlmostEqual(slab['odom_position'][2], .008)
 
     def test_invalid_pose_uncertainty_is_rejected(self):
         for index, value in ((0, .011), (35, math.radians(6)**2), (0, -1.), (0, math.nan)):

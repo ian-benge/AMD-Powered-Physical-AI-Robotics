@@ -90,12 +90,11 @@ controller. This verifies middleware integration, not autonomous driving.
 
 If Ubuntu's default archive hosts are unavailable, the Jazzy image accepts an
 explicit HTTPS mirror override, for example
-`--build-arg UBUNTU_MIRROR=https://mirrors.edge.kernel.org/ubuntu` on the first
+`--build-arg UBUNTU_MIRROR=https://ubuntu.osuosl.org/ubuntu` on the first
 `docker build` command. The navigation image inherits those sources. Ubuntu's
 archive signing keys and apt verification stay enabled; an incomplete index
-update fails the build. CI uses this override and a bounded mirror preflight
-following the November 11 upstream DNS outage. This changes the image build's
-package-download route, not the separately pinned Halo runtime images.
+update fails the build. CI tries the Ubuntu archive over HTTPS and rebuilds both
+images using the Oregon State University mirror if either image build fails.
 
 For a stopped procedural scene, continue with [Getting started, steps 3–4](GETTING_STARTED.md#3-generate-a-procedural-demonstration-world).
 That portable CPU demonstration is separate from the qualified Halo Ogre path.

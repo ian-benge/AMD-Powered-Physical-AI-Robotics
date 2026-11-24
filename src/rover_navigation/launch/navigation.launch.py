@@ -103,10 +103,12 @@ def build_nodes(context, scene, run, source, database):
     from mars_training_environment.robot import robot_description
     from rover_navigation.core import DRIVE_CENTER_X, FOOTPRINT
     from rover_navigation.coverage import ground_view
+    from rover_navigation.demo_core import DEMO_MAP_EDGE_SETBACK_M, DEMO_PLANNING_MAP_TOPIC
     camera = scene['config']['camera']
     try: demo_mode = LaunchConfiguration('demo_mode').perform(context) == 'true'
     except KeyError: demo_mode = False
     demo_profile = LaunchConfiguration('demo_profile').perform(context) if demo_mode else 'full'
+    edge_setback = demo_mode and scene['operating_map_size_m'] == 40.
     rear_wheel_friction = .25 if demo_mode else None
     rear_rolling_friction = .80 if demo_mode else None
     description = robot_description(scene['config'], navigation=True, drive_center_x=DRIVE_CENTER_X,
@@ -133,6 +135,7 @@ def build_nodes(context, scene, run, source, database):
                                                    manual_max_angular_speed=float(LaunchConfiguration('manual_max_angular_speed').perform(context)),
                                                    manual_initial_linear_speed=float(LaunchConfiguration('manual_initial_linear_speed').perform(context)),
                                                    map_size_m=scene['operating_map_size_m'],
+                                                   map_edge_setback_m=DEMO_MAP_EDGE_SETBACK_M if edge_setback else 0.,
                                                    demo_mode=demo_mode,demo_profile=demo_profile,
                                                    gui=LaunchConfiguration('gui').perform(context),
                                                    rviz=LaunchConfiguration('rviz').perform(context),
@@ -185,6 +188,8 @@ def build_nodes(context, scene, run, source, database):
     for costmap in ('local_costmap', 'global_costmap'):
         configured = params[costmap][costmap]['ros__parameters']
         configured['robot_base_frame'], configured['footprint'] = 'drive_center', footprint
+        if edge_setback and costmap == 'global_costmap':
+            configured['ground']['map_topic'] = DEMO_PLANNING_MAP_TOPIC
     (run/'nav2.yaml').write_text(yaml.safe_dump(params))
     sim = {'use_sim_time': True}
     gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource(str(
@@ -248,8 +253,9 @@ def build_nodes(context, scene, run, source, database):
         if name=='mission' and demo_mode:
             options.update(session=str(run),demo_output=str(run/'demo-events.jsonl'),demo_profile=demo_profile,
                            frontier_bt=str(run/'frontier_navigate.xml'),clearance_bt=str(run/'clearance_navigate.xml'))
+        remappings = [('/navigation/terrain_map', DEMO_PLANNING_MAP_TOPIC)] if name == 'mission' and edge_setback else []
         nodes.append(Node(package='rover_navigation', executable='demo_mission' if name=='mission' and demo_mode else name,
-                          output='screen', parameters=[sim, options]))
+                          output='screen', parameters=[sim, options], remappings=remappings))
     if LaunchConfiguration('rviz').perform(context) == 'true':
         nodes.append(Node(package='rviz2', executable='rviz2', name='navigation_rviz',
                           arguments=['-d', str(share/'config/navigation.rviz')], parameters=[sim],

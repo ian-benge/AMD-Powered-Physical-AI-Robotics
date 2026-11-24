@@ -2,6 +2,28 @@
 
 This publication separates reproducible CPU checks, ROS compilation, actual accelerator execution and bounded driving evidence. A passing unit suite cannot substitute for any of the other three.
 
+## Demo visuals and validation
+
+[Watch the capstone demo on Google Drive](https://drive.google.com/file/d/1fzdO_vHzRV3fEmbq78xAgBsiyACJd2Ww/view?usp=sharing).
+
+### Rover dashboard
+
+![Terrain and objects dashboard with measured ground, hazards, tracked sample sites, and a rover route](media/demo-terrain-dashboard.png)
+
+The simulated rover dashboard shows the driven trail, measured terrain, hazards, and tracked objects. At capture time the dashboard reported 90 confirmed tracks and five pending.
+
+### Multi-class NPU detection
+
+![Annotated simulator camera frame and per-class precision and recall for the AMD NPU detector](media/npu-detection-validation.png)
+
+The epoch-22 YOLOv8s A16W8 candidate scored **78.90% mAP50–95** on 100 held-out synthetic test images. The annotated frame shows the detector running in the live simulator. [Matched detector evaluation](CAPTURE5000_MODEL_ASSESSMENT.md#matched-accuracy).
+
+### Terrain map accuracy
+
+![Terrain audit map and ground-height error chart with a worst per-frame p95 of 4.24 mm across 107 frames and exact CPU/ROCm parity in 14 replay cases](media/terrain-map-validation.png)
+
+All 107 synchronized frames passed the 15 mm ground-height review, with a worst per-frame p95 error of **4.24 mm** against the saved simulator terrain mesh. CPU and ROCm cost maps matched across all 14 cases in the separate 40 m replay. [Rendered-depth review](PHASE3_MAPPING_ACCEPTANCE_20261105.md#attended-rendered-depth-review) · [40 m replay scope](SIMULATION_ENVIRONMENT_V2_CLOSEOUT.md).
+
 ## Run the source checks
 
 ```bash

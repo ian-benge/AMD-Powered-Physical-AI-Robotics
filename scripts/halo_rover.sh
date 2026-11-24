@@ -4,18 +4,18 @@ set -euo pipefail
 CAPSTONE=/home/ian/capstone-training
 SIM_STAGE=$CAPSTONE/rover-sim
 DEMO_ROOT=$CAPSTONE/rover-navigation/navigation_sessions/autonomous-demo-20261109
-DEMO_RUNTIME=$DEMO_ROOT/runtime-v50
+DEMO_RUNTIME=$DEMO_ROOT/runtime-v58
 TERRAIN_STARTER=$DEMO_ROOT/gpu-repair-20261117/terrain-sdma-off-v3/start_terrain.sh
 
 usage() {
   cat <<'USAGE'
-Halo V50 survey commands
+Halo V58 survey commands
 
   capture       Start a fresh capture
   temps         Monitor temperatures
   npu           Qualify and start the NPU service
   demo-terrain  Check cooldown and start terrain compute
-  demo          Start V50 survey at 0.15 m/s
+  demo          Start V58 survey at 0.15 m/s
   view          Inspect the stopped scene for 10 seconds
   rviz          Open the live navigation map
   gazebo        Open the live Gazebo GUI

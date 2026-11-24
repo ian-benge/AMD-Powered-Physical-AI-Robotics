@@ -1,12 +1,14 @@
 # Autonomous exploration and simulated sampling
 
 For the current Halo demo, use the
-[V50 survey commands](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v50-thermal-cutoff-and-run-commands).
+[V58 survey commands](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v58-edge-soil-and-mudstone-tracking).
 
-V50 is staged for attended survey testing. Prior rehearsals verified home
-arrival, and installed ROS replay verified simulated sample delivery. The
-next live milestone is a full survey, sample trip and verified second home
-stop. [Survey results](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v49-long-survey-and-sampling-demo).
+V50 completed a 25-minute survey, verified its first home arrival and
+recorded simulated collection. V51 puts **Return home** in the sticky
+toolbar through the sample approach and collection. V55 completed the
+second home stop and delivered a simulated sample. V56 completed the
+25-minute survey and returned autonomously with 53.0% measured.
+[Survey results](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v57-longer-survey-legs).
 
 **November 10 incident:** the first v11 autonomous rehearsal froze during its
 first return. Its shutdown was unclean and the initiating cause is unresolved.
@@ -118,11 +120,11 @@ The Halo finish command displays `MANUAL_SESSION_CLOSED_CLEANLY` for a clean
 short rehearsal. The protected endurance receipt remains in the case directory.
 See the dashboard or demo event log for the mission result.
 
-The staged release passed the navigation tests, ROS service smoke probe and all
-three scene launch checks. Live avoidance and a complete object sampling trip
-are awaiting attended verification.
+V50 passed the navigation tests, ROS service smoke probe and all three
+scene launch checks. V55 verified a simulated sampling trip in an attended
+run. V58 mapping and recovery still need a full attended run.
 
-### V50 survey workflow
+### V58 survey workflow
 
 The survey aims for 25 minutes of measured-ground mapping, with 32 minutes
 available through the first home arrival. The planner evaluates reachable
@@ -131,25 +133,26 @@ checked frontier remains. The dashboard reports measured coverage and the
 reason for ending exploration.
 
 At the first home stop, select a confirmed sample site and review the
-outbound and return routes. Approve the drive, wait for the simulated
-collection result, and choose **Return home**. The checked departure
-includes a 0.50 m reverse before the rover turns.
+outbound and return routes. Approve the drive and watch **Return home**
+in the top toolbar. It enables when the sample result and navigation
+checks are ready. Click it to authorize the departure, which includes
+a checked 0.50 m reverse before the rover turns.
 
 ## Retained profile and limits
 
 | Setting | Candidate behavior |
 |---|---|
 | Environment | Frozen 40 × 40 m sparse scene; standard/cluttered variations |
-| Camera | V50 Ogre RGB-D at 960 × 540 and 8 Hz, with 0.40 rad downward tilt and 8 m usable depth |
+| Camera | Ogre RGB-D at 960 × 540 and 8 Hz, with 0.40 rad downward tilt and 8 m usable depth |
 | Detector | Frozen epoch-22 A16W8 NPU candidate; baseline retained separately |
 | Terrain | Float64, HIP flags 4, unchanged hazard/clearing rules |
-| Movement | V50 on Halo defaults to 0.15 m/s. The turn cap is 0.30 rad/s. |
+| Movement | The Halo survey defaults to 0.15 m/s. The turn cap is 0.30 rad/s. |
 | Full profile | 30 min overall, exploration and first return up to 20 min, selection 2 min, sampling round trip 8 min |
 | Rehearsal | 12 min overall, exploration and first return up to 6 min, selection 1 min, sampling round trip 4 min |
 | Survey | 42 min overall, mapping up to 25 min, first home stop by 32 min, selection 2 min, sampling round trip 8 min plus unused first-return time |
 | Starter | 45 min including setup and shutdown |
 | Browser lease | Operator page sends 200 ms heartbeats; >1 s without renewal requests Stop |
-| Temperature | V50 uses a 92°C Tctl cutoff for demo workloads and native capture. |
+| Temperature | Demo workloads and native capture use a 92°C Tctl cutoff. |
 
 Coverage is depth-supported area inside the operating map. Launch-only clearance,
 unknown space and hazards are reported separately. It is not complete coverage

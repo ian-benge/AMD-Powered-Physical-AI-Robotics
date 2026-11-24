@@ -9,6 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Optional mirror override for build-time archive/DNS outages. Existing Ubuntu
 # signing keys and apt signature/freshness checks remain in force.
 ARG UBUNTU_MIRROR=""
+# Headless Blender simplifies scanned rock meshes (mars_assets prepare).
 RUN if [ -n "$UBUNTU_MIRROR" ]; then \
         case "$UBUNTU_MIRROR" in https://*) ;; *) echo 'UBUNTU_MIRROR must use HTTPS' >&2; exit 1 ;; esac; \
         sed -i -E "s@https?://(archive|security)\.ubuntu\.com/ubuntu/?@${UBUNTU_MIRROR%/}@g" /etc/apt/sources.list.d/ubuntu.sources; \
@@ -33,10 +34,7 @@ RUN if [ -n "$UBUNTU_MIRROR" ]; then \
         libgl1-mesa-dri \
         libegl1 \
         libegl-mesa0 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Headless Blender simplifies scanned rock meshes (mars_assets prepare).
-RUN apt-get -o APT::Update::Error-Mode=any update && apt-get install -y --no-install-recommends blender \
+        blender \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /work
