@@ -20,16 +20,19 @@ jobs:
       - name: Build Jazzy and navigation images
         run: |
           set -euo pipefail
-          # Independent mirror avoids a Canonical DNS outage; apt still checks
-          # Ubuntu signatures. Fail before a long build if indexes are unreachable.
-          mirror=https://mirrors.edge.kernel.org/ubuntu
-          for suite in noble noble-security; do
-            curl --fail --silent --show-error --head --retry 2 \
-              --connect-timeout 5 --max-time 20 "$mirror/dists/$suite/InRelease"
+          # The navigation image inherits the base image's apt sources.
+          # Retry both builds with an independent mirror if either fails.
+          for mirror in https://archive.ubuntu.com/ubuntu https://ubuntu.osuosl.org/ubuntu; do
+            echo "Building ROS images with $mirror"
+            if docker build --network host --build-arg UBUNTU_MIRROR="$mirror" \
+                -f docker/Dockerfile.jazzy -t rover-jazzy . &&
+              docker build --network host -f docker/Dockerfile.navigation -t rover-navigation .; then
+              exit 0
+            fi
+            echo "::warning::ROS image build failed using $mirror"
           done
-          docker build --network host --build-arg UBUNTU_MIRROR="$mirror" \
-            -f docker/Dockerfile.jazzy -t rover-jazzy .
-          docker build --network host -f docker/Dockerfile.navigation -t rover-navigation .
+          echo '::error::ROS image builds failed with both Ubuntu mirrors'
+          exit 1
       - name: Build ROS packages
         run: |
           docker run --rm -v "$PWD:/work" -w /work rover-navigation bash -c '
