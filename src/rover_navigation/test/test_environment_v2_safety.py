@@ -5,6 +5,8 @@ import unittest
 import numpy as np
 
 from rover_navigation.core import Grid, TerrainMemory, mask_outside_memory, swept_clear
+from rover_navigation.demo_core import demo_map_interior
+from rover_navigation.goal_checks import check_path
 from rover_navigation.manual_input import ManualInput
 from rover_navigation.safety import SafetyGate
 
@@ -21,6 +23,24 @@ class EnvironmentV2SafetyTests(unittest.TestCase):
             inside = (abs(y)<20.)[:,None] & (abs(x)<20.)[None,:]
             self.assertTrue((local.data[~inside]==-1).all())
             self.assertTrue((local.data[inside]==100).all())
+
+    def test_demo_setback_blocks_sweeps_at_all_four_edges(self):
+        boundary=demo_map_interior(TerrainMemory(40.,.025).grid)
+        for dx,dy in ((1.,0.),(-1.,0.),(0.,1.),(0.,-1.)):
+            pose=[16.8*dx,16.8*dy,math.atan2(dy,dx)]
+            local=Grid(np.zeros((240,240),np.int8),.025,pose[0]-3.,pose[1]-3.)
+            self.assertTrue(swept_clear(local,pose,.15,0.))
+            mask_outside_memory(local,boundary)
+            self.assertTrue(swept_clear(local,pose,0.,0.))
+            self.assertFalse(swept_clear(local,pose,.15,0.))
+            self.assertTrue(swept_clear(local,[16.4*dx,16.4*dy,pose[2]],.15,0.))
+
+    def test_demo_setback_rejects_a_route_that_leaves_and_reenters(self):
+        grid=Grid(np.zeros((800,800),np.int8),.05,-20.,-20.)
+        route=[[-2.,16.5,0.],[0.,17.5,0.],[2.,16.5,0.]]
+        check_path(grid,route,route[0],route[-1])
+        with self.assertRaisesRegex(ValueError,'hazardous or unknown ground'):
+            check_path(demo_map_interior(grid),route,route[0],route[-1])
 
     def gate(self, now=10.):
         gate=SafetyGate()

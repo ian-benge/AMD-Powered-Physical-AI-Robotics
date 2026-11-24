@@ -46,6 +46,9 @@ def main():
     assert session['database']=='' and session['navigation_speed']==float(a.speed) and session['camera']['render_engine']=='ogre'
     assert session['manual_max_linear_speed']==max(.10,float(a.speed))
     nav=yaml.safe_load((output/'nav2.yaml').read_text())
+    assert session['map_edge_setback_m']==(0. if a.fixture else 3.)
+    global_ground=nav['global_costmap']['global_costmap']['ros__parameters']['ground']
+    assert global_ground['map_topic']==('/navigation/terrain_map' if a.fixture else '/navigation/demo_planning_map')
     assert nav['controller_server']['ros__parameters']['FollowPath']['desired_linear_vel']==float(a.speed)
     assert session['gui']==a.gui and session['rviz']=='false' and session['sensor_headless']=='false'
     gazebo=next(action for action in actions if hasattr(action,'launch_arguments') and

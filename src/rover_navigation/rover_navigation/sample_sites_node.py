@@ -21,7 +21,8 @@ from vision_msgs.msg import Detection2DArray
 from rover_perception.live_core import image_to_bgr
 from .core import rotation
 from .ros_utils import apply_tf, stamp_seconds
-from .sample_sites import DEFAULTS, DEMO_BASELINE_M, SiteStore
+from .sample_sites import SiteStore
+from .soil_sites import SoilStore
 from .site_geometry import color_histogram, depth_image, measure, pose_covariance, visible_region
 
 
@@ -39,21 +40,19 @@ class SampleSites(Node):
         super().__init__('navigation_sample_sites')
         self.declare_parameter('output', '')
         self.declare_parameter('demo_mode', False)
-        self.soil_store = None
-        if self.get_parameter('demo_mode').value:
-            from .soil_sites import SoilStore
-            self.soil_store = SoilStore(min_baseline_m=DEMO_BASELINE_M)
+        demo_mode = self.get_parameter('demo_mode').value
+        self.soil_store = SoilStore(demo_mode=True) if demo_mode else None
         self.output = Path(self.get_parameter('output').value)
         if not self.get_parameter('output').value or self.output.exists():
             raise ValueError('Specify a new sample-site output path; historical tracks are never restored')
         self.output.parent.mkdir(parents=True, exist_ok=True)
         self.event_stream = self.output.with_name(self.output.stem+'-events.jsonl').open('x')
-        baseline = DEMO_BASELINE_M if self.soil_store is not None else DEFAULTS['min_baseline_m']
-        self.store, self.archived = SiteStore(min_baseline_m=baseline), []
+        self.store, self.archived = SiteStore(demo_mode=demo_mode), []
         self.event_stream.write(json.dumps(dict(kind='configuration', schema_version=2,
-            defaults=dict(DEFAULTS, min_baseline_m=baseline),
+            defaults=self.store.defaults,
             geometry=dict(plane_samples=30, plane_inlier_fraction=.5, plane_tolerance_m=.015,
-                          max_plane_tilt_deg=20, min_relief_m=.03, raised_fraction=.2),
+                          max_plane_tilt_deg=20, min_relief_m=.03, raised_fraction=.2,
+                          low_profile_slabs=demo_mode),
             score_description='engineering evidence score; not calibrated detector accuracy'))+'\n')
         self.depths, self.infos, self.images = OrderedDict(), OrderedDict(), OrderedDict()
         self.pending, self.seen, self.odometry = deque(maxlen=1), deque(maxlen=256), deque(maxlen=120)
@@ -119,10 +118,11 @@ class SampleSites(Node):
             self.flush_events()
             self.archived.append(dict(epoch=self.store.epoch, reason='odometry_reset',
                                       objects=[self.store.export(x) for x in self.store.objects]))
-            self.store = SiteStore(epoch=self.store.epoch+1, min_baseline_m=self.store.min_baseline_m)
+            self.store = SiteStore(epoch=self.store.epoch+1, min_baseline_m=self.store.min_baseline_m,
+                                   demo_mode=self.store.demo_mode)
             if getattr(self,'soil_store',None) is not None:
-                from .soil_sites import SoilStore
-                self.soil_store = SoilStore(epoch=self.store.epoch, min_baseline_m=self.store.min_baseline_m)
+                self.soil_store = SoilStore(epoch=self.store.epoch, demo_mode=self.soil_store.demo_mode,
+                                           min_baseline_m=self.soil_store.min_baseline_m)
             for collection in (self.pending, self.depths, self.infos, self.images, self.seen, self.odometry):
                 collection.clear()
             self.last_processed = -math.inf
@@ -227,7 +227,8 @@ class SampleSites(Node):
                         except (ValueError,np.linalg.LinAlgError) as error:
                             soil_projection_failed=True
                             self.soil_store.event('surface_rejected',stamp,reason=str(error))
-                    measurement = measure(distances, info.k, xyxy, sensor[:3], sensor[3:], covariance)
+                    measurement = measure(distances, info.k, xyxy, sensor[:3], sensor[3:], covariance,
+                                          low_profile=self.store.demo_mode and hypothesis.class_id=='mudstone_slab')
                     rows.append(dict(measurement, class_name=hypothesis.class_id, confidence=hypothesis.score,
                                      appearance=color_histogram(bgr, xyxy), box=xyxy))
                 except (ValueError, np.linalg.LinAlgError) as error:
@@ -248,8 +249,7 @@ class SampleSites(Node):
                 if not soil_projection_failed and len(rows)==sum(bool(d.results) for d in msg.detections):
                     soil_visible=[item['track_id'] for item in self.soil_store.objects if item['state']!='retired'
                                   and visible_region(item,distances,info.k,sensor[:3],sensor[3:])[0]]
-                from .soil_sites import surface_observer
-                self.soil_store.update(soil_rows,stamp,surface_observer(observer),sensor[:3],soil_visible)
+                self.soil_store.update(soil_rows,stamp,observer,sensor[:3],soil_visible)
                 while self.soil_store.events:
                     self.event_stream.write(json.dumps(dict(stream='soil',**self.soil_store.events.popleft()),allow_nan=False)+'\n')
             self.counts['observations'] += len(rows)
@@ -334,7 +334,7 @@ class SampleSites(Node):
                        odometry_resets=self.odometry_resets, accepted_stamp=self.last_processed if math.isfinite(self.last_processed) else None,
                        map_transform_age_seconds=transform_age,
                        processing_ms=self.processing_ms,
-                       defaults=dict(DEFAULTS, min_baseline_m=self.store.min_baseline_m))
+                       defaults=self.store.defaults)
         if emit:
             if getattr(self,'soil_store',None) is not None:
                 sites=[]

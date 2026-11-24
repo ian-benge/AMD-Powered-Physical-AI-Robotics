@@ -40,6 +40,10 @@ def validate_profile(terrain):
     perimeter=terrain.get('perimeter_objects',False)
     if type(perimeter) is not bool or perimeter and terrain.get('profile_version')!=2:
         raise ValueError('Perimeter placement requires the shared version-2 terrain')
+    soil_setback = terrain.get('perimeter_soil_staging_setback_m', 0.)
+    if (type(soil_setback) not in (int, float) or not math.isfinite(soil_setback) or soil_setback<0. or
+            soil_setback and (not perimeter or soil_setback>=terrain.get('size_m',0.)/2)):
+        raise ValueError('The perimeter soil staging setback must fit the perimeter layout')
     if style is not None and (terrain.get('profile_version')!=2 or style!='jezero_ripples'):
         raise ValueError('Jezero surface styling requires the shared version-2 terrain')
     if recipe is not None and (terrain.get('profile_version')!=2 or recipe not in ('standard','rare_demo_v1')):
@@ -128,9 +132,12 @@ def _launch_cell(field):
     return (round((START[1]+field.size/2)/field.step),round((START[0]+field.size/2)/field.step))
 
 
-def connected_staging_centers(field, objects):
+def connected_staging_centers(field, objects, *, edge_setback_m=0.):
     """Known clear centers reachable from launch on the evaluator's terrain."""
     free,x,y,_=free_centers(field,objects)
+    if edge_setback_m:
+        margin=CORRIDOR_RADIUS+math.sqrt(2)*field.step
+        free &= np.maximum(abs(x),abs(y)) <= field.size/2-edge_setback_m-margin
     distance,_=_connected(free,_launch_cell(field),field.step)
     reachable=np.isfinite(distance)
     return np.column_stack((x[reachable],y[reachable]))

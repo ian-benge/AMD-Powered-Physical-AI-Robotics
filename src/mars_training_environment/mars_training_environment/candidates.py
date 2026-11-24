@@ -101,7 +101,8 @@ PERIMETER_SIDES = {'east': (0,1), 'west': (0,-1), 'north': (1,1), 'south': (1,-1
 
 
 def add_candidates(rng, config, field, driveable, assets, root, objects, regions, scene_folder,
-                   allowed_categories=None, *, perimeter_side=None, staging_centers=None):
+                   allowed_categories=None, *, perimeter_side=None, staging_centers=None,
+                   perimeter_band=(.40,.455)):
     """Append mesh candidates and ground regions. Empty scenes call this never."""
     selected = set(config['candidates']['categories'])
     v2=config['terrain'].get('profile_version')==2
@@ -115,7 +116,7 @@ def add_candidates(rng, config, field, driveable, assets, root, objects, regions
     def place(category, index, radius):
         band=None if perimeter_side else candidate_band(config,category,index,band_counts)
         return _place(rng,field,driveable,config,occupied,radius,band=band,
-                      perimeter_side=perimeter_side,staging_centers=staging_centers)
+                      perimeter_side=perimeter_side,staging_centers=staging_centers,perimeter_band=perimeter_band)
 
     for category, key, size_key in (
             ('silica_soil', 'silica_count', 'silica_size_m'),
@@ -578,15 +579,16 @@ def _blob(rng, longest):
 
 
 def _place(rng, field, driveable, config, occupied, radius, band=None, *, perimeter_side=None,
-           staging_centers=None):
+           staging_centers=None, perimeter_band=(.40,.455)):
     size = field.size
     clearance = config['rocks']['clearance_m']
     spawn = config['terrain']['spawn_clearance_m']
     limit = math.tan(math.radians(config['terrain']['max_slope_deg']))
     if band or perimeter_side:limit=math.tan(math.radians(8.))
+    inner,outer=(size*edge for edge in perimeter_band)
     if staging_centers is not None:
         axis,sign=PERIMETER_SIDES[perimeter_side]
-        staging_centers=staging_centers[(staging_centers[:,axis]*sign>=size*.40-radius-1.35)&
+        staging_centers=staging_centers[(staging_centers[:,axis]*sign>=inner-radius-1.35)&
                                        (np.abs(staging_centers[:,1-axis])<=size*.34+radius+1.35)]
         if not len(staging_centers):
             from .reachability import LayoutError
@@ -596,13 +598,13 @@ def _place(rng, field, driveable, config, occupied, radius, band=None, *, perime
             axis,sign=PERIMETER_SIDES[perimeter_side]
             if staging_centers is None:
                 xy=np.empty(2)
-                xy[axis]=sign*rng.uniform(size*.40,size*.455)
+                xy[axis]=sign*rng.uniform(inner,outer)
                 xy[1-axis]=rng.uniform(-size*.34,size*.34)
             else:
                 center=staging_centers[rng.randint(len(staging_centers))]
                 azimuth=rng.uniform(-math.pi,math.pi)
                 xy=center+(radius+rng.uniform(.95,1.35))*np.array([math.cos(azimuth),math.sin(azimuth)])
-                if not size*.40<=xy[axis]*sign<=size*.455 or abs(xy[1-axis])>size*.34:
+                if not inner<=xy[axis]*sign<=outer or abs(xy[1-axis])>size*.34:
                     continue
         elif band:
             angle=(rng.randint(4)*math.pi/2+rng.uniform(-.3,.3)) if band=='outer' else rng.uniform(-math.pi,math.pi)

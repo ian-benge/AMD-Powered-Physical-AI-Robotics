@@ -12,6 +12,9 @@ DEFAULTS = dict(min_views=3, min_baseline_m=.20, min_view_span_s=2., min_confide
                 prior=.20, hit_log_odds=math.log(4), miss_log_odds=math.log(3),
                 score_bounds=[.02, .98], automatic_classes=['rock', 'yellow_crystal_rock'])
 DEMO_BASELINE_M = .18
+DEMO_DEFAULTS = dict(DEFAULTS, min_views=2, min_view_span_s=1., confirmation_score=.80,
+                     min_baseline_m=DEMO_BASELINE_M,
+                     automatic_classes=[*DEFAULTS['automatic_classes'], 'mudstone_slab'])
 
 
 def depth_location(data, encoding, width, height, step, bigendian, k, box):
@@ -63,9 +66,13 @@ def _iou(a, b):
 
 class SiteStore:
     """Conservative, epoch-local static tracks; contains no robot control."""
-    def __init__(self, epoch=0, *, min_baseline_m=DEFAULTS['min_baseline_m']):
+    def __init__(self, epoch=0, *, min_baseline_m=None, demo_mode=False):
         self.epoch, self.objects, self.next_id = epoch, [], 1
-        self.min_baseline_m = min_baseline_m
+        self.demo_mode = demo_mode
+        self.defaults = dict(DEMO_DEFAULTS if demo_mode else DEFAULTS)
+        if min_baseline_m is not None:
+            self.defaults['min_baseline_m'] = min_baseline_m
+        self.min_baseline_m = self.defaults['min_baseline_m']
         self.ambiguous = []
         self.last_stamp = -math.inf
         self.events = deque(maxlen=4096)
@@ -96,19 +103,25 @@ class SiteStore:
         item['_log_odds'] = max(-bound, min(bound, item['_log_odds']+amount))
         item['evidence_score'] = 1/(1+math.exp(-item['_log_odds']))
 
+    def confirmation_ready(self, item):
+        views = item['_confirmation_views']
+        return (len(views) >= self.defaults['min_views'] and
+                views[-1]['stamp']-views[0]['stamp'] >= self.defaults['min_view_span_s']-1e-8 and
+                item['evidence_score'] >= self.defaults['confirmation_score']-1e-10)
+
     def _state(self, item, stamp):
-        eligible = item['class_name'] in DEFAULTS['automatic_classes'] and item['class_support'] >= .70
+        eligible = item['class_name'] in self.defaults['automatic_classes'] and item['class_support'] >= .70
         if item['state'] == 'confirmed' and (item['evidence_score'] < .50 or not eligible):
             self.transition(item, 'unverified', stamp, 'contradictory existence or class evidence')
         if item['evidence_score'] <= .20+1e-10 and item['contradiction_count'] >= 3:
             self.transition(item, 'retired', stamp, 'independent visible contradictions')
             return
-        views = item['_confirmation_views']
-        if (eligible and len(views) >= 3 and views[-1]['stamp']-views[0]['stamp'] >= 2.-1e-8 and
-                item['evidence_score'] >= .90):
-            self.transition(item, 'confirmed', stamp, 'multi-view rock and raised geometry supported')
+        if eligible and self.confirmation_ready(item):
+            reason = ('multi-view slab geometry supported' if item['class_name'] == 'mudstone_slab'
+                      else 'multi-view rock and raised geometry supported')
+            self.transition(item, 'confirmed', stamp, reason)
         elif item['state'] not in ('confirmed', 'retired'):
-            if item['class_name'] not in DEFAULTS['automatic_classes']:
+            if item['class_name'] not in self.defaults['automatic_classes']:
                 item['reason'] = 'class requires later validation; automatic confirmation disabled'
             elif item['class_support'] < .70:
                 item['reason'] = 'inconsistent class evidence'

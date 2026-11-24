@@ -267,6 +267,18 @@ class DemoTests(unittest.TestCase):
         self.assertFalse(frontier_stop_clear(g,stop))
         self.assertTrue(all(frontier_stop_clear(g,p['pose']) for p in observation_frontiers(g,[0.,0.,0.])))
 
+    def test_survey_retains_nearby_views_along_one_long_edge(self):
+        grid=Grid(np.full((160,500),-1,np.int8),.05,-12.5,-4.)
+        grid.data[50:110,20:480]=0
+        pose=[2.,0.,0.];home=[-9.,0.,0.]
+        local=observation_frontiers(grid,pose,home=home,prefer_local=True,max_goals=6)
+        self.assertEqual(len(local),6)
+        self.assertTrue(all(goal['distance_m']<3. for goal in local))
+        self.assertTrue(all(frontier_stop_clear(grid,goal['pose']) for goal in local))
+        wide=observation_frontiers(grid,pose,home=home,prefer_local=True,max_goals=80)
+        self.assertTrue(any(3.5<=math.dist(pose[:2],goal['pose'][:2])<=6. for goal in wide))
+        self.assertTrue(any(goal['distance_m']>6. for goal in wide))
+
     def test_wider_arrival_requires_room_for_the_full_turn_at_the_edge_of_tolerance(self):
         g=self.grid()
         g.data[g.cell(0.,.58)]=-1
@@ -326,16 +338,14 @@ class SoilTests(unittest.TestCase):
         for i in range(6):s.update([self.observation()],float(i),[0.,0.,0.],[.21*i,0.,.7])
         self.assertNotEqual(s.objects[0]['state'],'confirmed')
 
-    def test_front_axle_pivot_does_not_count_base_link_arc_as_translation(self):
-        from rover_navigation.soil_sites import surface_observer
-        from rover_navigation.core import DRIVE_CENTER_X
-        s=SoilStore()
-        for i,angle in enumerate((0.,2*math.pi/3,4*math.pi/3)):
-            base=[-DRIVE_CENTER_X*math.cos(angle),-DRIVE_CENTER_X*math.sin(angle),0.,0.,0.,math.sin(angle/2),math.cos(angle/2)]
-            observer=surface_observer(base)
-            np.testing.assert_allclose(observer[:2],[0.,0.],atol=1e-10)
-            s.update([self.observation()],float(i),observer,[math.cos(angle),math.sin(angle),.7])
-        self.assertEqual(s.objects[0]['independent_view_count'],1)
+    def test_demo_soil_needs_two_supported_views_from_different_drive_centers(self):
+        soil=SoilStore(demo_mode=True)
+        soil.update([self.observation()],0.,[0.,0.,0.],[0.,0.,.7])
+        soil.update([self.observation()],1.,[0.,0.,0.],[.21,0.,.7])
+        self.assertEqual(soil.objects[0]['state'],'tentative')
+        soil.update([self.observation()],2.,[.19,0.,0.],[.19,0.,.7])
+        self.assertEqual(soil.objects[0]['state'],'confirmed')
+        self.assertEqual(soil.objects[0]['confirmation_view_count'],2)
 
     def test_envelope_still_encloses_old_views_after_track_center_moves(self):
         s=SoilStore();s.update([self.observation()],0.,[0,0,0],[0,0,.7])

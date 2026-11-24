@@ -113,7 +113,7 @@ class LaunchTests(unittest.TestCase):
                                     gui='true', rviz='true', mission_controls='true', terrain_collision='scene', detector_model='/trained.pt',
                                     mapping_on_confirm='true')
                 localized_nodes = launch.setup(localization)
-                demo=launch.setup(dict(localization,demo_mode='true',demo_profile='rehearsal',
+                demo=launch.setup(dict(localization,demo_mode='true',demo_profile='rehearsal',map_size_m='40',
                     database='',camera_rate_hz='15',navigation_speed='0.15',manual_max_linear_speed='0.15',
                     session=str(folder/'demo')))
                 demo_mission=next(n for n in demo if n.get('executable')=='demo_mission')
@@ -124,7 +124,10 @@ class LaunchTests(unittest.TestCase):
                 self.assertTrue(any(n.get('executable')=='live_bridge' for n in localized_nodes))
                 self.assertTrue(legacy_slam['parameters'][1]['publish_tf'])
                 self.assertIn(('grid_map', '/map'), legacy_slam['remappings'])
-                self.assertFalse(json.loads((folder/'demo/session.json').read_text())['slam_graph_enabled'])
+                demo_session=json.loads((folder/'demo/session.json').read_text())
+                self.assertFalse(demo_session['slam_graph_enabled'])
+                self.assertEqual(demo_session['map_edge_setback_m'],3.)
+                self.assertIn(('/navigation/terrain_map','/navigation/demo_planning_map'),demo_mission['remappings'])
                 anchors=[n for n in demo if n.get('executable')=='static_transform_publisher']
                 self.assertEqual(len(anchors), 1)
                 self.assertEqual(anchors[0]['arguments'], ['--frame-id', 'map', '--child-frame-id', 'odom'])
@@ -136,7 +139,10 @@ class LaunchTests(unittest.TestCase):
                 self.assertEqual(demo_mission['parameters'][1]['demo_profile'],'rehearsal')
                 self.assertEqual(demo_mission['parameters'][1]['session'],str(folder/'demo'))
                 import yaml
-                demo_controller = yaml.safe_load((folder/'demo/nav2.yaml').read_text())['controller_server']['ros__parameters']
+                demo_nav = yaml.safe_load((folder/'demo/nav2.yaml').read_text())
+                self.assertEqual(demo_nav['global_costmap']['global_costmap']['ros__parameters']['ground']['map_topic'],
+                                 '/navigation/demo_planning_map')
+                demo_controller = demo_nav['controller_server']['ros__parameters']
                 self.assertEqual(demo_controller['FollowPath']['plugin'],
                                  'nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController')
                 self.assertTrue(demo_controller['FollowPath']['use_collision_detection'])

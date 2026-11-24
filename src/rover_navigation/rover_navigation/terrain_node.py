@@ -24,6 +24,7 @@ from tf2_ros import Buffer, TransformException, TransformListener
 from .core import Grid, TerrainMemory, aligned_copy, depth_points, mask_outside_memory, terrain_reasons, traversability
 from .ros_utils import apply_tf, grid_message, stamp_seconds
 from .coverage import coverage_profile
+from .demo_core import DEMO_MAP_EDGE_SETBACK_M, DEMO_PLANNING_MAP_TOPIC, demo_map_interior
 from .object_obstacles import ObjectObstacles
 from .terrain_compute import CpuTerrainCompute
 from .terrain_evidence import ClearanceLocalization, ClearingPolicy, TerrainEvidence
@@ -40,6 +41,7 @@ class Terrain(Node):
             self.declare_parameter(name, value)
         self.mapping_on_confirm = self.get_parameter('mapping_on_confirm').value
         self.demo_mode = self.get_parameter('demo_mode').value
+        self.edge_setback = self.demo_mode and self.get_parameter('map_size_m').value == 40.
         backend = self.get_parameter('terrain_backend').value
         if backend == 'rocm_http':
             from .terrain_service import RemoteTerrainCompute
@@ -75,6 +77,7 @@ class Terrain(Node):
         self.event_stream = Path(output).open('x') if output else None
         if self.event_stream:
             self.event_stream.write(json.dumps(dict(kind='configuration', adaptive_terrain=self.adaptive_enabled,
+                map_edge_setback_m=DEMO_MAP_EDGE_SETBACK_M if self.edge_setback else 0.,
                 policy=asdict(ClearingPolicy())))+'\n')
             self.event_stream.flush()
         self.create_subscription(Odometry, '/odom', self.odometry, qos_profile_sensor_data)
@@ -90,6 +93,8 @@ class Terrain(Node):
         self.local_reasons_pub = self.create_publisher(OccupancyGrid, '/navigation/local_ground_reasons', 1)
         self.map_pub = self.create_publisher(OccupancyGrid, '/navigation/terrain_map', durable)
         self.map_reasons_pub = self.create_publisher(OccupancyGrid, '/navigation/terrain_reasons', durable)
+        if self.edge_setback:
+            self.planning_pub = self.create_publisher(OccupancyGrid, DEMO_PLANNING_MAP_TOPIC, durable)
         if self.demo_mode:
             self.measured_pub = self.create_publisher(OccupancyGrid, '/navigation/measured_ground', durable)
             self.objects = ObjectObstacles()
@@ -106,8 +111,13 @@ class Terrain(Node):
         if self.mapping_on_confirm:
             size = self.get_parameter('map_size_m').value
             blank = Grid(np.full((round(size/.05), round(size/.05)), -1, np.int8), .05, -size/2, -size/2)
-            self.map_pub.publish(grid_message(blank, 'map', self.get_clock().now().to_msg()))
-            self.map_reasons_pub.publish(grid_message(blank, 'map', self.get_clock().now().to_msg()))
+            self.publish_global(blank, blank, self.get_clock().now().to_msg())
+
+    def publish_global(self, grid, reasons, stamp):
+        self.map_pub.publish(grid_message(grid, 'map', stamp))
+        self.map_reasons_pub.publish(grid_message(reasons, 'map', stamp))
+        if self.edge_setback:
+            self.planning_pub.publish(grid_message(demo_map_interior(grid), 'map', stamp))
 
     def object_tracks(self, msg):
         try:
@@ -367,10 +377,11 @@ class Terrain(Node):
             local = self.seeded(local, seed_local)
             local_reasons.data[(local.data >= 0) & (local.data < 90)] = 0
             if self.get_parameter('map_size_m').value == 40.:
-                # Context terrain is rendered and collidable, but observations
-                # there cannot expand the declared navigation operating area.
-                mask_outside_memory(local, self.memory.grid)
-                mask_outside_memory(local_reasons, self.memory.grid)
+                # The 40 m demo fixes the map frame to odometry. Enforce the
+                # planning boundary in the local controller and guard grid too.
+                bounds = demo_map_interior(self.memory.grid) if self.edge_setback else self.memory.grid
+                mask_outside_memory(local, bounds)
+                mask_outside_memory(local_reasons, bounds)
             objects = getattr(self, 'objects', None)
             if objects is not None:
                 objects.apply(local, local_reasons)
@@ -399,8 +410,7 @@ class Terrain(Node):
                     coverage_grid = Grid(global_grid.data.copy(), global_grid.resolution, global_grid.x, global_grid.y)
                 if objects is not None:
                     objects.apply(global_grid, global_reasons, lambda points: apply_tf(points, map_tf))
-                self.map_reasons_pub.publish(grid_message(global_reasons, 'map', depth.header.stamp))
-                self.map_pub.publish(grid_message(global_grid, 'map', depth.header.stamp))
+                self.publish_global(global_grid, global_reasons, depth.header.stamp)
             # Publish safety input only after all requested GPU operations succeed.
             self.local_reasons_pub.publish(grid_message(local_reasons, 'odom', depth.header.stamp))
             self.local_pub.publish(grid_message(local, 'odom', depth.header.stamp))

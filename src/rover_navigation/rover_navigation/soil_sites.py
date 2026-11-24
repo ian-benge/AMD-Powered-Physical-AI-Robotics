@@ -2,15 +2,6 @@
 from .sample_sites import SiteStore
 
 
-def surface_observer(base_pose):
-    """Use the actual rotation center, so pivoting is not translated evidence."""
-    import numpy as np
-    from .core import DRIVE_CENTER_X,rotation
-    pose=list(base_pose)
-    pose[:3]=(np.asarray(pose[:3])+rotation(pose[3:]) @ [DRIVE_CENTER_X,0.,0.]).tolist()
-    return pose
-
-
 class SoilStore(SiteStore):
     def _state(self, item, stamp):
         eligible = item['class_name']=='pale_soil_patch' and item['class_support'] >= .70
@@ -18,8 +9,7 @@ class SoilStore(SiteStore):
             self.transition(item,'unverified',stamp,'soil identity or existence contradicted')
         if item['evidence_score'] <= .20+1e-10 and item['contradiction_count'] >= 3:
             self.transition(item,'retired',stamp,'independent visible contradictions');return
-        views=item['_confirmation_views']
-        if eligible and len(views)>=3 and views[-1]['stamp']-views[0]['stamp']>=2.-1e-8 and item['evidence_score']>=.90:
+        if eligible and self.confirmation_ready(item):
             self.transition(item,'confirmed',stamp,'translated multi-view ground-surface evidence')
         elif item['state'] not in ('confirmed','retired'):
             item['reason']='needs independent translated ground-surface observations'

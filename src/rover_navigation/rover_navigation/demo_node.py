@@ -1,5 +1,6 @@
 """Opt-in two-mission ROS adapter. Only the existing guard publishes cmd_vel."""
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 import json
 import math
 from multiprocessing import get_context
@@ -11,7 +12,7 @@ import rclpy
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import Twist
 from nav2_msgs.action import NavigateToPose
-from nav_msgs.msg import Odometry, Path as PathMessage
+from nav_msgs.msg import OccupancyGrid, Odometry, Path as PathMessage
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.qos import QoSProfile, DurabilityPolicy, ReliabilityPolicy, qos_profile_sensor_data
 from rclpy.time import Time
@@ -23,29 +24,52 @@ from rover_navigation_interfaces.srv import DemoCommand
 from .core import Grid, drive_pose, footprint_avoids_disk, footprint_clear, turn_radius
 from .demo_core import (ACTIVE, CONTACT_RECOVERABLE, CONTACT_RETRY_CLEARANCE, CONTACT_RETREAT_DISTANCE,
                         EXPLORATION_ROUTE_PHASES, FRONTIER_ARRIVAL_RADIUS, FRONTIER_ARRIVAL_YAW,
-                        FRONTIER_CANDIDATE_LIMIT, FRONTIER_SHORTLIST_SIZE,
+                        FRONTIER_CANDIDATE_LIMIT, FRONTIER_DETOUR_STOP_RADIUS, FRONTIER_SHORTLIST_SIZE,
                         REPOSITION_ARRIVAL_MARGIN, REPOSITION_ARRIVAL_RADIUS, REPOSITION_ARRIVAL_YAW,
                         SAMPLE_AT_SITE, SAMPLE_HEADING_TOLERANCE, SAMPLE_REVERSE_DISTANCE, SAMPLE_REVERSE_MAX_SPEED,
+                        SURVEY_FRONTIER_LEG_MIN_M, SURVEY_NEARBY_FRONTIER_M,
                         WAYPOINT_CLEARANCE_PAD,
                         DemoPolicy, DemoRun, SampleBudgetError, SampleGeometryChanged, check_sample_turn, collection_poses,
                         distance_to_route, exploration_overlap, heading_error,
                         follow_recorded_retreat, frontier_stop_clear, observation_frontiers, path_length,
-                        recorded_retreat, return_reserve, sample_reverse_pose,
+                        recorded_retreat, recovery_departure_angle, return_reserve, sample_reverse_pose,
                         sample_reverse_reserve, target_signature)
 from .goal_checks import check_path, pose_values
 from .mission_node import Mission
 from .object_obstacles import SOLID_CLASSES, object_radius
-from .ros_utils import apply_tf, stamp_seconds
+from .ros_utils import apply_tf, from_grid, stamp_seconds
 from .site_geometry import pose_covariance
 
 
 MAX_AUTOMATIC_REPLANS = 2
+AUTOMATIC_REPLAN_LOCATION_RADIUS_M = .65
 ROUTE_COMPARISON_LIMIT = 3
+FRONTIER_TURN_TIMEOUT_SECONDS = 24.
+FRONTIER_DETOUR_MIN_LENGTH_M = 1.5
+FRONTIER_DETOUR_LENGTH_RATIO = 2.5
 MAX_FRONTIER_RETRACE_SECONDS = 60.
+SURVEY_FRONTIER_ROUTE_MARGIN_M = 2.
+SURVEY_LONG_LEG_MAX_TRAIL_OVERLAP = .55
 SOIL_REFINEMENT_ALLOWANCE_M = .30
 STATIONARY_SOIL_EVIDENCE_SECONDS = .85
 NAV2_FAILED_TO_MAKE_PROGRESS = 105
+RECOVERY_TURN_TOLERANCE_RAD = .10
+RECOVERY_TURN_TIMEOUT_SECONDS = 30.
+RECOVERY_TURN_MAX_CORRECTIONS = 2
+RECOVERY_TURN_MAX_CORRECTION_RAD = .55
+SHORT_RECOVERY_MAX_DETOUR_RATIO = 1.8
 WAYPOINT_PURPOSE = {'exploring':'frontier','exploration_reposition':'clearance','contact_rejoin':'clearance'}
+
+
+@dataclass
+class RecoveryTurn:
+    target: list
+    origin: list
+    yaw: float
+    remaining: float
+    deadline: float
+    stop_requested_at: float | None = None
+    corrections: int = 0
 
 
 class DemoMission(Mission):
@@ -79,6 +103,9 @@ class DemoMission(Mission):
         self.nav_done=None
         self.nav_arrived_at=None
         self.waypoint_stop_deadline=None
+        self.frontier_detour_stop=False
+        self.frontier_turn_deadline=None
+        self.frontier_turn_stop_at=None
         self.current_target=None
         self.current_purpose=''
         self.goal_started=0.
@@ -107,13 +134,17 @@ class DemoMission(Mission):
         self.sample_view_angles=[]
         self.failed_route=[]
         self.frontier_arrival_blocked=False
+        self.return_route_blocked=False
         self.alternate_route=[]
         self.auto_retry_pending=False
-        self.auto_retry_count=0
+        self.auto_retry_locations=[]
         self.auto_retry_until=0.
         self.resume_return=False
         self.contact_point=None
         self.retreat_route=None
+        self.recovery_turn=None
+        self.local_grid=None
+        self.local_grid_wall=-math.inf
         self.retreat_pub=self.create_publisher(Twist,'/navigation/retreat_cmd_vel',1)
         self.retreat_client=self.create_client(Trigger,'/navigation/enable_retreat')
         self.actual_distance=0.
@@ -134,6 +165,7 @@ class DemoMission(Mission):
         self.create_subscription(String,'/navigation/sample_sites',self.objects_received,durable)
         self.create_subscription(String,'/rock_detector/status',self.detector_received,1)
         self.create_subscription(Odometry,'/odom',self.odom_received,qos_profile_sensor_data)
+        self.create_subscription(OccupancyGrid,'/navigation/local_ground',self.local_ground_received,1)
         self.create_subscription(PathMessage,'/plan',self.actual_plan,1)
 
     # Legacy mission entrypoints must not bypass the demo state machine.
@@ -171,6 +203,17 @@ class DemoMission(Mission):
 
     def mapping_received(self,msg):
         self.mapping=json.loads(msg.data);self.mapping_wall=time.monotonic()
+
+    def local_ground_received(self,msg):
+        if msg.header.frame_id=='odom':
+            try:
+                self.local_grid=from_grid(msg)
+                self.local_grid_wall=time.monotonic()
+                return
+            except ValueError:
+                pass
+        self.local_grid=None
+        self.local_grid_wall=-math.inf
 
     def soils_received(self,msg):
         self.soils=json.loads(msg.data);self.soils_wall=time.monotonic()
@@ -257,6 +300,7 @@ class DemoMission(Mission):
     def actual_plan(self,msg):
         if not hasattr(self,'run') or self.run.phase not in ACTIVE or not msg.poses:return
         if (self.goal is None and not self.pending) or self.current_target is None:return
+        if self.waypoint_stop_deadline is not None:return
         try:
             path=[pose_values(p) for p in msg.poses]
             # The planner also publishes paths requested for candidate scoring.
@@ -288,7 +332,11 @@ class DemoMission(Mission):
         if self.stop_client.service_is_ready():self.stop_client.call_async(Trigger.Request())
         self.flush()
 
-    def route_blocked(self,reason,*,frontier_arrival=False):
+    def cancel(self):
+        self.recovery_turn=None
+        super().cancel()
+
+    def route_blocked(self,reason,*,frontier_arrival=False,return_check=False):
         r=self.run
         if r.phase=='exploration_paused':
             return
@@ -306,6 +354,7 @@ class DemoMission(Mission):
         self.resume_return=(self.return_requested or r.phase=='exploration_return' or
                             r.phase=='exploration_reposition' and self.resume_return)
         self.frontier_arrival_blocked=frontier_arrival and r.phase=='exploring' and self.frontier is not None
+        self.return_route_blocked=return_check
         if self.active_path:
             self.failed_route=list(self.active_path)
         elif self.current_target is not None:
@@ -324,7 +373,7 @@ class DemoMission(Mission):
         self.pause_stop_epoch=epoch+1
         self.mode='idle'
         now=time.monotonic()
-        self.auto_retry_pending=(self.frontier_arrival_blocked or bool(self.failed_route)) and self.auto_retry_count<MAX_AUTOMATIC_REPLANS
+        self.auto_retry_pending=self.frontier_arrival_blocked or return_check or bool(self.failed_route)
         self.auto_retry_until=now+4.
         r.transition('exploration_paused',now,reason)
         self.stop_client.call_async(Trigger.Request())
@@ -642,6 +691,85 @@ class DemoMission(Mission):
     def sample_target_map(self):
         return self.transform_pose([*self.run.target['odom_position'][:2],0.])[:2]
 
+    def check_recovery_rotation(self, pose, angle):
+        if self.local_grid is None or time.monotonic()-self.local_grid_wall>=.6:
+            raise ValueError('Recovery turn requires fresh local ground')
+        if abs(angle)>math.tau:
+            raise ValueError('Recovery turn exceeds one revolution')
+        keepout=self.run.preview['keepout'] if self.run.preview else None
+        for grid,start,exclusion,contact in (
+                (self.grid,pose,keepout,self.contact_point),
+                (self.local_grid,self.transform_pose(pose,'odom'),None,None)):
+            # Interpolate short segments to retain the checked direction even
+            # when a safe turn has to go the long way around.
+            arc=[[*start[:2],start[2]+angle*i/3] for i in range(4)]
+            check_path(grid,arc,arc[0],arc[-1],keepout=exclusion,avoid_center=contact)
+
+    def checked_recovery_turn(self, start, path):
+        angle=recovery_departure_angle(start,path)
+        if abs(angle)>RECOVERY_TURN_TOLERANCE_RAD:
+            self.check_recovery_rotation(start,angle)
+
+    def start_recovery_connector(self, target, route, now):
+        pose=self.pose()
+        angle=recovery_departure_angle(pose,route)
+        if abs(angle)<=RECOVERY_TURN_TOLERANCE_RAD:
+            self.send_demo(target,'clearance')
+            return
+        self.recovery_turn=RecoveryTurn(target,pose[:2],pose[2],angle,now+RECOVERY_TURN_TIMEOUT_SECONDS)
+        self.run.event(now,'recovery_turn_started',pose=pose,target=target,angle_rad=angle)
+
+    async def advance_recovery_turn(self, now):
+        turn=self.recovery_turn
+        pose=self.pose()
+        if now>=turn.deadline or math.dist(pose[:2],turn.origin)>.05:
+            raise ValueError('The checked recovery turn did not settle at its starting position')
+        if self.goal is not None or self.pending:
+            raise ValueError('A Nav2 controller is still active during the recovery turn')
+        if (now-self.run.heartbeat_wall>self.run.policy.heartbeat_seconds or
+                not self.healthy() or self.guard.get('mode')!='autonomous' or self.guard.get('fault')):
+            return
+        turn.remaining-=heading_error(turn.yaw,pose[2])
+        turn.yaw=pose[2]
+        if abs(turn.remaining)>RECOVERY_TURN_TOLERANCE_RAD:
+            self.check_recovery_rotation(pose,turn.remaining)
+            turn.stop_requested_at=None
+            speed=min(self.run.policy.angular_speed,abs(turn.remaining))
+            self.sample_motion(angular=math.copysign(speed,turn.remaining))
+            return
+        self.sample_motion()
+        if turn.stop_requested_at is None:
+            turn.stop_requested_at=now
+        if min(self.guard_wall,self.odometry_wall)<=turn.stop_requested_at or not self.sample_stationary():
+            return
+        keepout=self.run.preview['keepout'] if self.run.preview else None
+        path=await self.path(pose,turn.target,keepout=keepout)
+        if self.recovery_turn is not turn:
+            return
+        now=time.monotonic()
+        if (now>=turn.deadline or now-self.run.heartbeat_wall>self.run.policy.heartbeat_seconds or
+                not self.healthy() or self.guard.get('mode')!='autonomous' or self.guard.get('fault')):
+            raise ValueError('Recovery authorization expired before the checked drive')
+        settled=self.pose()
+        if math.dist(settled[:2],turn.origin)>.05 or not self.sample_stationary():
+            raise ValueError('The rover moved during the checked recovery stop')
+        correction=recovery_departure_angle(settled,path)
+        if abs(correction)>RECOVERY_TURN_TOLERANCE_RAD:
+            if (turn.corrections>=RECOVERY_TURN_MAX_CORRECTIONS or
+                    abs(correction)>RECOVERY_TURN_MAX_CORRECTION_RAD):
+                raise ValueError('The recovery departure changed beyond the checked heading corrections')
+            self.check_recovery_rotation(settled,correction)
+            turn.remaining=correction
+            turn.yaw=settled[2]
+            turn.stop_requested_at=None
+            turn.corrections+=1
+            self.run.event(now,'recovery_turn_adjusted',pose=settled,target=turn.target,
+                           angle_rad=correction,correction=turn.corrections)
+            return
+        self.recovery_turn=None
+        self.run.event(now,'recovery_turn_completed',pose=settled,target=turn.target)
+        self.send_demo(turn.target,'clearance')
+
     async def recovery_return(self,start,home,token,*,keepout=None):
         try:
             return None,await self.path(start,home,keepout=keepout)
@@ -659,6 +787,9 @@ class DemoMission(Mission):
                     continue
                 try:
                     outward=await self.path(start,point,keepout=keepout)
+                    if path_length([start,*outward,point])>SHORT_RECOVERY_MAX_DETOUR_RATIO*distance:
+                        continue
+                    self.checked_recovery_turn(start,outward)
                     back=await self.path(point,home,keepout=keepout)
                     if not all(frontier_stop_clear(self.grid,p,REPOSITION_ARRIVAL_MARGIN)
                                for p in (point,outward[-1],back[0])):
@@ -765,7 +896,7 @@ class DemoMission(Mission):
             r.preview['back']=self.return_path
         if connector is not None:
             r.transition('contact_rejoin',now)
-            self.send_demo(connector,'clearance')
+            self.start_recovery_connector(connector,route,now)
         else:
             self.continue_after_contact(now)
 
@@ -802,6 +933,7 @@ class DemoMission(Mission):
                 # Skip connectors that loop around to reach a nearby position.
                 if separation<.60 or path_length(outward)>2.*math.dist(start[:2],point[:2]):
                     continue
+                self.checked_recovery_turn(start,outward)
                 back=await self.path(point,home)
                 if not all(frontier_stop_clear(self.grid,p,REPOSITION_ARRIVAL_MARGIN)
                            for p in (point,outward[-1],back[0])):
@@ -852,14 +984,14 @@ class DemoMission(Mission):
             self.mode='demo'
             self.return_path=route
             self.return_seconds=reserve
-            self.last_route_check=-math.inf
+            self.last_route_check=-math.inf if point else now
             self.return_requested=False
             self.alternate_route=list(self.failed_route) if alternate else []
             r.transition('exploration_reposition' if point else 'exploration_return' if self.resume_return
                          else 'exploring',now)
             r.event(now,'exploration_resumed',reposition=point,alternate=alternate,automatic=automatic)
             if point:
-                self.send_demo(point,'clearance')
+                self.start_recovery_connector(point,route,now)
         except Exception as error:
             if armed:
                 self.abort(str(error))
@@ -868,25 +1000,45 @@ class DemoMission(Mission):
             self.operation_deadline=None
 
     async def automatic_replan(self,now,token):
-        self.auto_retry_count+=1
         self.starting=True
         self.start_epoch=self.guard.get('stop_generation')
         try:
-            # A failed arrival does not invalidate the approach corridor. Check
-            # a way home and search again from the stopped pose when possible.
-            alternate=not self.frontier_arrival_blocked
+            self.valid_token(token)
+            if not self.route_resume_ready() or now-self.run.heartbeat_wall>self.run.policy.heartbeat_seconds:
+                return
+            stopped_at=self.transform_pose(self.pose(),'odom')[:2]
+            attempts=sum(math.dist(stopped_at,position)<AUTOMATIC_REPLAN_LOCATION_RADIUS_M
+                         for position in self.auto_retry_locations)
+            if attempts>=MAX_AUTOMATIC_REPLANS:
+                if not self.resume_return:
+                    self.resume_return=True
+                    self.run.event(now,'automatic_return_fallback',reason='Recovery attempts exhausted at this location')
+                    await self.resume_exploration(now,token,automatic=True)
+                return
+            self.auto_retry_locations.append(stopped_at)
+            mapping_limit=self.run.policy.mapping_seconds
+            if mapping_limit is not None and now-self.run.started>=mapping_limit:
+                self.resume_return=True
+            # A failed reserve check or observation stop can leave the
+            # approach corridor usable. Check a route home from the stopped pose.
+            alternate=not (self.frontier_arrival_blocked or self.return_route_blocked or self.resume_return)
             try:
                 await self.resume_exploration(now,token,alternate=alternate,automatic=True)
             except ValueError as error:
-                if (not alternate or self.run.phase!='exploration_paused' or token!=self.selection_generation or
+                if (token!=self.selection_generation or
                         not self.route_resume_ready()):
                     raise
                 now=time.monotonic()
                 if now-self.run.heartbeat_wall>self.run.policy.heartbeat_seconds:
                     raise
-                self.resume_return=True
-                self.run.event(now,'automatic_return_fallback',reason=str(error))
-                await self.resume_exploration(now,token,automatic=True)
+                if alternate:
+                    self.resume_return=True
+                    self.run.event(now,'automatic_return_fallback',reason=str(error))
+                    await self.resume_exploration(now,token,automatic=True)
+                elif self.failed_route and (self.return_route_blocked or self.resume_return):
+                    await self.resume_exploration(now,token,alternate=True,automatic=True)
+                else:
+                    raise
         except Exception as error:
             if self.run.phase=='exploration_paused':
                 self.run.reason='Automatic replan stopped: '+str(error)
@@ -980,6 +1132,9 @@ class DemoMission(Mission):
         self.pending=True
         self.nav_done=None
         self.waypoint_stop_deadline=None
+        self.frontier_detour_stop=False
+        self.frontier_turn_deadline=None
+        self.frontier_turn_stop_at=None
         token=self.selection_generation
         generation=self.generation
         goal=NavigateToPose.Goal();goal.pose=self.selected_pose(target)
@@ -1019,13 +1174,24 @@ class DemoMission(Mission):
             pose=self.pose()
         except (ValueError,TransformException):
             return None
-        radius,yaw=(FRONTIER_ARRIVAL_RADIUS,FRONTIER_ARRIVAL_YAW) if kind=='frontier' else (
-            REPOSITION_ARRIVAL_RADIUS,REPOSITION_ARRIVAL_YAW)
         target=self.current_target
-        path_yaw=self.active_path[-1][2] if self.active_path else target[2]
-        if (math.dist(pose[:2],target[:2])>radius or abs(heading_error(pose[2],path_yaw))>yaw or
-                not frontier_stop_clear(self.grid,pose,WAYPOINT_CLEARANCE_PAD)):
+        distance=math.dist(pose[:2],target[:2])
+        radius=REPOSITION_ARRIVAL_RADIUS
+        if kind=='frontier':
+            radius=FRONTIER_ARRIVAL_RADIUS
+            if self.frontier_detour_stop:
+                radius=FRONTIER_DETOUR_STOP_RADIUS
+            elif (radius<distance<=FRONTIER_DETOUR_STOP_RADIUS and self.active_path and
+                    math.dist(pose[:2],self.active_path[0][:2])<=.2 and
+                    path_length(self.active_path)>=max(FRONTIER_DETOUR_MIN_LENGTH_M,
+                                                       FRONTIER_DETOUR_LENGTH_RATIO*distance)):
+                radius=FRONTIER_DETOUR_STOP_RADIUS
+        if distance>radius or not frontier_stop_clear(self.grid,pose,WAYPOINT_CLEARANCE_PAD):
             return None
+        if kind=='clearance':
+            path_yaw=self.active_path[-1][2] if self.active_path else target[2]
+            if abs(heading_error(pose[2],path_yaw))>REPOSITION_ARRIVAL_YAW:
+                return None
         if self.contact_point and math.dist(pose[:2],self.contact_point[:2])<self.contact_point[2]:
             return None
         keepout=self.run.preview['keepout'] if self.run.preview else None
@@ -1044,10 +1210,12 @@ class DemoMission(Mission):
         if pose is None:return
         # Keep the goal handle until its terminal result. That prevents a new
         # drive from competing with a controller that is still stopping.
+        self.frontier_detour_stop=(self.current_purpose=='frontier' and
+                                  math.dist(pose[:2],self.current_target[:2])>FRONTIER_ARRIVAL_RADIUS)
         self.waypoint_stop_deadline=now+2.
         self.goal.cancel_goal_async()
         self.run.event(now,'waypoint_stop_requested',purpose=self.current_purpose,pose=pose,
-                       target=self.current_target)
+                       target=self.current_target,detour_stop=self.frontier_detour_stop)
 
     def finish_navigation(self,answer,purpose):
         self.goal=None
@@ -1061,6 +1229,8 @@ class DemoMission(Mission):
             pose=self.waypoint_arrival_pose(now)
             if pose is not None:
                 reached=True
+                if purpose=='frontier' and math.dist(pose[:2],self.current_target[:2])>FRONTIER_ARRIVAL_RADIUS:
+                    self.frontier_detour_stop=True
                 self.run.event(now,'waypoint_progress_result_accepted',purpose=purpose,pose=pose,
                                target=self.current_target)
         if not reached:
@@ -1088,6 +1258,39 @@ class DemoMission(Mission):
             return True
         if now-arrival>=2.:
             raise ValueError('Rover did not settle after reaching the waypoint')
+        return False
+
+    def finish_frontier_view(self, now, *, align=True):
+        """Aim at unknown terrain after Nav2 has released the stopped rover."""
+        if self.frontier_turn_deadline is None and not self.waypoint_settled(now):
+            return False
+        pose=self.waypoint_arrival_pose(now)
+        if pose is None:
+            raise ValueError('Frontier viewing pose lost its turning clearance')
+        error=heading_error(pose[2],self.current_target[2])
+        aligned=abs(error)<=FRONTIER_ARRIVAL_YAW
+        if self.frontier_turn_deadline is None:
+            if aligned or not align:
+                return True
+            self.frontier_turn_deadline=now+FRONTIER_TURN_TIMEOUT_SECONDS
+            self.run.event(now,'frontier_turn_started',pose=pose,target=self.current_target,
+                           heading_error_rad=error)
+        elif now>=self.frontier_turn_deadline:
+            raise ValueError('Frontier viewing turn did not settle in time')
+        if aligned or not align:
+            self.sample_motion()
+            if self.frontier_turn_stop_at is None:
+                self.frontier_turn_stop_at=now
+            if (min(self.guard_wall,self.odometry_wall)<=self.frontier_turn_stop_at or
+                    not self.sample_stationary()):
+                return False
+            self.frontier_turn_deadline=None
+            self.frontier_turn_stop_at=None
+            self.run.event(now,'frontier_turn_completed',pose=pose,heading_error_rad=error,
+                           aligned=aligned)
+            return True
+        self.frontier_turn_stop_at=None
+        self.sample_motion(angular=math.copysign(self.run.policy.angular_speed,error))
         return False
 
     def sample_return_ready(self):
@@ -1195,11 +1398,27 @@ class DemoMission(Mission):
         return xy[indices] @ np.array([[c,s],[-s,c]])+[x,y]
 
     async def choose_frontier(self,goals):
+        planning_started=time.monotonic()
+        survey=self.run.policy.mapping_seconds is not None
+        start=self.pose() if survey and goals else None
+        if start is not None:
+            longer=[goal for goal in goals if SURVEY_FRONTIER_LEG_MIN_M<=
+                    math.dist(start[:2],goal['pose'][:2])<=SURVEY_NEARBY_FRONTIER_M]
+            longer=sorted(longer,key=lambda goal:-goal['score'])[:ROUTE_COMPARISON_LIMIT]
+            if longer and await self.try_frontiers(longer,start,planning_started,longer_leg=True):
+                return
+        await self.try_frontiers(goals,start,planning_started)
+
+    async def try_frontiers(self,goals,start,planning_started,*,longer_leg=False):
         r=self.run
         survey=r.policy.mapping_seconds is not None
+        if survey and not longer_leg:
+            # Straight-line distance is a lower bound even when the lattice
+            # route detours around a hazard. Check closer goals before scoring.
+            goals=sorted(goals,key=lambda g:math.dist(start[:2],g['pose'][:2]))
         generation=self.selection_generation
         checked=[]
-        deferred=[]
+        nearest_route=math.inf
         budget_rejected=False
         retrace_rejected=False
         last_candidate=len(goals)
@@ -1209,22 +1428,33 @@ class DemoMission(Mission):
             reason=r.exploration_reason(now,self.return_path,self.rtf(),goals)
             if reason:
                 r.transition('exploration_return',now,reason)
-                return
+                return True
             pose=candidate['pose']
+            if survey:
+                direct=math.dist(start[:2],pose[:2])
+                if not longer_leg and (direct>nearest_route+SURVEY_FRONTIER_ROUTE_MARGIN_M or
+                        len(checked)>=ROUTE_COMPARISON_LIMIT and direct>=nearest_route):
+                    break
             try:
-                outward=await self.path(self.pose(),pose)
+                outward=await self.path(start if survey else self.pose(),pose)
+                if self.return_requested or r.phase!='exploring' or generation!=self.selection_generation:
+                    return True
                 self.check_alternate_departure(outward)
                 overlap=exploration_overlap(outward,self.frontier_trail)
-                retrace_seconds=path_length(outward)*overlap/r.policy.speed/min(1.,self.rtf())
-                long_retrace=overlap>=.80 and retrace_seconds>MAX_FRONTIER_RETRACE_SECONDS
-                if long_retrace and not survey:
-                    retrace_rejected=True
-                    r.event(time.monotonic(),'planning_candidate_rejected',
-                            reason='Frontier requires a long retrace of earlier travel',pose=pose,
-                            outward_trail_overlap=overlap,estimated_retrace_seconds=retrace_seconds)
+                distance=path_length([start,*outward,pose]) if survey else path_length(outward)
+                if longer_leg and (distance>min(SURVEY_NEARBY_FRONTIER_M,1.5*direct) or
+                                   overlap>SURVEY_LONG_LEG_MAX_TRAIL_OVERLAP):
                     continue
+                if not survey:
+                    retrace_seconds=path_length(outward)*overlap/r.policy.speed/min(1.,self.rtf())
+                    if overlap>=.80 and retrace_seconds>MAX_FRONTIER_RETRACE_SECONDS:
+                        retrace_rejected=True
+                        r.event(time.monotonic(),'planning_candidate_rejected',
+                                reason='Frontier requires a long retrace of earlier travel',pose=pose,
+                                outward_trail_overlap=overlap,estimated_retrace_seconds=retrace_seconds)
+                        continue
                 back=await self.path(pose,self.home_map())
-                if self.return_requested or r.phase!='exploring' or generation!=self.selection_generation:return
+                if self.return_requested or r.phase!='exploring' or generation!=self.selection_generation:return True
                 outward_seconds=return_reserve(outward,r.policy.speed,self.rtf(),contingency_seconds=0.)
                 back_seconds=return_reserve(back,r.policy.speed,self.rtf())
                 remaining=r.policy.exploration_seconds-(time.monotonic()-r.started)
@@ -1236,27 +1466,28 @@ class DemoMission(Mission):
                     continue
                 if not all(frontier_stop_clear(self.grid,p) for p in (pose,outward[-1],back[0])):
                     raise ValueError('Frontier approach or departure lacks clear turning space')
-                # Compare checked travel and viewing gain. The return route
-                # must fit the reserve regardless of the frontier's score.
                 score=candidate['expected_gain_m2']*(1.-.8*overlap)/(1.+outward_seconds)
-                trip=(score,candidate,outward,back,outward_seconds,back_seconds,overlap)
-                if long_retrace:
-                    deferred.append(trip)
-                else:
-                    if not checked:last_candidate=min(last_candidate,index+ROUTE_COMPARISON_LIMIT)
-                    checked.append(trip)
+                if survey:
+                    nearest_route=min(nearest_route,distance)
+                elif not checked:
+                    last_candidate=min(last_candidate,index+ROUTE_COMPARISON_LIMIT)
+                checked.append((score,candidate,outward,back,outward_seconds,back_seconds,overlap,distance))
             except ValueError as error:
-                if self.return_requested or r.phase!='exploring' or generation!=self.selection_generation:return
+                if self.return_requested or r.phase!='exploring' or generation!=self.selection_generation:return True
                 self.visited.append(self.transform_pose(pose,'odom')[:2])
                 r.event(time.monotonic(),'planning_candidate_rejected',reason=str(error),pose=pose)
-        ranked=sorted(checked,key=lambda trip:-trip[0])+sorted(deferred,key=lambda trip:-trip[0])
-        for score,candidate,outward,back,outward_seconds,back_seconds,overlap in ranked:
+        distance_limit=nearest_route+SURVEY_FRONTIER_ROUTE_MARGIN_M
+        # Coverage and trail novelty choose among comparably short routes.
+        # Try a longer route only after the shorter checked ones lose clearance.
+        ranked=sorted(checked,key=lambda trip:(trip[-1]>distance_limit,
+                      trip[-1] if trip[-1]>distance_limit else -trip[0]))
+        for score,candidate,outward,back,outward_seconds,back_seconds,overlap,distance in ranked:
             pose=candidate['pose']
             now=time.monotonic()
             reason=r.exploration_reason(now,self.return_path,self.rtf(),goals)
             if reason:
                 r.transition('exploration_return',now,reason)
-                return
+                return True
             remaining=r.policy.exploration_seconds-(now-r.started)
             if outward_seconds+back_seconds>=remaining:
                 budget_rejected=True
@@ -1269,13 +1500,18 @@ class DemoMission(Mission):
             except ValueError as error:
                 r.event(time.monotonic(),'planning_candidate_rejected',reason=str(error),pose=pose)
                 continue
-            r.event(time.monotonic(),'frontier_selected',pose=pose,expected_gain_m2=candidate['expected_gain_m2'],
+            selected_at=time.monotonic()
+            r.event(selected_at,'frontier_selected',pose=pose,expected_gain_m2=candidate['expected_gain_m2'],
                 trail_novelty=candidate['trail_novelty'],outward_trail_overlap=overlap,
-                outward_distance_m=path_length(outward),return_distance_m=path_length(back),
+                outward_distance_m=distance,return_distance_m=path_length(back),
                 outward_reserve_seconds=outward_seconds,return_reserve_seconds=back_seconds,
-                remaining_seconds=remaining,route_score=score)
+                remaining_seconds=remaining,route_score=score,
+                checked_round_trips=len(checked),planning_seconds=selected_at-planning_started,
+                preferred_long_leg=longer_leg,
+                shortest_checked_route_m=nearest_route if survey else None)
             self.frontier=pose
-            self.send_demo(pose,'frontier');return
+            self.send_demo(pose,'frontier');return True
+        if longer_leg:return False
         reason='No checked route to a frontier remains'
         if budget_rejected and retrace_rejected:
             reason='Remaining frontiers exceed the return budget or retrace limit'
@@ -1284,6 +1520,7 @@ class DemoMission(Mission):
         elif retrace_rejected:
             reason='No frontier within the retrace limit'
         r.transition('exploration_return',time.monotonic(),reason)
+        return True
 
     async def advance(self):
         r=self.run
@@ -1291,7 +1528,7 @@ class DemoMission(Mission):
             now=time.monotonic()
             if self.goal is not None and self.waypoint_stop_deadline is not None:return
             if self.return_requested and r.phase in ('sweeping','exploring'):
-                if self.nav_done=='frontier' and not self.waypoint_settled(now):return
+                if self.nav_done=='frontier' and not self.finish_frontier_view(now,align=False):return
                 self.nav_done=None
                 r.transition('exploration_return',now,'Operator requested early return')
             if r.phase=='sweeping':
@@ -1306,12 +1543,24 @@ class DemoMission(Mission):
                     r.transition('exploring',now)
             elif r.phase=='exploring':
                 if self.nav_done=='frontier':
-                    if not self.waypoint_settled(now):return
+                    if not self.return_path:
+                        if not self.waypoint_settled(now):return
+                        back=await self.path(self.pose(),self.home_map())
+                        if self.nav_done!='frontier' or r.phase!='exploring' or self.return_requested:return
+                        self.return_path=back
+                        now=time.monotonic()
+                        self.last_route_check=now
+                    reason=r.exploration_reason(now,self.return_path,self.rtf(),[True])
+                    if not self.finish_frontier_view(now,align=not reason):return
+                    if reason:
+                        self.nav_done=None
+                        r.transition('exploration_return',now,reason)
+                        return
                     r.visited(now,self.transform_pose(self.pose(),'odom'),self.area())
                     self.visited.append(self.transform_pose(self.current_target,'odom')[:2]);self.nav_done=None
                     self.frontier=None
                     self.alternate_route=[]
-                    self.auto_retry_count=0
+                    self.auto_retry_locations.clear()
                     self.last_route_check=-math.inf
                 elif self.frontier is not None and not frontier_stop_clear(self.grid,self.frontier):
                     self.route_blocked('The frontier stop lost its obstacle clearance', frontier_arrival=True)
@@ -1322,7 +1571,7 @@ class DemoMission(Mission):
                         return_path=await self.path(start,home)
                     except ValueError as error:
                         if not self.waypoint_handoff_pending():
-                            self.route_blocked('Return route blocked: '+str(error))
+                            self.route_blocked('Return route blocked: '+str(error),return_check=True)
                         return
                     if self.waypoint_handoff_pending():return
                     self.return_path=return_path
@@ -1336,10 +1585,11 @@ class DemoMission(Mission):
                     attempted=[self.transform_pose([*v,0.])[:2] for v in self.visited]
                     grid=Grid(self.grid.data.copy(),self.grid.resolution,self.grid.x,self.grid.y)
                     self.frontier_trail=self.exploration_trail()
-                    limit=FRONTIER_CANDIDATE_LIMIT if r.policy.mapping_seconds is not None else FRONTIER_SHORTLIST_SIZE
+                    survey=r.policy.mapping_seconds is not None
+                    limit=FRONTIER_CANDIDATE_LIMIT if survey else FRONTIER_SHORTLIST_SIZE
                     self.frontier_future=self.worker.submit(observation_frontiers,grid,start,attempted,
                         max_goals=limit,speed=r.policy.speed,angular_speed=r.policy.angular_speed,home=home,
-                        trail=self.frontier_trail)
+                        trail=self.frontier_trail,prefer_local=survey)
                     return
                 if not self.frontier_future.done():return
                 goals=self.frontier_future.result();self.frontier_future=None
@@ -1349,6 +1599,8 @@ class DemoMission(Mission):
                 reason=r.exploration_reason(now,self.return_path,self.rtf(),goals)
                 if reason:r.transition('exploration_return',now,reason);return
                 await self.choose_frontier(goals)
+            elif r.phase in ('exploration_reposition','contact_rejoin') and self.recovery_turn is not None:
+                await self.advance_recovery_turn(now)
             elif r.phase=='exploration_reposition' and self.nav_done=='clearance':
                 if not self.waypoint_settled(now):return
                 self.nav_done=None
@@ -1458,6 +1710,8 @@ class DemoMission(Mission):
         waypoint_kind=self.waypoint_kind()
         waypoint=self.current_target if waypoint_kind and (
             self.goal is not None or self.pending or self.nav_done==waypoint_kind) else None
+        if self.recovery_turn is not None and self.run.phase in ('exploration_reposition','contact_rejoin'):
+            waypoint_kind,waypoint='clearance',self.recovery_turn.target
         status.update(coverage=self.mapping.get('measured_coverage'),
                       contact_ready=self.contact_ready(),
                       resume_ready=self.route_resume_ready() and not self.working,
@@ -1470,7 +1724,7 @@ class DemoMission(Mission):
                       real_time_factor=self.rtf(),collection_elapsed_seconds=self.run.collection_elapsed,
                       collection_paused=self.run.phase=='collecting' and not self.run.collection_fresh,
                       actual_distance_m=self.actual_distance,
-                      goal_active=self.goal is not None or self.pending)
+                      goal_active=self.goal is not None or self.pending or self.recovery_turn is not None)
         self.latest_status=status
         message=String();message.data=json.dumps(status,allow_nan=False);self.demo_pub.publish(message)
         legacy=String();legacy.data=json.dumps(dict(mission='idle' if self.run.phase not in ACTIVE else 'demo',home=status['home'],

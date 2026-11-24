@@ -168,7 +168,26 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt,
                 break
             except LayoutError as error:
                 if retry==7:
-                    raise ValueError('Could not add a reachable perimeter to the accepted layout: '+str(error)) from error
+                    raise LayoutError('Could not add a reachable perimeter to this layout: '+str(error)) from error
+        soil_setback=config['terrain'].get('perimeter_soil_staging_setback_m',0.)
+        if soil_setback:
+            # Painted regions introduce no new collision geometry. Find a clear
+            # staging pose for each addition without rerolling the accepted layout.
+            staging=connected_staging_centers(field,objects,edge_setback_m=soil_setback)
+            for side in PERIMETER_SIDES:
+                soil_rng=stream(layout_seed,f'perimeter-soil-{side}')
+                added=len(regions)
+                for band in ((.37,.42),(.30,.37)):
+                    try:
+                        add_candidates(soil_rng,edge_config,field,driveable,assets,root,objects,regions,folder,
+                                       allowed_categories={'silica_soil'},perimeter_side=side,
+                                       staging_centers=staging,perimeter_band=band)
+                        break
+                    except LayoutError:
+                        continue
+                for region in regions[added:]:
+                    index=int(samples[side]=='silica_soil')
+                    region['name']=f'perimeter_{side}_silica_soil_{index:03d}'
         write_json(layout_path,dict(layout_seed=layout_seed,terrain=terrain,objects=objects,regions=regions))
     geometry=dict(seed=seed,layout_seed=layout_seed,layout_attempt=layout_attempt,
                   config_sha256=config_hash,terrain=terrain,objects=objects,regions=regions)
@@ -333,6 +352,8 @@ def _make_scene(root, config, seed, assets, ground, layout_seed, layout_attempt,
         scene['environment_recipe']['surface_style'] = config['terrain']['surface_style']
     if v2 and config['terrain'].get('perimeter_objects'):
         scene['environment_recipe']['perimeter_objects']=True
+        if config['terrain'].get('perimeter_soil_staging_setback_m'):
+            scene['environment_recipe']['perimeter_soil_staging_setback_m']=config['terrain']['perimeter_soil_staging_setback_m']
     if config['capture'].get('target_class_views'):
         scene['view_planning'] = {'policy':'class_quotas_v1','layout_seed':layout_seed,'layout_attempt':layout_attempt}
         coverage = class_coverage([scene])

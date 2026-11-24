@@ -6,9 +6,10 @@ const html=base.replace('</script></html>','</script>'+panel+'</html>');
 const flush=async()=>{for(let i=0;i<50;i++)await Promise.resolve();};
 async function exercise(secure){
  const elements=new Map(),requests=[],timers=[],draws=[];
- let rejectStart=false,rejectStatus=false,nextElement=0,now=100,decode,delayStatus;
+ let rejectStart=false,rejectReturn=false,rejectStatus=false,nextElement=0,now=100,decode,delayStatus;
  function element(id){if(!elements.has(id))elements.set(id,{id,value:'',disabled:id==='demo-explore',checked:false,
-  attributes:{},events:{},children:[],classList:{remove(){},toggle(){}},before(){},
+  attributes:{},events:{},children:[],preceding:[],classList:{remove(){},toggle(){}},
+  before(item){this.preceding.push(item);},
   append(...items){this.children.push(...items);},replaceChildren(...items){this.children=items;},
   setAttribute(k,v){this.attributes[k]=v;},removeAttribute(k){delete this.attributes[k];},
   addEventListener(k,fn){this.events[k]=fn;},remove(){this.removed=true;}});return elements.get(id);}
@@ -31,6 +32,7 @@ async function exercise(secure){
    if(route==='/status')return delayStatus?delayStatus.then(()=>response(status,!rejectStatus)):response(status,!rejectStatus);
    if(route.startsWith('/map.png?'))return {ok:true,blob:async()=>new Blob(['test frame'])};
    if(route==='/demo/start-exploration'&&rejectStart)return response({success:false,message:'Inspect the rejected footprint'},false);
+   if(route==='/demo/return-now'&&rejectReturn)return response({success:false,message:'Return check unavailable. Try again.'},false);
    return response({success:true,message:'Accepted',mission_id:demo.mission_id});}});
  for(const match of html.matchAll(/<script>([\s\S]*?)<\/script>/g))vm.runInContext(match[1],context);
  await flush();assert.equal(element('demo-explore').disabled,false,'The full page must enable Start after healthy status');
@@ -178,21 +180,46 @@ async function exercise(secure){
  await element('demo-alternate-sample').onclick();await flush();
  assert.ok(requests.some(r=>r.route==='/demo/alternate-sample'));
  assert.ok(!requests.some(r=>r.route==='/demo/start-sample'),'Regenerating a preview cannot authorize motion');
- demo.phase='collecting';demo.sample_return_ready=true;
+ const handoff=element('demo-sample-handoff'),sampleReturn=element('demo-sample-return'),returnInfo=element('demo-sample-return-info');
+ assert.ok(element('stop').preceding.includes(handoff),'The sample action belongs in the sticky operator bar');
+ demo.phase='sample_outbound';demo.sample_return_ready=true;
  await vm.runInContext('refresh()',context);
- assert.equal(element('demo-return').hidden,true,'Return must wait for the collection result');
- assert.equal(element('demo-return').disabled,true);
+ assert.equal(handoff.hidden,false);
+ assert.equal(sampleReturn.textContent,'Return home');
+ assert.equal(sampleReturn.disabled,true);
+ assert.match(returnInfo.textContent,/available after collection/);
+ demo.phase='collecting';
+ await vm.runInContext('refresh()',context);
+ assert.equal(handoff.hidden,false,'The return control stays visible while collecting');
+ assert.equal(sampleReturn.disabled,true);
+ assert.match(returnInfo.textContent,/held stationary/);
+ await sampleReturn.onclick();
+ assert.ok(!requests.some(r=>r.route==='/demo/return-now'),'Collection does not authorize departure');
  demo.phase='awaiting_sample_return';
  await vm.runInContext('refresh()',context);
- assert.equal(element('demo-return').textContent,'Return without a sample');
+ assert.equal(sampleReturn.textContent,'Return without a sample');
  demo.sample={simulated:true,delivered:false};
+ demo.sample_return_ready=false;
  await vm.runInContext('refresh()',context);
- assert.equal(element('demo-return').textContent,'Return home');
- assert.equal(element('demo-return').disabled,false);
+ assert.equal(sampleReturn.textContent,'Return home');
+ assert.equal(sampleReturn.disabled,true);
+ assert.match(returnInfo.textContent,/stationary rover and healthy navigation/);
+ demo.sample_return_ready=true;demo.age_seconds=1.1;
+ await vm.runInContext('refresh()',context);
+ assert.equal(sampleReturn.disabled,true,'A stale result cannot authorize return');
+ assert.match(returnInfo.textContent,/fresh rover status/);
+ demo.age_seconds=0;
+ await vm.runInContext('refresh()',context);
+ assert.equal(sampleReturn.disabled,false);
+ assert.match(returnInfo.textContent,/Sample collected/);
  assert.ok(!requests.some(r=>r.route==='/demo/return-now'),'The rover waits for explicit return');
- await element('demo-return').onclick();await flush();
- const returning=requests.find(r=>r.route==='/demo/return-now');
+ rejectReturn=true;await sampleReturn.onclick();await flush();
+ assert.match(returnInfo.textContent,/Return check unavailable/,'The toolbar retains a refused return after refresh');
+ rejectReturn=false;await sampleReturn.onclick();await flush();
+ const returning=requests.filter(r=>r.route==='/demo/return-now').at(-1);
  assert.equal(JSON.parse(returning.body).client_token,body.client_token);
+ demo.phase='sample_backing';await vm.runInContext('refresh()',context);
+ assert.equal(handoff.hidden,true,'The operator sees the active reverse phase after accepting return');
  demo.phase='ready';rejectStart=true;await element('demo-explore').onclick();await flush();
  assert.match(element('demo-message').textContent,/Inspect the rejected footprint/,'A failed command must stay visible after status refresh');
  now+=1001;status.map.stamp=4;

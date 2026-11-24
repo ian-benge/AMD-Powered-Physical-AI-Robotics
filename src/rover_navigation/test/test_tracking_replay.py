@@ -2,7 +2,7 @@ import importlib.util
 from pathlib import Path
 import unittest
 
-from rover_navigation.sample_sites import DEFAULTS, DEMO_BASELINE_M
+from rover_navigation.sample_sites import DEFAULTS, DEMO_BASELINE_M, DEMO_DEFAULTS
 from test_site_tracking import observation
 
 spec = importlib.util.spec_from_file_location('phase3_replay', Path(__file__).resolve().parents[3]/'scripts/halo_navigation_tracking_replay.py')
@@ -39,3 +39,16 @@ class ReplayTests(unittest.TestCase):
         self.assertFalse(module.replay(self.events(spacing=.19), trial, scene)['passed'])
         result = module.replay(self.events(baseline=DEMO_BASELINE_M, spacing=.19), trial, scene)
         self.assertTrue(result['passed'])
+
+    def test_demo_replay_matches_a_two_view_mudstone_confirmation(self):
+        trial = dict(start=dict(truth=dict(x=0., y=0., yaw=0.), estimate=dict(x=0., y=0., yaw=0.)))
+        scene = dict(objects=[dict(name='slab', class_name='cheyava_rock', xyz=[1., 0., 0.], radius_m=.1)])
+        events = list(self.events(spacing=.19))[:3]
+        events[0]['defaults'] = DEMO_DEFAULTS
+        for event in events[1:]:
+            event['observations'] = [observation('mudstone_slab'),
+                                     observation('mudstone_slab', point=(3., 0., 0.), supported=False)]
+        result = module.replay(events, trial, scene)
+        self.assertTrue(result['passed'])
+        self.assertEqual(result['confirmed'][0]['confirmation_view_count'], 2)
+        self.assertEqual(result['reference_evaluation']['matches'][0]['reference'], 'slab')
