@@ -1049,6 +1049,195 @@ exterior viewer use that cutoff. The dashboard displays it as a single
 limit. In offline checks, the guards accepted 91.999°C and stopped
 at 92°C.
 
+### V51 sample return handoff
+
+On November 23, an attended V50 run mapped for 25 minutes, verified the
+first home stop at 27:51, and measured 875.7 m² (54.7%) by the end of
+the run. The operator reviewed a larger soil envelope after an outbound
+stop, approved the revised route, and reached the sample pose. The mission
+logged 10.19 seconds of stationary simulated collection. It reported a
+ready return for 3.7 seconds before Stop or takeover ended the mission.
+The audited capture closed cleanly with zero kernel incident matches.
+
+V51 keeps **Return home** in the sticky top toolbar from sample approach
+through the collection result. It explains why the rover is waiting,
+enables when the stopped rover has healthy navigation, and shows a refused
+return request where the operator can retry it. The operator authorizes
+the return explicitly. The rover checks the reverse departure and route
+home before moving.
+
+Browser checks exercised the control with the map scrolled and the camera
+expanded. The installed ROS replay used V50's recorded sample pose,
+keepout and 390-pose home preview on a measured-clear fixture. It backed
+0.50 m, stopped at home and recorded delivery. The full attended V51
+survey was stopped during mapping to investigate a distant frontier.
+
+### V52 closer survey frontiers
+
+In the stopped V51 run, the planner selected a 25.46 m outward leg across
+the map. Its estimated overlap with earlier travel was 70.5%. The old
+80% threshold kept the leg in its preferred group while it deferred
+shorter approaches with higher overlap. The rover had visited 21
+frontiers and measured 24.2% when the operator stopped.
+
+V52 gives viewpoints within 6 m of reachable driving their own place in
+the candidate search, even when the same map edge extends much farther.
+It checks nearby destinations first and measures the actual planned
+drive around obstacles. Coverage gain and trail novelty rank the
+checked routes within 2 m of the shortest usable drive. The search can
+expand to a farther viewpoint when closer approaches fail clearance or
+return checks. Viewpoints sit on measured ground and face into unmapped
+terrain.
+
+The recorded-route replay used both V51 plans and chose the 12.5 m
+approach on a measured-clear test grid. A separate corridor test verified
+that close observations were generated along a connected map edge. The
+installed sample-return replay also passed.
+
+### V53 frontier turns and planning time
+
+Two frontiers in the attended V52 run produced loops in the driven
+trail. After entering the 40 cm arrival radius, the rover drove 5.48 m
+around one frontier while Nav2 tried to match the viewing angle. It
+drove another 3.09 m around a later frontier before the operator stopped.
+One frontier search took 10.94 seconds after the map supplied candidates,
+with 64 paths published while checking outbound and return routes.
+
+V53 ends the Nav2 drive on arrival within 40 cm when the actual rover pose
+has clear turning space. After Nav2 acknowledges the stop and fresh
+feedback confirms the rover is stationary, the rover turns in place to
+face the frontier. The next search starts after fresh feedback confirms
+the turn has stopped. The operator can request an early return during
+the turn.
+
+The survey planner compares three checked nearby round trips and
+continues checking while another candidate could offer a shorter
+drive. Coverage and earlier travel still guide the choice among routes
+of similar length. Both legs are checked against the latest map and the
+estimated time needed to get home.
+
+The installed replay used both recorded arrival poses and verified
+zero forward motion commands during the turn. In the slow search replay,
+the planner made 10 route requests from the archived candidate paths
+and selected a checked 1.18 m leg. The replay used a measured-clear test
+grid and simulated motion feedback. Live timing and traction still
+need an attended run.
+
+### V54 map edge clearance
+
+The V53 survey stopped during a northern frontier approach. The selected
+viewpoint was at `(7.475, 17.825)` on the 40 m map. The rover got within
+44 cm of it and came to about 2.6 m from the map edge. Nav2's remaining
+route grew from 0.91 m to 3.08 m as it changed its approach. The guard
+recorded an operator stop after the detour.
+
+V54 keeps the rover's footprint 3 m inside each edge during the 40 m
+demo. The mission and Nav2 plan on the interior 34 m square. The local
+motion guard checks the same boundary. The camera and dashboard use the
+full 40 m map.
+
+A frontier normally uses the 40 cm arrival radius. If a fresh Nav2 plan
+takes a long detour with the rover within 65 cm, the mission can stop
+at the current pose when it has full turning clearance. It waits for
+Nav2 and the motion guard to confirm the stop before aiming in place.
+
+The installed replay received both map sizes over ROS and rejected
+the recorded V53 route at the setback. It shifted the same approach
+inland on a measured-clear test grid and verified the stop at 54 cm
+with simulated motion feedback. The local sweep tests covered all four
+edges. The next attended survey will verify operation with live terrain.
+
+### V55 recovery turns and scene generation retries
+
+V54 measured 658.6 m² (41.2%) and drove 104.5 m before the motion guard
+stopped it 19:10 into the survey. The return route failed a footprint
+check. Recovery found a connector that started with a clockwise turn,
+but the controller turned counterclockwise and its predicted sweep
+reached a tracked rock. The guard stopped the rover before contact.
+
+V55 checks the recovery turn against the measured map and fresh local
+ground. The rover performs the checked turn in place, waits for a
+stationary reading, then rechecks the route before handing control back
+to Nav2. Recovery stays stopped if the current terrain blocks the turn
+or a safe departure cannot be checked.
+
+The next scene request also failed when the generator exhausted the
+perimeter placement attempts for one layout. V55 lets the generator
+try the next layout for the same seed within its retry limit. The
+failed seed `277760684` generated a scene successfully on layout 15.
+
+The recovery replay used the recorded pose, 197° clockwise turn and
+rejected rock cell. It verified zero translation through the turn and
+one fresh route check after the stop. The replay used simulated motion
+feedback. The next attended run will verify the complete recovery on
+live terrain.
+
+### V56 automatic mapping recovery
+
+V55 completed both home stops and delivered the simulated sample at
+26:33. The operator resumed mapping three times and requested an early
+return at 17:34. The final map measured 621.0 m² (38.8%).
+
+V56 counts automatic attempts near each stopped position. Moving to
+new ground lets the rover recover again even before completing a
+frontier. If the rover runs out of attempts at the same spot, it
+checks a route home. When a return-route check causes a pause, the
+rover first replans from the stopped pose, then checks a different
+departure if needed. The owner’s live heartbeat and a checked route
+are required before it resumes.
+
+If Nav2 asks for a small heading correction after a recovery turn,
+V56 checks the new turn against the terrain, performs it in place,
+and waits for a full stop before checking the departure again. Two
+corrections can fit within the existing recovery turn deadline.
+
+The installed replay completed all three recorded heading corrections
+and automatically resumed the two later pauses using the recorded
+routes and the existing heartbeat. It used a measured-clear test map
+and simulated motion feedback.
+
+### V57 longer survey legs
+
+An attended V56 survey reached its mapping time limit at 25:01 and
+verified home arrival at 29:04 with 53.0% of the map measured. It
+resumed exploration automatically seven times. The median planned
+frontier leg was 1.81 m, and 80 of 85 were under 3 m.
+
+V57 gives viewpoints 3.5–6 m away their own places in the frontier
+shortlist. The survey compares up to three such candidates first.
+A preferred leg needs a checked outbound path of at most 6 m, limited
+overlap with the driven trail, enough room to turn at the frontier,
+and a checked return within the time budget. If none passes, the
+planner checks the nearby options.
+
+In replay, V57 selected a 5.2 m option from the same recorded batch
+where V56 had selected 2.6 m. A separate replay selection used the
+shorter leg when the longer option retraced earlier travel. These
+checks used recorded path geometry and trail history on a clear test
+grid. The next V57 survey selected 11 preferred legs out of 39, with a
+longest leg of 5.41 m. It mapped 28.6% before the motion guard stopped a
+recovery turn near a tracked rock.
+
+### V58 edge soil and mudstone tracking
+
+The three demo scenes now have six, five, and six perimeter pale soil
+patches, each up from two. The generator places added patches near a
+connected staging pose inside the 3 m driving setback. The regenerated
+scenes preserve the original terrain, rocks, and interior regions.
+
+Two depth-supported views can confirm a rock, crystal, mudstone slab, or
+pale soil patch when they span at least one second and both the rover's
+drive center and camera have moved at least 18 cm. A mudstone slab can
+qualify with shallow relief and a measured rim above the local ground.
+The archived V57 slab mesh passed all six two-view depth replays. Bare
+ground at the same location failed the geometry check in all 12 views.
+These replays used rendered depth and projected boxes.
+
+Short recovery checks now skip a path whose driven length exceeds 1.8
+times the displacement to its waypoint. In replay this rejected the
+0.97 m detour toward V57's 0.50 m recovery waypoint and checked another
+connector. Live mapping and recovery in V58 still need a full run.
+
 Finish any prior capture with `~/bin/halo-rover finish` and complete its
 sudo prompt. Run each command below in a separate Halo desktop terminal.
 Wait for repeating capture health before temperatures and NPU. Wait
@@ -1066,7 +1255,7 @@ cooldown check before it launches the worker.
 ~/bin/halo-rover view
 ```
 
-`demo` opens V50 scene 1 with the survey profile at 0.15 m/s. `view` opens a
+`demo` opens V58 scene 1 with the survey profile at 0.15 m/s. `view` opens a
 ten-second inspection. After it closes, confirm the clear launch area on
 the [Halo dashboard](http://127.0.0.1:8774) and choose **Start autonomous
 exploration**. Keep the dashboard visible and let the planner begin its

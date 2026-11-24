@@ -27,22 +27,23 @@ Offline geometry, compatibility, texture allocation and actual CPU/ROCm mapping 
 
 ## Autonomous demonstration in attended testing
 
-V50 plans a 25-minute survey at 0.15 m/s and reserves enough time for the first
+V58 plans a 25-minute survey at 0.15 m/s and reserves enough time for the first
 home return. The operator selects a sample site, reviews both routes and
 approves the departure. After simulated collection, the operator requests the
-second return. The dashboard shows coverage, confirmed objects, the checked
-route and mission progress. [Mission guide](AUTONOMOUS_DEMO_GUIDE.md).
+second return from the dashboard toolbar. The dashboard shows coverage,
+confirmed objects, the checked route and mission progress.
+[Mission guide](AUTONOMOUS_DEMO_GUIDE.md).
 
-Short rehearsals verified home arrival. The longest V49 survey measured
-536 m² of the 40 × 40 m operating area and reached 30 frontiers before its
-thermal stop at 14:25. An isolated installed ROS fixture verified simulated
-sample delivery at home. The V50 cutoff of 92°C passed offline boundary
-checks. [Attended and offline evidence](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v49-long-survey-and-sampling-demo).
+V55 verified both home stops and delivered a simulated sample after the
+operator resumed mapping and requested an early return. V56 completed the
+25-minute mapping window and returned autonomously with 53.0% measured.
+[Attended and offline evidence](AUTONOMOUS_PLANNER_REHEARSAL_20261117.md#v56-automatic-mapping-recovery).
 
-The next milestone is an attended V50 survey and sample trip with both home
-stops, a delivered sample record and a reviewed thermal trace. Subsequent
-checks cover startup across terrain types, localization drift, wheel contact,
-other scene densities, and performance with demo recording active.
+The next milestone is a full attended V58 run with the updated mapping,
+recovery and sample tracking, both home stops, a delivered sample record,
+and a reviewed thermal trace. Subsequent checks cover startup across terrain
+types, localization drift, wheel contact, other scene densities, and
+performance with demo recording active.
 
 ## Later milestones
 
