@@ -10,6 +10,8 @@
 
 Developed for a Texas A&M engineering capstone. The project combines a reproducible Mars environment, synthetic-data collection, four-class detector training, AMD accelerator deployment, terrain mapping and a browser-controlled rover. The autonomous survey and simulated sampling workflow is in attended testing.
 
+**[Watch the capstone demo on Google Drive](https://drive.google.com/file/d/1fzdO_vHzRV3fEmbq78xAgBsiyACJd2Ww/view?usp=sharing)** · [Demo visuals and validation results](docs/VERIFICATION.md#demo-visuals-and-validation)
+
 **For AMD evaluation:** start with the [testing guide](docs/AMD_TESTING_GUIDE.md), which separates clean-checkout tests, retained Halo deployment requirements, measured results and unresolved issues. This is a simulation research prototype; no physical-rover or completed autonomous-mission claim is made.
 
 ![Recorded Halo run: camera detections, terrain map, confirmed rocks, and manual controls](docs/media/rover-dashboard.png)
