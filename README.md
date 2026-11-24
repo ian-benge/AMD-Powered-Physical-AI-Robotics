@@ -10,13 +10,29 @@
 
 Developed for a Texas A&M engineering capstone. The project combines a reproducible Mars environment, synthetic-data collection, four-class detector training, AMD accelerator deployment, terrain mapping and a browser-controlled rover. The autonomous survey and simulated sampling workflow is in attended testing.
 
-**[Watch the capstone demo on Google Drive](https://drive.google.com/file/d/1fzdO_vHzRV3fEmbq78xAgBsiyACJd2Ww/view?usp=sharing)** · [Demo visuals and validation results](docs/VERIFICATION.md#demo-visuals-and-validation)
-
 **For AMD evaluation:** start with the [testing guide](docs/AMD_TESTING_GUIDE.md), which separates clean-checkout tests, retained Halo deployment requirements, measured results and unresolved issues. This is a simulation research prototype; no physical-rover or completed autonomous-mission claim is made.
 
-![Recorded Halo run: camera detections, terrain map, confirmed rocks, and manual controls](docs/media/rover-dashboard.png)
+## Capstone demo
 
-*Actual scene-50000 simulation on the Halo development machine. Camera boxes are immediate predictions; yellow map markers require independent, depth-supported observations.*
+**[Watch the capstone demo on Google Drive](https://drive.google.com/file/d/1fzdO_vHzRV3fEmbq78xAgBsiyACJd2Ww/view?usp=sharing)**
+
+### Rover dashboard
+
+![Simulated rover dashboard showing measured terrain, hazards, tracked objects, and the driven trail](docs/media/demo-terrain-dashboard.png)
+
+The dashboard reported 90 confirmed tracks and five pending at capture time.
+
+### Multi-class NPU detection
+
+![Annotated simulator camera frame and per-class precision and recall for the AMD NPU detector](docs/media/npu-detection-validation.png)
+
+The epoch-22 YOLOv8s A16W8 detector scored **78.90% mAP50–95** on 100 held-out synthetic test images. [Matched detector evaluation](docs/CAPTURE5000_MODEL_ASSESSMENT.md#matched-accuracy).
+
+### Terrain map accuracy
+
+![Terrain audit map and ground-height error chart for 107 synchronized frames and 14 CPU and ROCm replay cases](docs/media/terrain-map-validation.png)
+
+All 107 frames passed the 15 mm ground-height review. The worst per-frame p95 error was **4.24 mm**. CPU and ROCm cost maps matched across all 14 cases in the separate 40 m replay. [Rendered-depth review](docs/PHASE3_MAPPING_ACCEPTANCE_20261105.md#attended-rendered-depth-review) · [40 m replay scope](docs/SIMULATION_ENVIRONMENT_V2_CLOSEOUT.md).
 
 ## Current status — November 24, 2026
 
@@ -80,9 +96,13 @@ flowchart LR
 The NPU runs learned feature extraction and prediction heads. Preprocessing, sparse DFL decoding, NMS, drawing and JPEG encoding remain on the CPU. Simulator truth is consumed only by evaluators. [Architecture and safety contracts →](docs/ARCHITECTURE.md)
 
 <details>
-<summary>View the recorded Gazebo scene</summary>
+<summary>View the recorded Gazebo scene and Halo dashboard</summary>
 
 ![Gazebo Harmonic terrain, rocks, and simulated rover](docs/media/gazebo-scene.png)
+
+![Recorded Halo run with camera detections, terrain map, confirmed rocks, and manual controls](docs/media/rover-dashboard.png)
+
+*Actual scene-50000 simulation on the Halo development machine. Camera boxes show immediate predictions. Yellow map markers require independent, depth-supported observations.*
 
 </details>
 
